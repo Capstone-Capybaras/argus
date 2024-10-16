@@ -13,7 +13,7 @@ import { DATABASE_CONNECTION } from './connection';
           connectionString: configService.getOrThrow('DATABASE_URL'),
         });
         return drizzle(pool, {
-          schema: {},
+          casing: 'snake_case',
         });
       },
       inject: [ConfigService],
