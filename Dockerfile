@@ -10,8 +10,6 @@ COPY . .
 
 RUN npm run build
 
-ENV NODE_ENV=production
-
 FROM --platform=linux/amd64 node:18-alpine AS production
 
 WORKDIR /app
@@ -24,4 +22,4 @@ COPY --from=build /app/dist ./dist
 
 EXPOSE 8080
 
-CMD ["node", "dist/main.js"]
+CMD ["sh", "-c", "if [ \"$NODE_ENV\" = 'production' ]; then npm run start:prod; elif [ \"$NODE_ENV\" = 'staging' ]; then npm run start:staging; else npm run start:dev; fi"]
