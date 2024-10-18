@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
-import { UsersModule } from './users/users.module';
 import * as path from 'path';
 import * as fs from 'fs';
+import { secretManagerConfig } from './config/secrets';
+import { UsersModule } from './users/users.module';
+import { DatabaseModule } from './database/database.module';
 
 console.log(`NODE_ENV sanity check: ${process.env.NODE_ENV}`);
 console.log(
@@ -20,6 +21,7 @@ console.log(
         path.join(__dirname, '..', '..', `.env.${process.env.NODE_ENV}`),
       ],
       isGlobal: true,
+      load: [secretManagerConfig],
     }),
     DatabaseModule,
     UsersModule,

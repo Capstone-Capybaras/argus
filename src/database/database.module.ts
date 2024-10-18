@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common';
+import { Module, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Pool, PoolClient } from 'pg';
+import { Pool } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { DATABASE_CONNECTION } from './connection';
 import * as schemas from './schema';
@@ -20,6 +20,7 @@ import * as schemas from './schema';
         } catch (err) {
           throw new Error(err);
         }
+        Logger.log('Database connected');
 
         return drizzle(pool, {
           casing: 'snake_case',

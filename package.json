@@ -23,6 +23,7 @@
     "migrate:prod": "NODE_ENV=production npx drizzle-kit migrate"
   },
   "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.674.0",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^10.0.0",
