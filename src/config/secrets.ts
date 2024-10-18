@@ -2,6 +2,7 @@ import {
   SecretsManagerClient,
   GetSecretValueCommand,
 } from '@aws-sdk/client-secrets-manager';
+import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
 import { ConfigService } from '@nestjs/config';
 
 /**
@@ -12,7 +13,10 @@ export interface Secrets {
 }
 
 const fetchSecrets = async (secretName: string): Promise<Secrets> => {
-  const client = new SecretsManagerClient({ region: 'ap-southeast-1' });
+  const client = new SecretsManagerClient({
+    region: 'ap-southeast-1',
+    credentials: fromNodeProviderChain(),
+  });
   try {
     const response = await client.send(
       new GetSecretValueCommand({
