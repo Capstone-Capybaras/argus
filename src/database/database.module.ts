@@ -2,7 +2,7 @@ import { Module, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Pool } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { DATABASE_CONNECTION } from './connection';
+import { DATABASE_CONNECTION } from '../providerKeys';
 import * as schemas from './schema';
 
 @Module({
@@ -18,6 +18,7 @@ import * as schemas from './schema';
           const client = await pool.connect();
           client.release();
         } catch (err) {
+          Logger.error('Could not connect to database');
           throw new Error(err);
         }
         Logger.log('Database connected');

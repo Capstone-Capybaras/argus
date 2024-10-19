@@ -4,6 +4,8 @@ import * as path from 'path';
 import { secretManagerConfig } from './config/secrets';
 import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './database/database.module';
+import { EmailsModule } from './emails/emails.module';
+import { SnsModule } from './sns.module';
 
 @Module({
   imports: [
@@ -16,8 +18,9 @@ import { DatabaseModule } from './database/database.module';
     }),
     DatabaseModule,
     UsersModule,
+    EmailsModule,
+    SnsModule,
   ],
   controllers: [],
-  providers: [],
 })
 export class AppModule {}
