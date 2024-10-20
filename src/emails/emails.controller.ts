@@ -38,8 +38,6 @@ export class EmailsController {
     } else {
       // check typing here
       // https://docs.aws.amazon.com/ses/latest/dg/event-publishing-retrieving-sns-contents.html
-      // no current official support for types,
-      // but refer to this for a community one: https://github.com/aws/aws-sdk-js-v3/issues/6141
       const parsedMessage = JSON.parse(message);
       Logger.log({ parsedMessage });
       return this.emailsService.processInbound();
