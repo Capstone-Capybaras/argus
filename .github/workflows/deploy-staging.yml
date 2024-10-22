@@ -11,7 +11,7 @@ env:
   ECS_CLUSTER: eep-staging
   ECS_TASK_DEFINITION: argus-task-staging
   CONTAINER_NAME: argus
-  ROLE_TO_ASSUME: arn:aws:iam::891377379277:oidc-provider/token.actions.githubusercontent.com
+  ROLE_TO_ASSUME: arn:aws:iam::891377379277:role/GitHubAction-AssumeRoleWithAction
 
 permissions:
   id-token: write # Required for requesting the JWT for AWS
