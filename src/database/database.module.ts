@@ -18,7 +18,7 @@ import * as schemas from './schema';
           const client = await pool.connect();
           client.release();
         } catch (err) {
-          throw new Error(err);
+          throw new Error(String(err));
         }
         Logger.log('Database connected');
 
