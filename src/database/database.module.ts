@@ -14,7 +14,6 @@ import * as schemas from './schema';
           connectionString: configService.getOrThrow('DATABASE_URL'),
         });
         // validate db connection
-        // comment to check if its working
         try {
           const client = await pool.connect();
           client.release();
