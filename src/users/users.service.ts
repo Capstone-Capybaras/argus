@@ -29,10 +29,15 @@ export class UsersService {
   }
 
   async findOne(username: string): Promise<User | undefined> {
-    return this.database.select().from(schemas.usersTable).where(eq(schemas.usersTable.username, username));
+    return this.database
+      .select()
+      .from(schemas.usersTable)
+      .where(eq(schemas.usersTable.username, username));
   }
 
-  async addUser(username: string, password: string){
-    return this.database.insert(schemas.usersTable).values({username: username, password: password})
+  async addUser(username: string, password: string) {
+    return this.database
+      .insert(schemas.usersTable)
+      .values({ username: username, password: password });
   }
 }

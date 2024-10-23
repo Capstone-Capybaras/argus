@@ -9,6 +9,8 @@ import { ConfigService } from '@nestjs/config';
  */
 export interface Secrets {
   DATABASE_URL: string;
+  JWT_SECRET: string;
+  SALT_OR_ROUNDS: string;
 }
 
 const fetchSecrets = async (secretName: string): Promise<Secrets> => {
