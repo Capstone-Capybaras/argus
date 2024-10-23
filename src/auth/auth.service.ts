@@ -17,9 +17,9 @@ export class AuthService {
   ) {}
 
   async register(username: string, pass: string) {
-    const saltOrRounds = this.configService.getOrThrow('SALT_OR_ROUNDS');
+    const saltOrRounds = +this.configService.getOrThrow('SALT_OR_ROUNDS');
     const hash = await bcrypt.hash(pass, saltOrRounds);
-    const success = await this.usersService.addUser(username, hash);
+    return this.usersService.addUser(username, hash);
   }
 
   async signIn(
@@ -32,7 +32,7 @@ export class AuthService {
       if (!isMatch) {
         throw new UnauthorizedException();
       }
-      const payload = { sub: user.username, username: user.username };
+      const payload = { sub: user.id, username: user.username };
       return {
         access_token: await this.jwtService.signAsync(payload),
       };

@@ -1,11 +1,7 @@
-import { pgTable, text } from 'drizzle-orm/pg-core';
-
-// export const usersTable = pgTable('users', {
-//   name: text().notNull(),
-//   pillar: text({ enum: ['CSD', 'DAI', 'EPD', 'ESD', 'ASD'] }).notNull(),
-// });
+import { pgTable, text, serial } from 'drizzle-orm/pg-core';
 
 export const usersTable = pgTable('users', {
-  username: text().notNull(),
+  id: serial("id").primaryKey(),
+  username: text().notNull().unique(),
   password: text().notNull(),
 });

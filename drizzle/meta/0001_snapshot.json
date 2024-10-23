@@ -1,6 +1,6 @@
 {
-  "id": "a08f5de2-b40a-40cd-8c84-e28b5a8b97cc",
-  "prevId": "d5d17380-5789-464d-b785-7b4e981c75a8",
+  "id": "91303801-ea2f-4ac3-8990-1b017974f55a",
+  "prevId": "8ad03b90-5ab4-4a08-9563-cc87521abad8",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -8,6 +8,12 @@
       "name": "users",
       "schema": "",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
         "username": {
           "name": "username",
           "type": "text",
@@ -24,7 +30,15 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "users_username_unique": {
+          "name": "users_username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "username"
+          ]
+        }
+      },
       "checkConstraints": {}
     }
   },

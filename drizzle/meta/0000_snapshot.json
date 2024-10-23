@@ -1,5 +1,5 @@
 {
-  "id": "d5d17380-5789-464d-b785-7b4e981c75a8",
+  "id": "8ad03b90-5ab4-4a08-9563-cc87521abad8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -8,23 +8,43 @@
       "name": "users",
       "schema": "",
       "columns": {
-        "name": {
-          "name": "name",
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "pillar": {
-          "name": "pillar",
+        "password": {
+          "name": "password",
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "test_column": {
+          "name": "test_column",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "users_username_unique": {
+          "name": "users_username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "username"
+          ]
+        }
+      },
       "checkConstraints": {}
     }
   },
