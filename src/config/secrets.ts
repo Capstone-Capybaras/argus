@@ -12,6 +12,7 @@ export interface Secrets {
   DATABASE_URL: string;
   JWT_SECRET: string;
   SALT_OR_ROUNDS: string;
+  JWT_REFRESH_SECRET: string;
 }
 
 const fetchSecrets = async (secretName: string): Promise<Secrets> => {
