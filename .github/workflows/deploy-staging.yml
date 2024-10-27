@@ -26,6 +26,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install Node.js dependencies
+        run: npm install
+
+      - name: Run lint
+        run: npm run lint
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
