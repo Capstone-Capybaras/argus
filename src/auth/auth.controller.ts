@@ -77,6 +77,22 @@ export class AuthController {
     return { accessToken };
   }
 
+  @Post('logout')
+  @HttpCode(204)
+  async logout(@Req() request: Request) {
+    const storedRefreshToken = request.cookies[REFRESH_TOKEN_COOKIE];
+    if (!storedRefreshToken) {
+      throw new UnauthorizedException('Refresh token not found');
+    }
+
+    try {
+      await this.authService.revokeRefreshToken(storedRefreshToken);
+    } catch (err) {
+      throw new InternalServerErrorException(String(err));
+    }
+    return true;
+  }
+
   @UseGuards(AuthGuard)
   @Get('verify')
   async verifyToken() {

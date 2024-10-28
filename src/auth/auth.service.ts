@@ -3,11 +3,17 @@ import {
   UnauthorizedException,
   NotFoundException,
   ForbiddenException,
+  Inject,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { createHash } from 'crypto';
+import { DATABASE_CONNECTION } from 'src/database/connection';
 import { ConfigService } from '@nestjs/config';
+import { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import { eq } from 'drizzle-orm';
+import * as schemas from 'src/database/schema';
 
 interface JwtPayload {
   sub: number;
@@ -20,6 +26,8 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private readonly configService: ConfigService,
+    @Inject(DATABASE_CONNECTION)
+    private readonly database: NodePgDatabase<typeof schemas>,
   ) {}
 
   private async generateRefreshToken(payload: JwtPayload) {
@@ -27,6 +35,23 @@ export class AuthService {
       secret: this.configService.getOrThrow('JWT_REFRESH_SECRET'),
       expiresIn: '7d',
     });
+  }
+
+  private hashToken(token: string): string {
+    return createHash('sha256').update(token).digest('hex');
+  }
+
+  private async validateRefreshToken(token: string): Promise<void> {
+    const hashedToken = this.hashToken(token);
+    const revoked = await this.database
+      .select()
+      .from(schemas.revokedTokensTable)
+      .where(eq(schemas.revokedTokensTable.token_hash, hashedToken))
+      .limit(1);
+    if (!revoked || revoked.length === 0) return;
+    const [revokedToken] = revoked;
+    if (!revokedToken) return;
+    throw new Error('refresh token has been revoked');
   }
 
   async register(username: string, pass: string) {
@@ -69,6 +94,9 @@ export class AuthService {
         },
       );
 
+      await this.validateRefreshToken(refreshToken);
+
+      // passed refresh token check
       const user = await this.usersService.findOne(payload.username);
       if (!user) {
         throw new ForbiddenException('Access Denied');
@@ -83,5 +111,11 @@ export class AuthService {
     } catch {
       throw new ForbiddenException('Invalid refresh token');
     }
+  }
+
+  async revokeRefreshToken(refreshToken: string) {
+    return this.database.insert(schemas.revokedTokensTable).values({
+      token_hash: this.hashToken(refreshToken),
+    });
   }
 }
