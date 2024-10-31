@@ -15,6 +15,20 @@
       "when": 1729673046666,
       "tag": "0001_happy_abomination",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1730137503405,
+      "tag": "0002_striped_sunfire",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1730137604393,
+      "tag": "0003_motionless_marten_broadcloak",
+      "breakpoints": true
     }
   ]
 }

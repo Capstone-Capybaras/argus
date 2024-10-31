@@ -19,7 +19,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "generate:local": "npx drizzle-kit generate",
+    "generateSchemas": "npx drizzle-kit generate",
     "migrate:local": "NODE_ENV=local npx drizzle-kit migrate",
     "migrate:staging": "NODE_ENV=staging npx drizzle-kit migrate",
     "migrate:prod": "NODE_ENV=production npx drizzle-kit migrate"
