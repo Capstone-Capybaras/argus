@@ -5,6 +5,9 @@ import { AuthModule } from './auth/auth.module';
 import * as path from 'path';
 import { secretManagerConfig } from './config/secrets';
 import { DatabaseModule } from './database/database.module';
+import { ProjectModule } from './modules/project/project.module';
+import { EntityModule } from './modules/entity/entity.module';
+import { ScenarioModule } from './modules/scenario/scenario.module';
 
 @Module({
   imports: [
@@ -18,6 +21,9 @@ import { DatabaseModule } from './database/database.module';
     DatabaseModule,
     UsersModule,
     AuthModule,
+    ProjectModule,
+    EntityModule,
+    ScenarioModule,
   ],
   controllers: [],
   providers: [],
