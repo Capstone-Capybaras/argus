@@ -1,9 +1,29 @@
+// create-entity.dto.ts
+import { IsString, IsOptional } from 'class-validator';
+
 export class CreateEntityDto {
-    name: string;
-    description: string;
-    victim_sector: string;
-    CII: string;
-    critical_function: string;
-    policy_documents: string; // Could be a file path or URL
-  }
-  
+  @IsString()
+  name: string;
+
+  @IsString()
+  description: string;
+
+  @IsString()
+  victim_sector: string;
+
+  @IsString()
+  CII: string;
+
+  @IsString()
+  critical_function: string;
+
+  @IsString()
+  policy_documents: string;
+
+  @IsString()
+  participants: string; // Add this field
+
+  @IsOptional()
+  @IsString()
+  real_threat_landscape?: string; // Add this field if optional
+}

@@ -19,6 +19,7 @@ export const projectTable = pgTable('project', {
   end_date: date().notNull(),
   email_header: text().notNull(),
   email_footer: text().notNull(),
+  entity_name : text().notNull().references(() => entityTable.name)
 });
 
 // New tables based on the diagram
@@ -30,6 +31,8 @@ export const entityTable = pgTable('entity', {
   CII: varchar().notNull(),
   critical_function: text().notNull(),
   policy_documents: varchar().notNull(),
+  participants: varchar().notNull().references(() => participantsTable.email),
+  real_threat_landscape: varchar().references(() => masterThreatCubesTable.name)
 });
 
 export const CIITable = pgTable('CII', {
@@ -48,18 +51,12 @@ export const participantsTable = pgTable('participants', {
 
 export const threatActorTable = pgTable('threat_actor', {
   name: varchar().notNull(),
-  threat_landscape: text().notNull(),
+  threat_landscape: text().notNull().references(() => masterThreatCubesTable.name),
   category: text().notNull(),
   intent: text().notNull(),
   rationale: text().notNull(),
   capabilities: text().notNull(),
   project: varchar().notNull().references(() => projectTable.name),
-});
-
-export const masterThreatLandscapeTable = pgTable('master_threat_landscape', {
-  category: text().notNull(),
-  name: text().notNull(),
-  pillar: text({ enum: ['CSD', 'DAI', 'EPD', 'ESD', 'ASD'] }).notNull(),
 });
 
 export const scenariosTable = pgTable('scenarios', {
@@ -88,7 +85,7 @@ export const injectsTable = pgTable('injects', {
   artefact: text().notNull(),
   entity: varchar().notNull().references(() => entityTable.name),
   from: varchar().notNull(),
-  to_recipient: varchar().notNull(),
+  to_recipient: varchar().notNull().references(() => roleTable.name),
   project: varchar().notNull().references(() => projectTable.name),
   inject_id: varchar().notNull().primaryKey(),
   observation: text().notNull(),
@@ -104,3 +101,15 @@ export const roleTable = pgTable('role', {
   project: varchar().notNull().references(() => projectTable.name),
 });
 
+export const entityThreatCubeTable = pgTable('entity_threat_cube', {
+  entity_name: varchar().notNull().references(() => entityTable.name), // Foreign key referencing entity name
+  entity_id: integer().primaryKey(), // Unique ID for each row
+  threat_cube_id: integer().notNull().references(() => masterThreatCubesTable.id), // Foreign key referencing threat cube ID
+  score: integer().notNull(), // Associated score for entity-threat cube relationship
+});
+
+export const masterThreatCubesTable = pgTable('master_threat_cubes', {
+  category: text().notNull(), // tactic
+  name: text().notNull().primaryKey(), // technique
+  id: varchar().notNull().primaryKey(), // unique ID for each row
+});

@@ -8,6 +8,7 @@ import { DatabaseModule } from './database/database.module';
 import { ProjectModule } from './modules/project/project.module';
 import { EntityModule } from './modules/entity/entity.module';
 import { ScenarioModule } from './modules/scenario/scenario.module';
+import { InjectsModule } from './modules/injects/injects.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ScenarioModule } from './modules/scenario/scenario.module';
     ProjectModule,
     EntityModule,
     ScenarioModule,
+    InjectsModule,
   ],
   controllers: [],
   providers: [],
