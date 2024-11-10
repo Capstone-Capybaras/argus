@@ -57,6 +57,13 @@
       "when": 1731033404324,
       "tag": "0007_sad_mister_sinister",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1731232565647,
+      "tag": "0008_talented_zaran",
+      "breakpoints": true
     }
   ]
 }

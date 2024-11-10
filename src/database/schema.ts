@@ -36,10 +36,8 @@ export const projectTable = pgTable('project', {
     .references(() => entityTable.name),
 });
 
-// New tables based on the diagram
-
 export const entityTable = pgTable('entity', {
-  name: varchar().notNull().primaryKey(), // Making `name` the primary key
+  name: varchar().notNull().primaryKey(),
   description: text().notNull(),
   victim_sector: text().notNull(),
   CII: varchar().notNull(),
@@ -155,7 +153,7 @@ export const entityThreatCubeTable = pgTable('entity_threat_cube', {
 });
 
 export const masterThreatCubesTable = pgTable('master_threat_cubes', {
-  category: text().notNull(), // tactic
-  name: text().notNull().primaryKey(), // technique
-  id: varchar().notNull().primaryKey(), // unique ID for each row
+  category: text().notNull(),
+  name: text().notNull().unique(),
+  id: varchar().notNull().primaryKey(),  // Use only `id` as primary key
 });
