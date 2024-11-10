@@ -8,13 +8,11 @@ import {
   integer,
   boolean,
   timestamp,
-  primaryKey,
-  foreignKey,
 } from 'drizzle-orm/pg-core';
 
 // Existing tables
 export const usersTable = pgTable('users', {
-  id: serial('id').primaryKey(),
+  id: serial('id').unique().primaryKey(),
   username: text().notNull().unique(),
   password: text().notNull(),
 });
@@ -37,7 +35,7 @@ export const projectTable = pgTable('project', {
 });
 
 export const entityTable = pgTable('entity', {
-  name: varchar().notNull().primaryKey(),
+  name: varchar().primaryKey().unique(),
   description: text().notNull(),
   victim_sector: text().notNull(),
   CII: varchar().notNull(),
@@ -60,7 +58,7 @@ export const CIITable = pgTable('CII', {
 });
 
 export const participantsTable = pgTable('participants', {
-  email: varchar().notNull().primaryKey(),
+  email: varchar().primaryKey().unique(),
   role: text().notNull(),
   name: text().notNull(),
 });
@@ -80,7 +78,7 @@ export const threatActorTable = pgTable('threat_actor', {
 });
 
 export const scenariosTable = pgTable('scenarios', {
-  scenario_number: varchar().notNull().primaryKey(),
+  scenario_number: varchar().unique().primaryKey(),
   threat_actor: varchar()
     .notNull()
     .references(() => threatActorTable.name),
@@ -113,9 +111,7 @@ export const injectsTable = pgTable('injects', {
   inject_desc: text().notNull(),
   inject_type: text().notNull(),
   artefact: text().notNull(),
-  entity: varchar()
-    .notNull()
-    .references(() => entityTable.name),
+  entity: varchar().references(() => entityTable.name),
   from: varchar().notNull(),
   to_recipient: varchar()
     .notNull()
@@ -123,7 +119,7 @@ export const injectsTable = pgTable('injects', {
   project: varchar()
     .notNull()
     .references(() => projectTable.name),
-  inject_id: varchar().notNull().primaryKey(),
+  inject_id: varchar().unique().primaryKey(),
   observation: text().notNull(),
 });
 
@@ -135,25 +131,31 @@ export const responsesTable = pgTable('responses', {
 });
 
 export const roleTable = pgTable('role', {
-  name: varchar().notNull(),
+  name: varchar().unique().primaryKey(),
   project: varchar()
     .notNull()
     .references(() => projectTable.name),
 });
 
+export const masterThreatCubesTable = pgTable('master_threat_cubes', {
+  category: text().notNull(),
+  name: text().notNull().unique(),
+  id: integer().unique().primaryKey(), // Use only `id` as primary key
+});
+
+// ------- JOIN TABLES -------
 export const entityThreatCubeTable = pgTable('entity_threat_cube', {
   entity_name: varchar()
     .notNull()
     .references(() => entityTable.name), // Foreign key referencing entity name
-  entity_id: integer().primaryKey(), // Unique ID for each row
+  entity_id: integer().unique().primaryKey(), // Unique ID for each row
   threat_cube_id: integer()
     .notNull()
     .references(() => masterThreatCubesTable.id), // Foreign key referencing threat cube ID
   score: integer().notNull(), // Associated score for entity-threat cube relationship
 });
 
-export const masterThreatCubesTable = pgTable('master_threat_cubes', {
-  category: text().notNull(),
-  name: text().notNull().unique(),
-  id: varchar().notNull().primaryKey(),  // Use only `id` as primary key
+export const participantsRolesTable = pgTable('participants_roles', {
+  participant_email: varchar().references(() => participantsTable.email),
+  role_name: varchar().references(() => roleTable.name),
 });
