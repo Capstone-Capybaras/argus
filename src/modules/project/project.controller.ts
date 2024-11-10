@@ -1,7 +1,17 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from '../project/dto/create-project.dto';
-import { UpdateProjectDto } from '../project/dto/update-project.dto'
+import { UpdateProjectDto } from '../project/dto/update-project.dto';
 
 @Controller('projects')
 export class ProjectController {
@@ -11,10 +21,14 @@ export class ProjectController {
   @Post()
   async createProject(@Body() createProjectDto: CreateProjectDto) {
     try {
-      const newProject = await this.projectService.createProject(createProjectDto);
+      const newProject =
+        await this.projectService.createProject(createProjectDto);
       return { message: 'Project created successfully', data: newProject };
     } catch (error) {
-      throw new HttpException('Failed to create project', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Failed to create project',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -36,15 +50,24 @@ export class ProjectController {
 
   // Update a project by name
   @Put(':name')
-  async updateProject(@Param('name') name: string, @Body() updateProjectDto: UpdateProjectDto) {
+  async updateProject(
+    @Param('name') name: string,
+    @Body() updateProjectDto: UpdateProjectDto,
+  ) {
     try {
-      const updatedProject = await this.projectService.updateProject(name, updateProjectDto);
+      const updatedProject = await this.projectService.updateProject(
+        name,
+        updateProjectDto,
+      );
       if (!updatedProject) {
         throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
       }
       return { message: 'Project updated successfully', data: updatedProject };
     } catch (error) {
-      throw new HttpException('Failed to update project', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Failed to update project',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 

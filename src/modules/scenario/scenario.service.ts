@@ -9,12 +9,16 @@ import { eq } from 'drizzle-orm';
 @Injectable()
 export class ScenarioService {
   constructor(
-    @Inject(DATABASE_CONNECTION) private readonly db: ReturnType<typeof drizzle>,
+    @Inject(DATABASE_CONNECTION)
+    private readonly db: ReturnType<typeof drizzle>,
   ) {}
 
   // Create a new scenario
   async createScenario(data: CreateScenarioDto) {
-    const result = await this.db.insert(scenariosTable).values(data).returning();
+    const result = await this.db
+      .insert(scenariosTable)
+      .values(data)
+      .returning();
     return result[0]; // Assuming you only want the first inserted record
   }
 

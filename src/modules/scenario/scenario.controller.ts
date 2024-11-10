@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { ScenarioService } from './scenario.service';
 import { CreateScenarioDto } from './dto/create-scenario.dto';
 import { UpdateScenarioDto } from './dto/update-scenario.dto';
@@ -11,10 +21,14 @@ export class ScenarioController {
   @Post()
   async createScenario(@Body() createScenarioDto: CreateScenarioDto) {
     try {
-      const newScenario = await this.scenarioService.createScenario(createScenarioDto);
+      const newScenario =
+        await this.scenarioService.createScenario(createScenarioDto);
       return { message: 'Scenario created successfully', data: newScenario };
     } catch (error) {
-      throw new HttpException('Failed to create scenario', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Failed to create scenario',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -27,7 +41,8 @@ export class ScenarioController {
   // Retrieve a specific scenario by scenario_number
   @Get(':scenario_number')
   async getScenarioByNumber(@Param('scenario_number') scenario_number: string) {
-    const scenario = await this.scenarioService.getScenarioByNumber(scenario_number);
+    const scenario =
+      await this.scenarioService.getScenarioByNumber(scenario_number);
     if (!scenario) {
       throw new HttpException('Scenario not found', HttpStatus.NOT_FOUND);
     }
@@ -36,15 +51,27 @@ export class ScenarioController {
 
   // Update a scenario by scenario_number
   @Put(':scenario_number')
-  async updateScenario(@Param('scenario_number') scenario_number: string, @Body() updateScenarioDto: UpdateScenarioDto) {
+  async updateScenario(
+    @Param('scenario_number') scenario_number: string,
+    @Body() updateScenarioDto: UpdateScenarioDto,
+  ) {
     try {
-      const updatedScenario = await this.scenarioService.updateScenario(scenario_number, updateScenarioDto);
+      const updatedScenario = await this.scenarioService.updateScenario(
+        scenario_number,
+        updateScenarioDto,
+      );
       if (!updatedScenario) {
         throw new HttpException('Scenario not found', HttpStatus.NOT_FOUND);
       }
-      return { message: 'Scenario updated successfully', data: updatedScenario };
+      return {
+        message: 'Scenario updated successfully',
+        data: updatedScenario,
+      };
     } catch (error) {
-      throw new HttpException('Failed to update scenario', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Failed to update scenario',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 

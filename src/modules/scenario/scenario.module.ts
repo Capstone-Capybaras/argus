@@ -6,6 +6,6 @@ import { DatabaseModule } from 'src/database/database.module';
 @Module({
   imports: [DatabaseModule],
   providers: [ScenarioService],
-  controllers: [ScenarioController]
+  controllers: [ScenarioController],
 })
 export class ScenarioModule {}

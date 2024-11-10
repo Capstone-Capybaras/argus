@@ -27,16 +27,23 @@ export class InjectsService {
   }
 
   update(id: string, updateInjectDto: UpdateInjectDto): InjectDto {
-    const injectIndex = this.injects.findIndex((inject) => inject.injectId === id);
+    const injectIndex = this.injects.findIndex(
+      (inject) => inject.injectId === id,
+    );
     if (injectIndex === -1) {
       throw new NotFoundException(`Inject with ID ${id} not found`);
     }
-    this.injects[injectIndex] = { ...this.injects[injectIndex], ...updateInjectDto };
+    this.injects[injectIndex] = {
+      ...this.injects[injectIndex],
+      ...updateInjectDto,
+    };
     return this.injects[injectIndex];
   }
 
   remove(id: string): void {
-    const injectIndex = this.injects.findIndex((inject) => inject.injectId === id);
+    const injectIndex = this.injects.findIndex(
+      (inject) => inject.injectId === id,
+    );
     if (injectIndex === -1) {
       throw new NotFoundException(`Inject with ID ${id} not found`);
     }

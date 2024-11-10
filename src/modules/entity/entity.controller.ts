@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { EntityService } from './entity.service';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
@@ -14,7 +24,10 @@ export class EntityController {
       const newEntity = await this.entityService.createEntity(createEntityDto);
       return { message: 'Entity created successfully', data: newEntity };
     } catch (error) {
-      throw new HttpException('Failed to create entity', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Failed to create entity',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -36,15 +49,24 @@ export class EntityController {
 
   // Update an entity by name
   @Put(':name')
-  async updateEntity(@Param('name') name: string, @Body() updateEntityDto: UpdateEntityDto) {
+  async updateEntity(
+    @Param('name') name: string,
+    @Body() updateEntityDto: UpdateEntityDto,
+  ) {
     try {
-      const updatedEntity = await this.entityService.updateEntity(name, updateEntityDto);
+      const updatedEntity = await this.entityService.updateEntity(
+        name,
+        updateEntityDto,
+      );
       if (!updatedEntity) {
         throw new HttpException('Entity not found', HttpStatus.NOT_FOUND);
       }
       return { message: 'Entity updated successfully', data: updatedEntity };
     } catch (error) {
-      throw new HttpException('Failed to update entity', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Failed to update entity',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 

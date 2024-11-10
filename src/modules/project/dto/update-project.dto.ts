@@ -5,6 +5,5 @@ export class UpdateProjectDto {
   start_date: string;
   end_date: string;
   email_header: string;
-  email_footer: string;  
+  email_footer: string;
 }
-  

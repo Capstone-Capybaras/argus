@@ -1,5 +1,13 @@
 // injects.controller.ts
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+} from '@nestjs/common';
 import { InjectsService } from './injects.service';
 import { CreateInjectDto } from './dto/create-inject.dto';
 import { UpdateInjectDto } from './dto/update-inject.dto';
@@ -25,7 +33,10 @@ export class InjectsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateInjectDto: UpdateInjectDto): InjectDto {
+  update(
+    @Param('id') id: string,
+    @Body() updateInjectDto: UpdateInjectDto,
+  ): InjectDto {
     return this.injectsService.update(id, updateInjectDto);
   }
 

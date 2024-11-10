@@ -9,7 +9,8 @@ import { UpdateEntityDto } from './dto/update-entity.dto';
 @Injectable()
 export class EntityService {
   constructor(
-    @Inject(DATABASE_CONNECTION) private readonly db: ReturnType<typeof drizzle>,
+    @Inject(DATABASE_CONNECTION)
+    private readonly db: ReturnType<typeof drizzle>,
   ) {}
 
   // Create a new entity

@@ -9,9 +9,9 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 @Injectable()
 export class ProjectService {
   constructor(
-    @Inject(DATABASE_CONNECTION) private readonly db: ReturnType<typeof drizzle>,
+    @Inject(DATABASE_CONNECTION)
+    private readonly db: ReturnType<typeof drizzle>,
   ) {}
-  
 
   // Create a new project
   async createProject(data: CreateProjectDto) {
@@ -20,7 +20,10 @@ export class ProjectService {
       start_date: data.start_date.toISOString().split('T')[0], // Convert Date to 'YYYY-MM-DD'
       end_date: data.end_date.toISOString().split('T')[0], // Convert Date to 'YYYY-MM-DD'
     };
-    const result = await this.db.insert(projectTable).values(projectData).returning();
+    const result = await this.db
+      .insert(projectTable)
+      .values(projectData)
+      .returning();
     return result[0];
   }
 
