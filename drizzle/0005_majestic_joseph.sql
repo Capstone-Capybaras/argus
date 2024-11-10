@@ -1,0 +1,1 @@
+ALTER TABLE "entity" ADD CONSTRAINT "entity_name_unique" UNIQUE("name");

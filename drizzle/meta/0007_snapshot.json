@@ -1,0 +1,838 @@
+{
+  "id": "2cff4562-9436-48a3-8529-6f47f0333af9",
+  "prevId": "25a072f8-11b5-42f1-8b08-97c8a2d57e94",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.CII": {
+      "name": "CII",
+      "schema": "",
+      "columns": {
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "users": {
+          "name": "users",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "function": {
+          "name": "function",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sensitive_info": {
+          "name": "sensitive_info",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.entity": {
+      "name": "entity",
+      "schema": "",
+      "columns": {
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "victim_sector": {
+          "name": "victim_sector",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "CII": {
+          "name": "CII",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "critical_function": {
+          "name": "critical_function",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "policy_documents": {
+          "name": "policy_documents",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "participants": {
+          "name": "participants",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "real_threat_landscape": {
+          "name": "real_threat_landscape",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "entity_participants_participants_email_fk": {
+          "name": "entity_participants_participants_email_fk",
+          "tableFrom": "entity",
+          "tableTo": "participants",
+          "columnsFrom": [
+            "participants"
+          ],
+          "columnsTo": [
+            "email"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "entity_real_threat_landscape_master_threat_cubes_name_fk": {
+          "name": "entity_real_threat_landscape_master_threat_cubes_name_fk",
+          "tableFrom": "entity",
+          "tableTo": "master_threat_cubes",
+          "columnsFrom": [
+            "real_threat_landscape"
+          ],
+          "columnsTo": [
+            "name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.entity_threat_cube": {
+      "name": "entity_threat_cube",
+      "schema": "",
+      "columns": {
+        "entity_name": {
+          "name": "entity_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entity_id": {
+          "name": "entity_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "threat_cube_id": {
+          "name": "threat_cube_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "score": {
+          "name": "score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "entity_threat_cube_entity_name_entity_name_fk": {
+          "name": "entity_threat_cube_entity_name_entity_name_fk",
+          "tableFrom": "entity_threat_cube",
+          "tableTo": "entity",
+          "columnsFrom": [
+            "entity_name"
+          ],
+          "columnsTo": [
+            "name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "entity_threat_cube_threat_cube_id_master_threat_cubes_id_fk": {
+          "name": "entity_threat_cube_threat_cube_id_master_threat_cubes_id_fk",
+          "tableFrom": "entity_threat_cube",
+          "tableTo": "master_threat_cubes",
+          "columnsFrom": [
+            "threat_cube_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.injects": {
+      "name": "injects",
+      "schema": "",
+      "columns": {
+        "scenario_number": {
+          "name": "scenario_number",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date_time": {
+          "name": "date_time",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "inject_sent": {
+          "name": "inject_sent",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "inject_desc": {
+          "name": "inject_desc",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "inject_type": {
+          "name": "inject_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "artefact": {
+          "name": "artefact",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entity": {
+          "name": "entity",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "from": {
+          "name": "from",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "to_recipient": {
+          "name": "to_recipient",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "project": {
+          "name": "project",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "inject_id": {
+          "name": "inject_id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "observation": {
+          "name": "observation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "injects_scenario_number_scenarios_scenario_number_fk": {
+          "name": "injects_scenario_number_scenarios_scenario_number_fk",
+          "tableFrom": "injects",
+          "tableTo": "scenarios",
+          "columnsFrom": [
+            "scenario_number"
+          ],
+          "columnsTo": [
+            "scenario_number"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "injects_entity_entity_name_fk": {
+          "name": "injects_entity_entity_name_fk",
+          "tableFrom": "injects",
+          "tableTo": "entity",
+          "columnsFrom": [
+            "entity"
+          ],
+          "columnsTo": [
+            "name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "injects_to_recipient_role_name_fk": {
+          "name": "injects_to_recipient_role_name_fk",
+          "tableFrom": "injects",
+          "tableTo": "role",
+          "columnsFrom": [
+            "to_recipient"
+          ],
+          "columnsTo": [
+            "name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "injects_project_project_name_fk": {
+          "name": "injects_project_project_name_fk",
+          "tableFrom": "injects",
+          "tableTo": "project",
+          "columnsFrom": [
+            "project"
+          ],
+          "columnsTo": [
+            "name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.master_threat_cubes": {
+      "name": "master_threat_cubes",
+      "schema": "",
+      "columns": {
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.participants": {
+      "name": "participants",
+      "schema": "",
+      "columns": {
+        "email": {
+          "name": "email",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.project": {
+      "name": "project",
+      "schema": "",
+      "columns": {
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "exercise_type": {
+          "name": "exercise_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "start_date": {
+          "name": "start_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "end_date": {
+          "name": "end_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email_header": {
+          "name": "email_header",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email_footer": {
+          "name": "email_footer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entity_name": {
+          "name": "entity_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "project_entity_name_entity_name_fk": {
+          "name": "project_entity_name_entity_name_fk",
+          "tableFrom": "project",
+          "tableTo": "entity",
+          "columnsFrom": [
+            "entity_name"
+          ],
+          "columnsTo": [
+            "name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.responses": {
+      "name": "responses",
+      "schema": "",
+      "columns": {
+        "inject_id": {
+          "name": "inject_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "response": {
+          "name": "response",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "responses_inject_id_injects_inject_id_fk": {
+          "name": "responses_inject_id_injects_inject_id_fk",
+          "tableFrom": "responses",
+          "tableTo": "injects",
+          "columnsFrom": [
+            "inject_id"
+          ],
+          "columnsTo": [
+            "inject_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.revoked_tokens": {
+      "name": "revoked_tokens",
+      "schema": "",
+      "columns": {
+        "token_hash": {
+          "name": "token_hash",
+          "type": "char(64)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "revoked_at": {
+          "name": "revoked_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "revoked_tokens_token_hash_unique": {
+          "name": "revoked_tokens_token_hash_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "token_hash"
+          ]
+        }
+      },
+      "checkConstraints": {}
+    },
+    "public.role": {
+      "name": "role",
+      "schema": "",
+      "columns": {
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "project": {
+          "name": "project",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "role_project_project_name_fk": {
+          "name": "role_project_project_name_fk",
+          "tableFrom": "role",
+          "tableTo": "project",
+          "columnsFrom": [
+            "project"
+          ],
+          "columnsTo": [
+            "name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.scenarios": {
+      "name": "scenarios",
+      "schema": "",
+      "columns": {
+        "scenario_number": {
+          "name": "scenario_number",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "threat_actor": {
+          "name": "threat_actor",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "threat_actor_motivation": {
+          "name": "threat_actor_motivation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entity": {
+          "name": "entity",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "CII": {
+          "name": "CII",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "intended_system_impact": {
+          "name": "intended_system_impact",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "intended_biz_impact": {
+          "name": "intended_biz_impact",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attack_solution": {
+          "name": "attack_solution",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "severity_level": {
+          "name": "severity_level",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "initial_access": {
+          "name": "initial_access",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "exploit": {
+          "name": "exploit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "impact": {
+          "name": "impact",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tactics_techniques": {
+          "name": "tactics_techniques",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "project": {
+          "name": "project",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "scenarios_threat_actor_threat_actor_name_fk": {
+          "name": "scenarios_threat_actor_threat_actor_name_fk",
+          "tableFrom": "scenarios",
+          "tableTo": "threat_actor",
+          "columnsFrom": [
+            "threat_actor"
+          ],
+          "columnsTo": [
+            "name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "scenarios_entity_entity_name_fk": {
+          "name": "scenarios_entity_entity_name_fk",
+          "tableFrom": "scenarios",
+          "tableTo": "entity",
+          "columnsFrom": [
+            "entity"
+          ],
+          "columnsTo": [
+            "name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "scenarios_CII_CII_name_fk": {
+          "name": "scenarios_CII_CII_name_fk",
+          "tableFrom": "scenarios",
+          "tableTo": "CII",
+          "columnsFrom": [
+            "CII"
+          ],
+          "columnsTo": [
+            "name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "scenarios_project_project_name_fk": {
+          "name": "scenarios_project_project_name_fk",
+          "tableFrom": "scenarios",
+          "tableTo": "project",
+          "columnsFrom": [
+            "project"
+          ],
+          "columnsTo": [
+            "name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.threat_actor": {
+      "name": "threat_actor",
+      "schema": "",
+      "columns": {
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "threat_landscape": {
+          "name": "threat_landscape",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "intent": {
+          "name": "intent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rationale": {
+          "name": "rationale",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "capabilities": {
+          "name": "capabilities",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "project": {
+          "name": "project",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "threat_actor_threat_landscape_master_threat_cubes_name_fk": {
+          "name": "threat_actor_threat_landscape_master_threat_cubes_name_fk",
+          "tableFrom": "threat_actor",
+          "tableTo": "master_threat_cubes",
+          "columnsFrom": [
+            "threat_landscape"
+          ],
+          "columnsTo": [
+            "name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "threat_actor_project_project_name_fk": {
+          "name": "threat_actor_project_project_name_fk",
+          "tableFrom": "threat_actor",
+          "tableTo": "project",
+          "columnsFrom": [
+            "project"
+          ],
+          "columnsTo": [
+            "name"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "name": "password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_username_unique": {
+          "name": "users_username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "username"
+          ]
+        }
+      },
+      "checkConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
