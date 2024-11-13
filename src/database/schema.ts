@@ -23,6 +23,7 @@ export const revokedTokensTable = pgTable('revoked_tokens', {
 });
 
 export const projectTable = pgTable('project', {
+  id: serial('id').unique().primaryKey(),
   name: text().notNull(),
   exercise_type: text({ enum: ['Executive', 'Sectorial'] }).notNull(),
   start_date: date().notNull(),
@@ -35,22 +36,22 @@ export const projectTable = pgTable('project', {
 });
 
 export const entityTable = pgTable('entity', {
-  name: varchar().primaryKey().unique(),
+  id: serial('id').unique().primaryKey(),
+  name: varchar().notNull().unique(),
   description: text().notNull(),
   victim_sector: text().notNull(),
   CII: varchar().notNull(),
   critical_function: text().notNull(),
   policy_documents: varchar().notNull(),
-  participants: varchar()
-    .notNull()
-    .references(() => participantsTable.email),
-  real_threat_landscape: varchar().references(
-    () => masterThreatCubesTable.name,
-  ),
+  participants: varchar().notNull(),
+  real_threat_landscape: varchar().notNull(),
 });
 
 export const CIITable = pgTable('CII', {
-  name: varchar().notNull(),
+  id: serial('id').unique().primaryKey(),
+  name: varchar()
+    .notNull()
+    .references(() => entityTable.CII),
   users: text().notNull(),
   function: text().notNull(),
   sensitive_info: text().notNull(),
@@ -60,14 +61,15 @@ export const CIITable = pgTable('CII', {
 export const participantsTable = pgTable('participants', {
   email: varchar().primaryKey().unique(),
   role: text().notNull(),
-  name: text().notNull(),
+  name: text()
+    .notNull()
+    .references(() => entityTable.participants),
 });
 
 export const threatActorTable = pgTable('threat_actor', {
+  id: serial('id').unique().primaryKey(),
   name: varchar().notNull(),
-  threat_landscape: text()
-    .notNull()
-    .references(() => masterThreatCubesTable.name),
+  threat_landscape: text().notNull(),
   category: text().notNull(),
   intent: text().notNull(),
   rationale: text().notNull(),
@@ -86,9 +88,7 @@ export const scenariosTable = pgTable('scenarios', {
   entity: varchar()
     .notNull()
     .references(() => entityTable.name),
-  CII: varchar()
-    .notNull()
-    .references(() => CIITable.name),
+  CII: varchar().notNull(),
   intended_system_impact: text().notNull(),
   intended_biz_impact: text().notNull(),
   attack_solution: text().notNull(),
@@ -106,16 +106,14 @@ export const injectsTable = pgTable('injects', {
   scenario_number: varchar()
     .notNull()
     .references(() => scenariosTable.scenario_number),
-  date_time: timestamp().notNull(),
+  date_time: date().notNull(),
   inject_sent: boolean().notNull(),
   inject_desc: text().notNull(),
   inject_type: text().notNull(),
   artefact: text().notNull(),
   entity: varchar().references(() => entityTable.name),
   from: varchar().notNull(),
-  to_recipient: varchar()
-    .notNull()
-    .references(() => roleTable.name),
+  to_recipient: varchar().notNull(),
   project: varchar()
     .notNull()
     .references(() => projectTable.name),
@@ -128,6 +126,7 @@ export const responsesTable = pgTable('responses', {
     .notNull()
     .references(() => injectsTable.inject_id),
   response: text().notNull(),
+  id: serial('id').unique().primaryKey(),
 });
 
 export const roleTable = pgTable('role', {
@@ -140,7 +139,7 @@ export const roleTable = pgTable('role', {
 export const masterThreatCubesTable = pgTable('master_threat_cubes', {
   category: text().notNull(),
   name: text().notNull().unique(),
-  id: integer().unique().primaryKey(), // Use only `id` as primary key
+  id: serial('id').unique().primaryKey(), // Use only `id` as primary key
 });
 
 // ------- JOIN TABLES -------
@@ -158,4 +157,65 @@ export const entityThreatCubeTable = pgTable('entity_threat_cube', {
 export const participantsRolesTable = pgTable('participants_roles', {
   participant_email: varchar().references(() => participantsTable.email),
   role_name: varchar().references(() => roleTable.name),
+});
+
+export const projectThreatActorTable = pgTable('project_threat_actor', {
+  project_name: varchar()
+    .notNull()
+    .references(() => projectTable.name),
+  threat_actor_id: integer()
+    .notNull()
+    .references(() => threatActorTable.id),
+});
+
+export const projectEntityTable = pgTable('project_entity', {
+  project_id: integer().unique().primaryKey(),
+  project_name: varchar()
+    .notNull()
+    .references(() => projectTable.name),
+  entity_id: integer()
+    .notNull()
+    .references(() => entityTable.id),
+});
+
+export const CIIScenariosTable = pgTable('CII_scenarios', {
+  CII_id: integer()
+    .notNull()
+    .references(() => CIITable.id),
+  scenario_number: varchar()
+    .notNull()
+    .references(() => scenariosTable.scenario_number),
+});
+
+export const masterThreatCubesThreatActorTable = pgTable(
+  'master_threat_cubes_threat_actor',
+  {
+    threat_cube_id: integer()
+      .notNull()
+      .references(() => masterThreatCubesTable.id),
+    threat_actor_id: integer()
+      .notNull()
+      .references(() => threatActorTable.id),
+  },
+);
+
+export const masterThreatCubesScenariosTable = pgTable(
+  'master_threat_cubes_scenarios',
+  {
+    threat_cube_id: integer()
+      .notNull()
+      .references(() => masterThreatCubesTable.id),
+    scenario_number: varchar()
+      .notNull()
+      .references(() => scenariosTable.scenario_number),
+  },
+);
+
+export const roleInjectsTable = pgTable('role_injects', {
+  role_name: varchar()
+    .notNull()
+    .references(() => roleTable.name),
+  inject_id: varchar()
+    .notNull()
+    .references(() => injectsTable.inject_id),
 });

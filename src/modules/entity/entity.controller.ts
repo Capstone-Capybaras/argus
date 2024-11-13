@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Put,
+  Patch,
   Delete,
   Param,
   Body,
@@ -48,7 +49,7 @@ export class EntityController {
   }
 
   // Update an entity by name
-  @Put(':name')
+  @Patch(':name')
   async updateEntity(
     @Param('name') name: string,
     @Body() updateEntityDto: UpdateEntityDto,

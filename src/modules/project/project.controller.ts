@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Put,
   Delete,
   Param,
@@ -49,7 +50,7 @@ export class ProjectController {
   }
 
   // Update a project by name
-  @Put(':name')
+  @Patch(':name')
   async updateProject(
     @Param('name') name: string,
     @Body() updateProjectDto: UpdateProjectDto,

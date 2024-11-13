@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Put,
   Delete,
   Param,
@@ -50,7 +51,7 @@ export class ScenarioController {
   }
 
   // Update a scenario by scenario_number
-  @Put(':scenario_number')
+  @Patch(':scenario_number')
   async updateScenario(
     @Param('scenario_number') scenario_number: string,
     @Body() updateScenarioDto: UpdateScenarioDto,

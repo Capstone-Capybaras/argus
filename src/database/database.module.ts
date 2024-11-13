@@ -3,11 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Pool } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { DATABASE_CONNECTION } from './connection';
-// import {ProjectService} from '../modules/project/project.service'
 import * as schemas from './schema';
-// import { AuthModule } from 'src/auth/auth.module';
-// import { EntityModule } from 'src/modules/entity/entity.module';
-// import { ScenarioModule } from 'src/modules/scenario/scenario.module';
 
 @Module({
   providers: [
@@ -33,12 +29,7 @@ import * as schemas from './schema';
       },
       inject: [ConfigService],
     },
-    // ProjectService,
-    // AuthModule,
-    // EntityModule,
-    // ScenarioModule
   ],
-  // exports: [ProjectService, DATABASE_CONNECTION, AuthModule, EntityModule, ScenarioModule],
   exports: [DATABASE_CONNECTION],
 })
 export class DatabaseModule {}

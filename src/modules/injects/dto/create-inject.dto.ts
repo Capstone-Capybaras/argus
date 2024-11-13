@@ -3,22 +3,22 @@ import { IsString, IsBoolean, IsDateString, IsOptional } from 'class-validator';
 
 export class CreateInjectDto {
   @IsString()
-  injectId: string;
+  inject_id: string;
 
   @IsString()
-  scenarioNumber: string;
+  scenario_number: string;
 
   @IsDateString()
-  dateTime: Date;
+  date_time: string;
 
   @IsBoolean()
-  injectSent: boolean;
+  inject_sent: boolean;
 
   @IsString()
-  injectDesc: string;
+  inject_desc: string;
 
   @IsString()
-  injectType: string;
+  inject_type: string;
 
   @IsString()
   artefact: string;
@@ -30,7 +30,7 @@ export class CreateInjectDto {
   from: string;
 
   @IsString()
-  toRecipient: string;
+  to_recipient: string;
 
   @IsString()
   project: string;

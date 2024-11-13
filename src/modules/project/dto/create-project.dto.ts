@@ -9,10 +9,10 @@ export class CreateProjectDto {
   exercise_type: 'Executive' | 'Sectorial';
 
   @IsDate()
-  start_date: Date;
+  start_date: string;
 
   @IsDate()
-  end_date: Date;
+  end_date: string;
 
   @IsString()
   email_header: string;

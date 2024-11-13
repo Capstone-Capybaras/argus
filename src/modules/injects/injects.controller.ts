@@ -1,48 +1,82 @@
-// injects.controller.ts
 import {
   Controller,
   Get,
   Post,
-  Body,
-  Param,
   Patch,
   Delete,
+  Param,
+  Body,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { InjectsService } from './injects.service';
 import { CreateInjectDto } from './dto/create-inject.dto';
 import { UpdateInjectDto } from './dto/update-inject.dto';
-import { InjectDto } from './dto/inject.dto';
 
 @Controller('injects')
 export class InjectsController {
   constructor(private readonly injectsService: InjectsService) {}
 
+  // Create a new inject
   @Post()
-  create(@Body() createInjectDto: CreateInjectDto): InjectDto {
-    return this.injectsService.create(createInjectDto);
+  async createInject(@Body() createInjectDto: CreateInjectDto) {
+    try {
+      const newInject = await this.injectsService.createInject(createInjectDto);
+      return { message: 'Inject created successfully', data: newInject };
+    } catch (error) {
+      throw new HttpException(
+        'Failed to create inject',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
+  // Retrieve all injects
   @Get()
-  findAll(): InjectDto[] {
-    return this.injectsService.findAll();
+  async getInjects() {
+    return await this.injectsService.getInjects();
   }
 
+  // Retrieve a specific inject by ID
   @Get(':id')
-  findOne(@Param('id') id: string): InjectDto {
-    return this.injectsService.findOne(id);
+  async getInjectById(@Param('id') id: string) {
+    const inject = await this.injectsService.getInjectByName(id);
+    if (!inject) {
+      throw new HttpException('Inject not found', HttpStatus.NOT_FOUND);
+    }
+    return inject;
   }
 
+  // Update a specific inject by ID
   @Patch(':id')
-  update(
+  async updateInject(
     @Param('id') id: string,
     @Body() updateInjectDto: UpdateInjectDto,
-  ): InjectDto {
-    return this.injectsService.update(id, updateInjectDto);
+  ) {
+    try {
+      const updatedInject = await this.injectsService.updateInject(
+        id,
+        updateInjectDto,
+      );
+      if (!updatedInject) {
+        throw new HttpException('Inject not found', HttpStatus.NOT_FOUND);
+      }
+      return { message: 'Inject updated successfully', data: updatedInject };
+    } catch (error) {
+      throw new HttpException(
+        'Failed to update inject',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
+  // Delete a specific inject by ID
   @Delete(':id')
-  remove(@Param('id') id: string): { message: string } {
-    this.injectsService.remove(id);
-    return { message: `Inject with ID ${id} has been deleted` };
+  async deleteInject(@Param('id') id: string) {
+    const deletedInject = await this.injectsService.deleteInject(id);
+    if (!deletedInject) {
+      throw new HttpException('Inject not found', HttpStatus.NOT_FOUND);
+    }
+    return { message: 'Inject deleted successfully' };
   }
 }
