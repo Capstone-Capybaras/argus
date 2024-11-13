@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { DATABASE_CONNECTION } from '../../database/connection';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { entityTable } from '../../database/schema'; // Ensure correct import path
+import { entityTable } from '../../database/schema'; 
 import { eq } from 'drizzle-orm';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
@@ -15,7 +15,17 @@ export class EntityService {
 
   // Create a new entity
   async createEntity(data: CreateEntityDto) {
-    const result = await this.db.insert(entityTable).values(data).returning();
+    const entityData = {
+      ...data,
+    };
+    const result = await this.db
+      .insert(entityTable)
+      .values({
+        ...entityData,
+        real_threat_landscape: entityData.real_threat_landscape || "",
+      }
+      )
+      .returning();
     return result[0]; // Assuming you only want the first inserted record
   }
 

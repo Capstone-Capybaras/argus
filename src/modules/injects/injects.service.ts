@@ -18,7 +18,6 @@ export class InjectsService {
     const injectData = {
       ...data,
     };
-
     const result = await this.db
       .insert(injectsTable)
       .values(injectData)

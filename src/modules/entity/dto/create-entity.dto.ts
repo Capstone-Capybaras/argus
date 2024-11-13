@@ -22,8 +22,7 @@ export class CreateEntityDto {
 
   @IsString()
   participants: string; // Add this field
-
-  @IsOptional()
+  
   @IsString()
   real_threat_landscape?: string; // Add this field if optional
 }
