@@ -1,4 +1,4 @@
-import { Module, Logger } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Pool } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
@@ -24,9 +24,7 @@ import * as schemas from './schema';
 
         return drizzle(pool, {
           casing: 'snake_case',
-          schema: {
-            ...schemas,
-          },
+          schema: { ...schemas },
         });
       },
       inject: [ConfigService],
