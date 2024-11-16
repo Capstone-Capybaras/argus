@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { DATABASE_CONNECTION } from '../../database/connection';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { entityTable } from '../../database/schema'; 
+import { entityTable } from '../../database/schema';
 import { eq } from 'drizzle-orm';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
@@ -22,9 +22,8 @@ export class EntityService {
       .insert(entityTable)
       .values({
         ...entityData,
-        real_threat_landscape: entityData.real_threat_landscape || "",
-      }
-      )
+        real_threat_landscape: entityData.real_threat_landscape || '',
+      })
       .returning();
     return result[0]; // Assuming you only want the first inserted record
   }

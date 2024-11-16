@@ -29,6 +29,13 @@
       "when": 1730137604393,
       "tag": "0003_motionless_marten_broadcloak",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1731751023412,
+      "tag": "0004_light_red_skull",
+      "breakpoints": true
     }
   ]
 }
