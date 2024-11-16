@@ -1,4 +1,7 @@
-export class UpdateScenarioDto {
+import { scenariosTable } from 'src/database/schema';
+import { InferUpdate } from 'src/utils/modelToDtoTypes';
+
+export class UpdateScenarioDto implements InferUpdate<typeof scenariosTable> {
   threat_actor?: string;
   threat_actor_motivation?: string;
   entity?: string;

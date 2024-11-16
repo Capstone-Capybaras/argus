@@ -3,12 +3,13 @@ import {
   Get,
   Post,
   Patch,
-  Put,
   Delete,
   Param,
   Body,
   HttpException,
   HttpStatus,
+  BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { ScenarioService } from './scenario.service';
 import { CreateScenarioDto } from './dto/create-scenario.dto';
@@ -26,10 +27,8 @@ export class ScenarioController {
         await this.scenarioService.createScenario(createScenarioDto);
       return { message: 'Scenario created successfully', data: newScenario };
     } catch (error) {
-      throw new HttpException(
-        'Failed to create scenario',
-        HttpStatus.BAD_REQUEST,
-      );
+      Logger.error(error);
+      throw new BadRequestException('Failed to create scenario');
     }
   }
 
@@ -69,10 +68,8 @@ export class ScenarioController {
         data: updatedScenario,
       };
     } catch (error) {
-      throw new HttpException(
-        'Failed to update scenario',
-        HttpStatus.BAD_REQUEST,
-      );
+      Logger.error(error);
+      throw new BadRequestException('Failed to update scenario');
     }
   }
 

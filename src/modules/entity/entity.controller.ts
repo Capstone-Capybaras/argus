@@ -2,13 +2,14 @@ import {
   Controller,
   Get,
   Post,
-  Put,
   Patch,
   Delete,
   Param,
   Body,
   HttpException,
   HttpStatus,
+  BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { EntityService } from './entity.service';
 import { CreateEntityDto } from './dto/create-entity.dto';
@@ -25,10 +26,8 @@ export class EntityController {
       const newEntity = await this.entityService.createEntity(createEntityDto);
       return { message: 'Entity created successfully', data: newEntity };
     } catch (error) {
-      throw new HttpException(
-        'Failed to create entity',
-        HttpStatus.BAD_REQUEST,
-      );
+      Logger.error(error);
+      throw new BadRequestException('Failed to create entity');
     }
   }
 
@@ -64,10 +63,8 @@ export class EntityController {
       }
       return { message: 'Entity updated successfully', data: updatedEntity };
     } catch (error) {
-      throw new HttpException(
-        'Failed to update entity',
-        HttpStatus.BAD_REQUEST,
-      );
+      Logger.error(error);
+      throw new BadRequestException('Failed to update entity');
     }
   }
 

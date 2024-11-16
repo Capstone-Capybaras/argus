@@ -1,11 +1,12 @@
 // injects.service.ts
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { DATABASE_CONNECTION } from 'src/database/connection';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { eq } from 'drizzle-orm';
 import { injectsTable } from 'src/database/schema';
 import { CreateInjectDto } from './dto/create-inject.dto';
 import { UpdateInjectDto } from './dto/update-inject.dto';
+import { dtoToInsertModel, dtoToUpdateModel } from 'src/utils/dtoToModel';
 
 @Injectable()
 export class InjectsService {
@@ -15,12 +16,13 @@ export class InjectsService {
   ) {}
 
   async createInject(data: CreateInjectDto) {
-    const injectData = {
-      ...data,
-    };
+    const values = dtoToInsertModel<
+      typeof injectsTable.$inferInsert,
+      CreateInjectDto
+    >(data);
     const result = await this.db
       .insert(injectsTable)
-      .values(injectData)
+      .values(values)
       .returning();
     return result[0];
   }
@@ -40,9 +42,13 @@ export class InjectsService {
   }
 
   async updateInject(id: string, data: UpdateInjectDto) {
+    const values = dtoToUpdateModel<
+      typeof injectsTable.$inferInsert,
+      UpdateInjectDto
+    >(data);
     const result = await this.db
       .update(injectsTable)
-      .set(data)
+      .set(values)
       .where(eq(injectsTable.inject_id, id))
       .returning();
     return result[0] || null;

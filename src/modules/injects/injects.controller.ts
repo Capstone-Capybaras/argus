@@ -8,6 +8,8 @@ import {
   Body,
   HttpException,
   HttpStatus,
+  BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { InjectsService } from './injects.service';
 import { CreateInjectDto } from './dto/create-inject.dto';
@@ -24,10 +26,8 @@ export class InjectsController {
       const newInject = await this.injectsService.createInject(createInjectDto);
       return { message: 'Inject created successfully', data: newInject };
     } catch (error) {
-      throw new HttpException(
-        'Failed to create inject',
-        HttpStatus.BAD_REQUEST,
-      );
+      Logger.error(error);
+      throw new BadRequestException('Failed to create inject');
     }
   }
 
@@ -63,10 +63,8 @@ export class InjectsController {
       }
       return { message: 'Inject updated successfully', data: updatedInject };
     } catch (error) {
-      throw new HttpException(
-        'Failed to update inject',
-        HttpStatus.BAD_REQUEST,
-      );
+      Logger.error(error);
+      throw new BadRequestException('Failed to update inject');
     }
   }
 

@@ -1,6 +1,8 @@
 import { IsString, IsUrl } from 'class-validator';
+import { entitiesTable } from 'src/database/schema';
+import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
-export class UpdateEntityDto {
+export class UpdateEntityDto implements InferUpdate<typeof entitiesTable> {
   @IsString()
   name?: string;
 

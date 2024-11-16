@@ -5,6 +5,7 @@ import { scenariosTable } from '../../database/schema';
 import { CreateScenarioDto } from './dto/create-scenario.dto';
 import { UpdateScenarioDto } from './dto/update-scenario.dto';
 import { eq } from 'drizzle-orm';
+import { dtoToInsertModel, dtoToUpdateModel } from 'src/utils/dtoToModel';
 
 @Injectable()
 export class ScenarioService {
@@ -15,9 +16,13 @@ export class ScenarioService {
 
   // Create a new scenario
   async createScenario(data: CreateScenarioDto) {
+    const values = dtoToInsertModel<
+      typeof scenariosTable.$inferInsert,
+      CreateScenarioDto
+    >(data);
     const result = await this.db
       .insert(scenariosTable)
-      .values(data)
+      .values(values)
       .returning();
     return result[0]; // Assuming you only want the first inserted record
   }
@@ -40,9 +45,13 @@ export class ScenarioService {
 
   // Update a scenario by scenario_number
   async updateScenario(scenario_number: string, data: UpdateScenarioDto) {
+    const values = dtoToUpdateModel<
+      typeof scenariosTable.$inferInsert,
+      UpdateScenarioDto
+    >(data);
     const result = await this.db
       .update(scenariosTable)
-      .set(data)
+      .set(values)
       .where(eq(scenariosTable.scenario_number, scenario_number))
       .returning();
     return result[0] || null;

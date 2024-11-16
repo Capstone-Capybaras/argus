@@ -1,14 +1,16 @@
-import { IsString, IsBoolean, IsDateString, IsOptional } from 'class-validator';
+import { IsString, IsBoolean, IsDate } from 'class-validator';
+import { injectsTable } from 'src/database/schema';
+import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
-export class UpdateInjectDto {
+export class UpdateInjectDto implements InferUpdate<typeof injectsTable> {
   @IsString()
   inject_id: string;
 
   @IsString()
   scenario_number: string;
 
-  @IsDateString()
-  date_time: string;
+  @IsDate()
+  date_time: Date;
 
   @IsBoolean()
   inject_sent: boolean;

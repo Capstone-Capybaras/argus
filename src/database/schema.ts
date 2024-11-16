@@ -105,7 +105,9 @@ export const injectsTable = pgTable('injects', {
   inject_desc: text().notNull(),
   inject_type: text().notNull(),
   artefact: text().notNull(),
-  entity_id: integer().references(() => entitiesTable.id),
+  entity_id: integer()
+    .notNull()
+    .references(() => entitiesTable.id),
   from: varchar().notNull(),
   project_id: integer()
     .notNull()
@@ -174,8 +176,12 @@ export const entitiesToThreatCubesTable = pgTable(
 export const participantsToRolesTable = pgTable(
   'participants_to_roles',
   {
-    participant_email: varchar().references(() => participantsTable.email),
-    role_name: varchar().references(() => rolesTable.name),
+    participant_email: varchar()
+      .notNull()
+      .references(() => participantsTable.email),
+    role_name: varchar()
+      .notNull()
+      .references(() => rolesTable.name),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.participant_email, table.role_name] }),

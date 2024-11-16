@@ -1,10 +1,11 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { DATABASE_CONNECTION } from '../../database/connection';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { projectTable } from '../../database/schema'; // Import other tables as needed
+import { projectsTable } from '../../database/schema'; // Import other tables as needed
 import { eq } from 'drizzle-orm';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { dtoToInsertModel, dtoToUpdateModel } from 'src/utils/dtoToModel';
 
 @Injectable()
 export class ProjectService {
@@ -15,11 +16,12 @@ export class ProjectService {
 
   // Create a new project
   async createProject(data: CreateProjectDto) {
-    const projectData = {
-      ...data,
-    };
+    const projectData = dtoToInsertModel<
+      typeof projectsTable.$inferInsert,
+      CreateProjectDto
+    >(data);
     const result = await this.db
-      .insert(projectTable)
+      .insert(projectsTable)
       .values(projectData)
       .returning();
     return result[0];
@@ -27,7 +29,7 @@ export class ProjectService {
 
   // Retrieve all projects
   async getProjects() {
-    const projects = await this.db.select().from(projectTable);
+    const projects = await this.db.select().from(projectsTable);
     return projects;
   }
 
@@ -35,18 +37,22 @@ export class ProjectService {
   async getProjectByName(name: string) {
     const project = await this.db
       .select()
-      .from(projectTable)
-      .where(eq(projectTable.name, name))
+      .from(projectsTable)
+      .where(eq(projectsTable.name, name))
       .limit(1);
     return project[0] || null;
   }
 
   // Update a project by name
   async updateProject(name: string, data: UpdateProjectDto) {
+    const values = dtoToUpdateModel<
+      typeof projectsTable.$inferInsert,
+      UpdateProjectDto
+    >(data);
     const result = await this.db
-      .update(projectTable)
-      .set(data)
-      .where(eq(projectTable.name, name))
+      .update(projectsTable)
+      .set(values)
+      .where(eq(projectsTable.name, name))
       .returning();
     return result[0] || null;
   }
@@ -54,8 +60,8 @@ export class ProjectService {
   // Delete a project by name
   async deleteProject(name: string): Promise<boolean> {
     const result = await this.db
-      .delete(projectTable)
-      .where(eq(projectTable.name, name))
+      .delete(projectsTable)
+      .where(eq(projectsTable.name, name))
       .returning();
     return result.length > 0;
   }

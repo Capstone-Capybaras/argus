@@ -1,4 +1,12 @@
-export class CreateScenarioDto {
+import { scenariosTable } from 'src/database/schema';
+import { InferInsert } from 'src/utils/modelToDtoTypes';
+
+export class CreateScenarioDto implements InferInsert<typeof scenariosTable> {
+  asset: string;
+  additional_context: string;
+  threat_actor_id: number;
+  entity_id: number;
+  project_id: number;
   scenario_number: string;
   threat_actor: string;
   threat_actor_motivation: string;

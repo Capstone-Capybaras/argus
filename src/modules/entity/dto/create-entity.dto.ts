@@ -1,7 +1,9 @@
 // create-entity.dto.ts
-import { IsString, IsOptional } from 'class-validator';
+import { IsString } from 'class-validator';
+import { entitiesTable } from 'src/database/schema';
+import { InferInsert } from 'src/utils/modelToDtoTypes';
 
-export class CreateEntityDto {
+export class CreateEntityDto implements InferInsert<typeof entitiesTable> {
   @IsString()
   name: string;
 
@@ -21,8 +23,9 @@ export class CreateEntityDto {
   policy_documents: string;
 
   @IsString()
-  participants: string; // Add this field
+  participants: string;
 
+  // TODO: this refers to master threat cube, but need to decide on order of insertion and the join table insertion
   @IsString()
   real_threat_landscape?: string; // Add this field if optional
 }

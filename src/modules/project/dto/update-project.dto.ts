@@ -1,6 +1,8 @@
 import { IsString, IsDateString, IsIn } from 'class-validator';
+import { projectsTable } from 'src/database/schema';
+import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
-export class UpdateProjectDto {
+export class UpdateProjectDto implements InferUpdate<typeof projectsTable> {
   @IsString()
   name: string;
 

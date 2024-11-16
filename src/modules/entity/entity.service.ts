@@ -1,10 +1,11 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { DATABASE_CONNECTION } from '../../database/connection';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { entityTable } from '../../database/schema';
+import { entitiesTable } from '../../database/schema';
 import { eq } from 'drizzle-orm';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
+import { dtoToInsertModel, dtoToUpdateModel } from 'src/utils/dtoToModel';
 
 @Injectable()
 export class EntityService {
@@ -15,22 +16,20 @@ export class EntityService {
 
   // Create a new entity
   async createEntity(data: CreateEntityDto) {
-    const entityData = {
-      ...data,
-    };
+    const values = dtoToInsertModel<
+      typeof entitiesTable.$inferInsert,
+      CreateEntityDto
+    >(data);
     const result = await this.db
-      .insert(entityTable)
-      .values({
-        ...entityData,
-        real_threat_landscape: entityData.real_threat_landscape || '',
-      })
+      .insert(entitiesTable)
+      .values(values)
       .returning();
     return result[0]; // Assuming you only want the first inserted record
   }
 
   // Retrieve all entities
   async getEntities() {
-    const entities = await this.db.select().from(entityTable);
+    const entities = await this.db.select().from(entitiesTable);
     return entities;
   }
 
@@ -38,18 +37,22 @@ export class EntityService {
   async getEntityByName(name: string) {
     const entity = await this.db
       .select()
-      .from(entityTable)
-      .where(eq(entityTable.name, name))
+      .from(entitiesTable)
+      .where(eq(entitiesTable.name, name))
       .limit(1);
     return entity[0] || null;
   }
 
   // Update an entity by name
   async updateEntity(name: string, data: UpdateEntityDto) {
+    const values = dtoToUpdateModel<
+      typeof entitiesTable.$inferInsert,
+      UpdateEntityDto
+    >(data);
     const result = await this.db
-      .update(entityTable)
-      .set(data)
-      .where(eq(entityTable.name, name))
+      .update(entitiesTable)
+      .set(values)
+      .where(eq(entitiesTable.name, name))
       .returning();
     return result[0] || null;
   }
@@ -57,8 +60,8 @@ export class EntityService {
   // Delete an entity by name
   async deleteEntity(name: string): Promise<boolean> {
     const result = await this.db
-      .delete(entityTable)
-      .where(eq(entityTable.name, name))
+      .delete(entitiesTable)
+      .where(eq(entitiesTable.name, name))
       .returning();
     return result.length > 0;
   }

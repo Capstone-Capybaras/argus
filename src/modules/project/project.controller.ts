@@ -3,12 +3,13 @@ import {
   Get,
   Post,
   Patch,
-  Put,
   Delete,
   Param,
   Body,
   HttpException,
   HttpStatus,
+  Logger,
+  BadRequestException,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from '../project/dto/create-project.dto';
@@ -26,10 +27,8 @@ export class ProjectController {
         await this.projectService.createProject(createProjectDto);
       return { message: 'Project created successfully', data: newProject };
     } catch (error) {
-      throw new HttpException(
-        'Failed to create project',
-        HttpStatus.BAD_REQUEST,
-      );
+      Logger.error(error);
+      throw new BadRequestException('Failed to create project');
     }
   }
 
@@ -65,10 +64,8 @@ export class ProjectController {
       }
       return { message: 'Project updated successfully', data: updatedProject };
     } catch (error) {
-      throw new HttpException(
-        'Failed to update project',
-        HttpStatus.BAD_REQUEST,
-      );
+      Logger.error(error);
+      throw new BadRequestException('Failed to update project');
     }
   }
 
