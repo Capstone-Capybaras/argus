@@ -30,6 +30,7 @@ export class UsersService {
   async addUser(username: string, password: string) {
     return this.database
       .insert(schemas.usersTable)
-      .values({ username: username, password: password });
+      .values({ username: username, password: password })
+      .returning();
   }
 }

@@ -48,7 +48,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('register')
-  async getOne(@Body() registerDto: RegisterDto) {
+  async register(@Body() registerDto: RegisterDto) {
     if (registerDto.confirmPassword !== registerDto.password) {
       throw new BadRequestException('Password does not match!');
     }
