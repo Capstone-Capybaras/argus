@@ -14,6 +14,7 @@ import {
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from '../project/dto/create-project.dto';
 import { UpdateProjectDto } from '../project/dto/update-project.dto';
+import { SelectProjectDto } from './dto/select-project.dto';
 
 @Controller('projects')
 export class ProjectController {
@@ -21,11 +22,11 @@ export class ProjectController {
 
   // Create a new project
   @Post()
-  async createProject(@Body() createProjectDto: CreateProjectDto) {
+  async createProject(
+    @Body() createProjectDto: CreateProjectDto,
+  ): Promise<UpdateProjectDto> {
     try {
-      const newProject =
-        await this.projectService.createProject(createProjectDto);
-      return { message: 'Project created successfully', data: newProject };
+      return await this.projectService.createProject(createProjectDto);
     } catch (error) {
       Logger.error(error);
       throw new BadRequestException('Failed to create project');
@@ -34,13 +35,15 @@ export class ProjectController {
 
   // Retrieve all projects
   @Get()
-  async getProjects() {
+  async getProjects(): Promise<SelectProjectDto[]> {
     return await this.projectService.getProjects();
   }
 
   // Retrieve a specific project by name
   @Get(':name')
-  async getProjectByName(@Param('name') name: string) {
+  async getProjectByName(
+    @Param('name') name: string,
+  ): Promise<SelectProjectDto> {
     const project = await this.projectService.getProjectByName(name);
     if (!project) {
       throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
@@ -53,7 +56,7 @@ export class ProjectController {
   async updateProject(
     @Param('name') name: string,
     @Body() updateProjectDto: UpdateProjectDto,
-  ) {
+  ): Promise<SelectProjectDto> {
     try {
       const updatedProject = await this.projectService.updateProject(
         name,
@@ -62,7 +65,7 @@ export class ProjectController {
       if (!updatedProject) {
         throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
       }
-      return { message: 'Project updated successfully', data: updatedProject };
+      return updatedProject;
     } catch (error) {
       Logger.error(error);
       throw new BadRequestException('Failed to update project');
@@ -76,6 +79,6 @@ export class ProjectController {
     if (!deleted) {
       throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
     }
-    return { message: 'Project deleted successfully' };
+    return true;
   }
 }

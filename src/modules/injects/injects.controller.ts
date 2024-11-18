@@ -14,6 +14,7 @@ import {
 import { InjectsService } from './injects.service';
 import { CreateInjectDto } from './dto/create-inject.dto';
 import { UpdateInjectDto } from './dto/update-inject.dto';
+import { SelectInjectDto } from './dto/select-inject.dto';
 
 @Controller('injects')
 export class InjectsController {
@@ -21,10 +22,12 @@ export class InjectsController {
 
   // Create a new inject
   @Post()
-  async createInject(@Body() createInjectDto: CreateInjectDto) {
+  async createInject(
+    @Body() createInjectDto: CreateInjectDto,
+  ): Promise<SelectInjectDto> {
     try {
       const newInject = await this.injectsService.createInject(createInjectDto);
-      return { message: 'Inject created successfully', data: newInject };
+      return newInject;
     } catch (error) {
       Logger.error(error);
       throw new BadRequestException('Failed to create inject');
@@ -33,13 +36,13 @@ export class InjectsController {
 
   // Retrieve all injects
   @Get()
-  async getInjects() {
+  async getInjects(): Promise<SelectInjectDto[]> {
     return await this.injectsService.getInjects();
   }
 
   // Retrieve a specific inject by ID
   @Get(':id')
-  async getInjectById(@Param('id') id: string) {
+  async getInjectById(@Param('id') id: string): Promise<SelectInjectDto> {
     const inject = await this.injectsService.getInjectByName(id);
     if (!inject) {
       throw new HttpException('Inject not found', HttpStatus.NOT_FOUND);
@@ -52,7 +55,7 @@ export class InjectsController {
   async updateInject(
     @Param('id') id: string,
     @Body() updateInjectDto: UpdateInjectDto,
-  ) {
+  ): Promise<SelectInjectDto> {
     try {
       const updatedInject = await this.injectsService.updateInject(
         id,
@@ -61,7 +64,7 @@ export class InjectsController {
       if (!updatedInject) {
         throw new HttpException('Inject not found', HttpStatus.NOT_FOUND);
       }
-      return { message: 'Inject updated successfully', data: updatedInject };
+      return updatedInject;
     } catch (error) {
       Logger.error(error);
       throw new BadRequestException('Failed to update inject');
@@ -75,6 +78,6 @@ export class InjectsController {
     if (!deletedInject) {
       throw new HttpException('Inject not found', HttpStatus.NOT_FOUND);
     }
-    return { message: 'Inject deleted successfully' };
+    return true;
   }
 }

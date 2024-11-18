@@ -14,6 +14,7 @@ import {
 import { EntityService } from './entity.service';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
+import { SelectEntityDto } from './dto/select-entity.dto';
 
 @Controller('entities')
 export class EntityController {
@@ -21,10 +22,11 @@ export class EntityController {
 
   // Create a new entity
   @Post()
-  async createEntity(@Body() createEntityDto: CreateEntityDto) {
+  async createEntity(
+    @Body() createEntityDto: CreateEntityDto,
+  ): Promise<SelectEntityDto> {
     try {
-      const newEntity = await this.entityService.createEntity(createEntityDto);
-      return { message: 'Entity created successfully', data: newEntity };
+      return await this.entityService.createEntity(createEntityDto);
     } catch (error) {
       Logger.error(error);
       throw new BadRequestException('Failed to create entity');
@@ -33,13 +35,13 @@ export class EntityController {
 
   // Retrieve all entities
   @Get()
-  async getEntities() {
+  async getEntities(): Promise<SelectEntityDto[]> {
     return await this.entityService.getEntities();
   }
 
   // Retrieve a specific entity by name
   @Get(':name')
-  async getEntityByName(@Param('name') name: string) {
+  async getEntityByName(@Param('name') name: string): Promise<SelectEntityDto> {
     const entity = await this.entityService.getEntityByName(name);
     if (!entity) {
       throw new HttpException('Entity not found', HttpStatus.NOT_FOUND);
@@ -52,7 +54,7 @@ export class EntityController {
   async updateEntity(
     @Param('name') name: string,
     @Body() updateEntityDto: UpdateEntityDto,
-  ) {
+  ): Promise<SelectEntityDto> {
     try {
       const updatedEntity = await this.entityService.updateEntity(
         name,
@@ -61,7 +63,7 @@ export class EntityController {
       if (!updatedEntity) {
         throw new HttpException('Entity not found', HttpStatus.NOT_FOUND);
       }
-      return { message: 'Entity updated successfully', data: updatedEntity };
+      return updatedEntity;
     } catch (error) {
       Logger.error(error);
       throw new BadRequestException('Failed to update entity');
@@ -75,6 +77,6 @@ export class EntityController {
     if (!deleted) {
       throw new HttpException('Entity not found', HttpStatus.NOT_FOUND);
     }
-    return { message: 'Entity deleted successfully' };
+    return true;
   }
 }

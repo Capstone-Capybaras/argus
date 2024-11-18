@@ -14,6 +14,7 @@ import {
 import { ScenarioService } from './scenario.service';
 import { CreateScenarioDto } from './dto/create-scenario.dto';
 import { UpdateScenarioDto } from './dto/update-scenario.dto';
+import { SelectScenarioDto } from './dto/select-scenario.dto';
 
 @Controller('scenarios')
 export class ScenarioController {
@@ -21,11 +22,13 @@ export class ScenarioController {
 
   // Create a new scenario
   @Post()
-  async createScenario(@Body() createScenarioDto: CreateScenarioDto) {
+  async createScenario(
+    @Body() createScenarioDto: CreateScenarioDto,
+  ): Promise<SelectScenarioDto> {
     try {
       const newScenario =
         await this.scenarioService.createScenario(createScenarioDto);
-      return { message: 'Scenario created successfully', data: newScenario };
+      return newScenario;
     } catch (error) {
       Logger.error(error);
       throw new BadRequestException('Failed to create scenario');
@@ -34,13 +37,15 @@ export class ScenarioController {
 
   // Retrieve all scenarios
   @Get()
-  async getScenarios() {
+  async getScenarios(): Promise<SelectScenarioDto[]> {
     return await this.scenarioService.getScenarios();
   }
 
   // Retrieve a specific scenario by scenario_number
   @Get(':scenario_number')
-  async getScenarioByNumber(@Param('scenario_number') scenario_number: string) {
+  async getScenarioByNumber(
+    @Param('scenario_number') scenario_number: string,
+  ): Promise<SelectScenarioDto> {
     const scenario =
       await this.scenarioService.getScenarioByNumber(scenario_number);
     if (!scenario) {
@@ -54,7 +59,7 @@ export class ScenarioController {
   async updateScenario(
     @Param('scenario_number') scenario_number: string,
     @Body() updateScenarioDto: UpdateScenarioDto,
-  ) {
+  ): Promise<SelectScenarioDto> {
     try {
       const updatedScenario = await this.scenarioService.updateScenario(
         scenario_number,
@@ -63,10 +68,7 @@ export class ScenarioController {
       if (!updatedScenario) {
         throw new HttpException('Scenario not found', HttpStatus.NOT_FOUND);
       }
-      return {
-        message: 'Scenario updated successfully',
-        data: updatedScenario,
-      };
+      return updatedScenario;
     } catch (error) {
       Logger.error(error);
       throw new BadRequestException('Failed to update scenario');
@@ -80,6 +82,6 @@ export class ScenarioController {
     if (!deleted) {
       throw new HttpException('Scenario not found', HttpStatus.NOT_FOUND);
     }
-    return { message: 'Scenario deleted successfully' };
+    return true;
   }
 }

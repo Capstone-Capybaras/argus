@@ -15,9 +15,10 @@ import {
 } from '@nestjs/common';
 import { Response, Request, CookieOptions } from 'express';
 import { AuthService } from './auth.service';
-import { SignInDto } from './auth.dto';
+import { AccessTokenResponse, SignInDto } from './auth.dto';
 import { RegisterDto } from './auth.dto';
 import { AuthGuard } from './auth.guard';
+import { SelectUserDto } from '../users/dto/select-user.dto';
 
 const cookieConfig: CookieOptions = {
   httpOnly: true,
@@ -37,7 +38,7 @@ export class AuthController {
   async signIn(
     @Body() signInDto: SignInDto,
     @Res({ passthrough: true }) response: Response,
-  ) {
+  ): Promise<AccessTokenResponse> {
     const { accessToken, refreshToken } = await this.authService.signIn(
       signInDto.username,
       signInDto.password,
@@ -48,7 +49,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('register')
-  async register(@Body() registerDto: RegisterDto) {
+  async register(@Body() registerDto: RegisterDto): Promise<SelectUserDto[]> {
     if (registerDto.confirmPassword !== registerDto.password) {
       throw new BadRequestException('Password does not match!');
     }
@@ -64,7 +65,7 @@ export class AuthController {
   }
 
   @Post('refresh')
-  async refreshTokens(@Req() request: Request) {
+  async refreshTokens(@Req() request: Request): Promise<AccessTokenResponse> {
     const storedRefreshToken = request.cookies[REFRESH_TOKEN_COOKIE];
     if (!storedRefreshToken) {
       throw new UnauthorizedException('Refresh token not found');

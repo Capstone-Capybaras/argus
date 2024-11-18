@@ -19,3 +19,7 @@ export class RegisterDto {
   @IsNotEmpty()
   confirmPassword: string;
 }
+
+export class AccessTokenResponse {
+  accessToken: string;
+}
