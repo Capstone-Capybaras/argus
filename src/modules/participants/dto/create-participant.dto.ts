@@ -6,6 +6,7 @@ export class CreateParticipantDto
   implements InferInsert<typeof participantsTable>
 {
   @IsString()
+  @IsEmail()
   email: string;
 
   @IsString()

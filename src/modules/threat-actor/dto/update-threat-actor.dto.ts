@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsString, IsInt } from 'class-validator';
 import { threatActorsTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
@@ -20,6 +20,6 @@ export class UpdateThreatActorDto
   @IsString()
   capabilities: string;
 
-  @IsString()
-  project_id: string;
+  @IsInt()
+  project_id: number;
 }

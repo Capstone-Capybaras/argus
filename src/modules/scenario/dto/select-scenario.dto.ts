@@ -2,7 +2,7 @@ import { scenariosTable } from 'src/database/schema';
 import { InferSelect } from 'src/utils/modelToDtoTypes';
 
 export class SelectScenarioDto implements InferSelect<typeof scenariosTable> {
-  CII: string;
+  CII: number;
   scenario_number: string;
   asset: string;
   additional_context: string;
