@@ -1,4 +1,4 @@
-import { IsString, IsInt } from 'class-validator';
+import { IsInt } from 'class-validator';
 import { masterThreatCubesToThreatActorsTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 

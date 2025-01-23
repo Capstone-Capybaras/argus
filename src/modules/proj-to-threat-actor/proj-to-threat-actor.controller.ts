@@ -6,8 +6,6 @@ import {
   Delete,
   Param,
   Body,
-  HttpException,
-  HttpStatus,
   BadRequestException,
   Logger,
 } from '@nestjs/common';

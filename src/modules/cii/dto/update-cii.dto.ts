@@ -1,10 +1,4 @@
-import {
-  IsNotEmpty,
-  IsString,
-  IsNumber,
-  IsOptional,
-  IsInt,
-} from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, IsInt } from 'class-validator';
 import { CIITable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 

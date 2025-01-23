@@ -8,8 +8,6 @@ import {
   Body,
   HttpException,
   HttpStatus,
-  BadRequestException,
-  Logger,
 } from '@nestjs/common';
 import { ThreatActorService } from './threat-actor.service';
 import { CreateThreatActorDto } from './dto/create-threat-actor.dto';

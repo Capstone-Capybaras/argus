@@ -1,5 +1,4 @@
-import { IsNotEmpty, IsString, IsInt } from 'class-validator';
-import { response } from 'express';
+import { IsString, IsInt } from 'class-validator';
 import { responsesTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 

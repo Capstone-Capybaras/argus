@@ -1,4 +1,4 @@
-import { IsEmail, IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 import { participantsTable } from 'src/database/schema';
 import { InferInsert } from 'src/utils/modelToDtoTypes';
 

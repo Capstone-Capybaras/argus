@@ -55,7 +55,7 @@ import { ThreatActorModule } from './modules/threat-actor/threat-actor.module';
     ResponsesModule,
     RolesModule,
     RolesToInjectModule,
-    ThreatActorModule
+    ThreatActorModule,
   ],
   controllers: [],
   providers: [],
