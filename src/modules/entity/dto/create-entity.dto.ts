@@ -1,9 +1,12 @@
 // create-entity.dto.ts
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 import { entitiesTable } from 'src/database/schema';
 import { InferInsert } from 'src/utils/modelToDtoTypes';
 
 export class CreateEntityDto implements InferInsert<typeof entitiesTable> {
+  @IsNumber()
+  id: number;
+
   @IsString()
   name: string;
 

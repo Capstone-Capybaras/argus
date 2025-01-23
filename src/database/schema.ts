@@ -64,11 +64,14 @@ export const participantsTable = pgTable('participants', {
 
 export const threatActorsTable = pgTable('threat_actors', {
   id: serial('id').unique().primaryKey(),
-  name: varchar().notNull(),
+  name: text().notNull(),
   category: text().notNull(),
   intent: text().notNull(),
   rationale: text().notNull(),
   capabilities: text().notNull(),
+  project_id: integer()
+    .notNull()
+    .references(() => projectsTable.id),
 });
 
 export const scenariosTable = pgTable('scenarios', {
@@ -92,6 +95,12 @@ export const scenariosTable = pgTable('scenarios', {
   project_id: integer()
     .notNull()
     .references(() => projectsTable.id),
+  CII: integer()
+    .notNull()
+    .references(() => CIITable.id),
+  tactics_techniques: text()
+    .notNull()
+    .references(() => masterThreatCubesTable.name),
 });
 
 export const injectsTable = pgTable('injects', {
@@ -109,6 +118,7 @@ export const injectsTable = pgTable('injects', {
     .notNull()
     .references(() => entitiesTable.id),
   from: varchar().notNull(),
+  to_recipient: varchar().notNull(),
   project_id: integer()
     .notNull()
     .references(() => projectsTable.id),

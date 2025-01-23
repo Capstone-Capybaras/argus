@@ -9,6 +9,21 @@ import { ProjectModule } from './modules/project/project.module';
 import { EntityModule } from './modules/entity/entity.module';
 import { ScenarioModule } from './modules/scenario/scenario.module';
 import { InjectsModule } from './modules/injects/injects.module';
+import { CiiModule } from './modules/cii/cii.module';
+import { CiiToScenarioModule } from './modules/cii-to-scenario/cii-to-scenario.module';
+import { EntToMastThreatCubesModule } from './modules/ent-to-mast-threat-cubes/ent-to-mast-threat-cubes.module';
+import { EntToThreatCubesModule } from './modules/ent-to-threat-cubes/ent-to-threat-cubes.module';
+import { MasterThreatCubesModule } from './modules/master-threat-cubes/master-threat-cubes.module';
+import { MtcToScenarioModule } from './modules/mtc-to-scenario/mtc-to-scenario.module';
+import { MtcToThreatActorModule } from './modules/mtc-to-threat-actor/mtc-to-threat-actor.module';
+import { PartToRoleModule } from './modules/part-to-role/part-to-role.module';
+import { ParticipantsModule } from './modules/participants/participants.module';
+import { ProjToEntModule } from './modules/proj-to-ent/proj-to-ent.module';
+import { ProjToThreatActorModule } from './modules/proj-to-threat-actor/proj-to-threat-actor.module';
+import { ResponsesModule } from './modules/responses/responses.module';
+import { RolesModule } from './modules/roles/roles.module';
+import { RolesToInjectModule } from './modules/roles-to-inject/roles-to-inject.module';
+import { ThreatActorModule } from './modules/threat-actor/threat-actor.module';
 
 @Module({
   imports: [
@@ -26,6 +41,21 @@ import { InjectsModule } from './modules/injects/injects.module';
     EntityModule,
     ScenarioModule,
     InjectsModule,
+    CiiModule,
+    CiiToScenarioModule,
+    EntToMastThreatCubesModule,
+    EntToThreatCubesModule,
+    MasterThreatCubesModule,
+    MtcToScenarioModule,
+    MtcToThreatActorModule,
+    PartToRoleModule,
+    ParticipantsModule,
+    ProjToEntModule,
+    ProjToThreatActorModule,
+    ResponsesModule,
+    RolesModule,
+    RolesToInjectModule,
+    ThreatActorModule
   ],
   controllers: [],
   providers: [],
