@@ -23,7 +23,4 @@ export class UpdateEntityDto implements InferUpdate<typeof entitiesTable> {
 
   @IsUrl()
   policy_documents?: string; // Assuming it's a URL; adjust as needed if it's a file path
-
-  @IsString()
-  participants?: string;
 }
