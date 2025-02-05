@@ -9,6 +9,7 @@ import {
   boolean,
   timestamp,
   primaryKey,
+  pgEnum,
 } from 'drizzle-orm/pg-core';
 
 // Existing tables
@@ -23,10 +24,14 @@ export const revokedTokensTable = pgTable('revoked_tokens', {
   revoked_at: timestamp().defaultNow(),
 });
 
+export const exerciseTypeEnum = pgEnum('exercise_type', [
+  'executive',
+  'sectorial',
+]);
 export const projectsTable = pgTable('projects', {
   id: serial('id').unique().primaryKey(),
   name: text().notNull(),
-  exercise_type: text({ enum: ['Executive', 'Sectorial'] }).notNull(),
+  exercise_type: exerciseTypeEnum().notNull(),
   start_date: date().notNull(),
   end_date: date().notNull(),
   email_header: text().notNull(),

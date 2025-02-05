@@ -1,0 +1,2 @@
+CREATE TYPE "public"."exercise_type" AS ENUM('executive', 'sectorial');--> statement-breakpoint
+ALTER TABLE "projects" ALTER COLUMN "exercise_type" SET DATA TYPE exercise_type USING exercise_type::exercise_type;
