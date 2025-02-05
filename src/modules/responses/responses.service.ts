@@ -5,7 +5,6 @@ import { responsesTable } from 'src/database/schema';
 import { eq } from 'drizzle-orm';
 import { CreateResponsesDto } from './dto/create-responses.dto';
 import { UpdateResponsesDto } from './dto/update-responses.dto';
-import { dtoToInsertModel, dtoToUpdateModel } from 'src/utils/dtoToModel';
 
 @Injectable()
 export class ResponsesService {
@@ -16,13 +15,9 @@ export class ResponsesService {
 
   // Create new response
   async createResponse(data: CreateResponsesDto) {
-    const values = dtoToInsertModel<
-      typeof responsesTable.$inferInsert,
-      CreateResponsesDto
-    >(data);
     const result = await this.db
       .insert(responsesTable)
-      .values(values)
+      .values(data)
       .returning();
     return result[0];
   }
@@ -41,13 +36,9 @@ export class ResponsesService {
   }
 
   async updateResponse(id: string, data: UpdateResponsesDto) {
-    const values = dtoToUpdateModel<
-      typeof responsesTable.$inferInsert,
-      UpdateResponsesDto
-    >(data);
     const result = await this.db
       .update(responsesTable)
-      .set(values)
+      .set(data)
       .where(eq(responsesTable.id, parseInt(id)))
       .returning();
     return result[0];

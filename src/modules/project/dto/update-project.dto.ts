@@ -1,8 +1,11 @@
-import { IsString, IsDateString, IsIn } from 'class-validator';
+import { IsString, IsDateString, IsIn, IsNumber } from 'class-validator';
 import { projectsTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
 export class UpdateProjectDto implements InferUpdate<typeof projectsTable> {
+  @IsNumber()
+  id: number;
+
   @IsString()
   name: string;
 

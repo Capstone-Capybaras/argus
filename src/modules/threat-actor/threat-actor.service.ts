@@ -5,7 +5,6 @@ import { threatActorsTable } from '../../database/schema';
 import { eq } from 'drizzle-orm';
 import { CreateThreatActorDto } from './dto/create-threat-actor.dto';
 import { UpdateThreatActorDto } from './dto/update-threat-actor.dto';
-import { dtoToInsertModel, dtoToUpdateModel } from 'src/utils/dtoToModel';
 
 @Injectable()
 export class ThreatActorService {
@@ -15,13 +14,9 @@ export class ThreatActorService {
   ) {}
 
   async createThreatActor(data: CreateThreatActorDto) {
-    const threatActor = dtoToInsertModel<
-      typeof threatActorsTable.$inferInsert,
-      CreateThreatActorDto
-    >(data);
     const result = await this.db
       .insert(threatActorsTable)
-      .values(threatActor)
+      .values(data)
       .returning();
     return result[0];
   }
@@ -40,13 +35,9 @@ export class ThreatActorService {
   }
 
   async updateThreatActor(id: string, data: UpdateThreatActorDto) {
-    const threatActor = dtoToUpdateModel<
-      typeof threatActorsTable.$inferInsert,
-      UpdateThreatActorDto
-    >(data);
     const result = await this.db
       .update(threatActorsTable)
-      .set(threatActor)
+      .set(data)
       .where(eq(threatActorsTable.id, parseInt(id)))
       .returning();
     return result[0];

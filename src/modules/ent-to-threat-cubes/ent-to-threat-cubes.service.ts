@@ -5,7 +5,6 @@ import { entitiesToThreatCubesTable } from 'src/database/schema';
 import { eq } from 'drizzle-orm';
 import { CreateEntToThreatDto } from './dto/create-ent-to-threat.dto';
 import { UpdateEntToThreatDto } from './dto/update-ent-to-threat.dto';
-import { dtoToInsertModel, dtoToUpdateModel } from 'src/utils/dtoToModel';
 
 @Injectable()
 export class EntToThreatCubesService {
@@ -16,13 +15,9 @@ export class EntToThreatCubesService {
 
   // Create new CII
   async createEntToThreat(data: CreateEntToThreatDto) {
-    const values = dtoToInsertModel<
-      typeof entitiesToThreatCubesTable.$inferInsert,
-      CreateEntToThreatDto
-    >(data);
     const result = await this.db
       .insert(entitiesToThreatCubesTable)
-      .values(values)
+      .values(data)
       .returning();
     return result[0];
   }
@@ -43,13 +38,9 @@ export class EntToThreatCubesService {
   }
 
   async updateEntToThreat(id: number, data: UpdateEntToThreatDto) {
-    const values = dtoToUpdateModel<
-      typeof entitiesToThreatCubesTable.$inferInsert,
-      UpdateEntToThreatDto
-    >(data);
     const result = await this.db
       .update(entitiesToThreatCubesTable)
-      .set(values)
+      .set(data)
       .where(eq(entitiesToThreatCubesTable.entity_id, id))
       .returning();
     return result[0];

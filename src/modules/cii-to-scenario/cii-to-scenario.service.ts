@@ -5,7 +5,6 @@ import { CIIToScenariosTable } from 'src/database/schema';
 import { eq } from 'drizzle-orm';
 import { UpdateCIIScenarioDto } from './dto/update-cii-scenario.dto';
 import { CreateCIIScenarioDto } from './dto/create-cii-scenario.dto';
-import { dtoToInsertModel, dtoToUpdateModel } from 'src/utils/dtoToModel';
 
 @Injectable()
 export class CiiToScenarioService {
@@ -15,13 +14,9 @@ export class CiiToScenarioService {
   ) {}
 
   async createCIIScenario(data: CreateCIIScenarioDto) {
-    const values = dtoToInsertModel<
-      typeof CIIToScenariosTable.$inferInsert,
-      CreateCIIScenarioDto
-    >(data);
     const result = await this.db
       .insert(CIIToScenariosTable)
-      .values(values)
+      .values(data)
       .returning();
     return result[0];
   }
@@ -40,13 +35,9 @@ export class CiiToScenarioService {
   }
 
   async updateCIIScenario(data: UpdateCIIScenarioDto) {
-    const values = dtoToUpdateModel<
-      typeof CIIToScenariosTable.$inferInsert,
-      UpdateCIIScenarioDto
-    >(data);
     const result = await this.db
       .update(CIIToScenariosTable)
-      .set(values)
+      .set(data)
       .where(eq(CIIToScenariosTable.CII_id, data.CII_id))
       .returning();
     return result[0];

@@ -5,7 +5,6 @@ import { participantsToRolesTable } from 'src/database/schema';
 import { eq } from 'drizzle-orm';
 import { CreateParticipantsToRolesDto } from './dto/create-part-role.dto';
 import { UpdateParticipantsToRolesDto } from './dto/update-part-role.dto';
-import { dtoToInsertModel, dtoToUpdateModel } from 'src/utils/dtoToModel';
 
 @Injectable()
 export class PartToRoleService {
@@ -16,13 +15,9 @@ export class PartToRoleService {
 
   // Create new CII
   async createPartRole(data: CreateParticipantsToRolesDto) {
-    const values = dtoToInsertModel<
-      typeof participantsToRolesTable.$inferInsert,
-      CreateParticipantsToRolesDto
-    >(data);
     const result = await this.db
       .insert(participantsToRolesTable)
-      .values(values)
+      .values(data)
       .returning();
     return result[0];
   }
@@ -41,13 +36,9 @@ export class PartToRoleService {
   }
 
   async updatePartRole(email: string, data: UpdateParticipantsToRolesDto) {
-    const values = dtoToUpdateModel<
-      typeof participantsToRolesTable.$inferInsert,
-      UpdateParticipantsToRolesDto
-    >(data);
     const result = await this.db
       .update(participantsToRolesTable)
-      .set(values)
+      .set(data)
       .where(eq(participantsToRolesTable.participant_email, email))
       .returning();
     return result[0];

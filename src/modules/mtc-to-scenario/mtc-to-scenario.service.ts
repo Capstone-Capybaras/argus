@@ -5,7 +5,6 @@ import { masterThreatCubesToScenariosTable } from 'src/database/schema';
 import { eq } from 'drizzle-orm';
 import { CreateMasterThreatToScenarioDto } from './dto/create-mtc-scen.dto';
 import { UpdateMasterThreatToScenarioDto } from './dto/update-mtc-scen.dto';
-import { dtoToInsertModel, dtoToUpdateModel } from 'src/utils/dtoToModel';
 
 @Injectable()
 export class MtcToScenarioService {
@@ -16,13 +15,9 @@ export class MtcToScenarioService {
 
   // Create new CII
   async createMasterThreatToScenario(data: CreateMasterThreatToScenarioDto) {
-    const values = dtoToInsertModel<
-      typeof masterThreatCubesToScenariosTable.$inferInsert,
-      CreateMasterThreatToScenarioDto
-    >(data);
     const result = await this.db
       .insert(masterThreatCubesToScenariosTable)
-      .values(values)
+      .values(data)
       .returning();
     return result[0];
   }
@@ -46,13 +41,9 @@ export class MtcToScenarioService {
     id: string,
     data: UpdateMasterThreatToScenarioDto,
   ) {
-    const values = dtoToUpdateModel<
-      typeof masterThreatCubesToScenariosTable.$inferInsert,
-      UpdateMasterThreatToScenarioDto
-    >(data);
     const result = await this.db
       .update(masterThreatCubesToScenariosTable)
-      .set(values)
+      .set(data)
       .where(eq(masterThreatCubesToScenariosTable.threat_cube_id, parseInt(id)))
       .returning();
     return result[0];

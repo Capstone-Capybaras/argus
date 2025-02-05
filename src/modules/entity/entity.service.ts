@@ -5,7 +5,6 @@ import { entitiesTable } from '../../database/schema';
 import { eq } from 'drizzle-orm';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
-import { dtoToInsertModel, dtoToUpdateModel } from 'src/utils/dtoToModel';
 
 @Injectable()
 export class EntityService {
@@ -16,14 +15,7 @@ export class EntityService {
 
   // Create a new entity
   async createEntity(data: CreateEntityDto) {
-    const values = dtoToInsertModel<
-      typeof entitiesTable.$inferInsert,
-      CreateEntityDto
-    >(data);
-    const result = await this.db
-      .insert(entitiesTable)
-      .values(values)
-      .returning();
+    const result = await this.db.insert(entitiesTable).values(data).returning();
     return result[0]; // Assuming you only want the first inserted record
   }
 
@@ -45,13 +37,9 @@ export class EntityService {
 
   // Update an entity by name
   async updateEntity(name: string, data: UpdateEntityDto) {
-    const values = dtoToUpdateModel<
-      typeof entitiesTable.$inferInsert,
-      UpdateEntityDto
-    >(data);
     const result = await this.db
       .update(entitiesTable)
-      .set(values)
+      .set(data)
       .where(eq(entitiesTable.name, name))
       .returning();
     return result[0] || null;

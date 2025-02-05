@@ -5,7 +5,6 @@ import { eq } from 'drizzle-orm';
 import { participantsTable } from 'src/database/schema';
 import { CreateParticipantDto } from './dto/create-participant.dto';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
-import { dtoToInsertModel, dtoToUpdateModel } from 'src/utils/dtoToModel';
 
 @Injectable()
 export class ParticipantsService {
@@ -15,13 +14,9 @@ export class ParticipantsService {
   ) {}
 
   async createParticipant(data: CreateParticipantDto) {
-    const values = dtoToInsertModel<
-      typeof participantsTable.$inferInsert,
-      CreateParticipantDto
-    >(data);
     const result = await this.db
       .insert(participantsTable)
-      .values(values)
+      .values(data)
       .returning();
     return result[0];
   }
@@ -41,13 +36,9 @@ export class ParticipantsService {
   }
 
   async updateParticipant(email: string, data: UpdateParticipantDto) {
-    const values = dtoToUpdateModel<
-      typeof participantsTable.$inferInsert,
-      UpdateParticipantDto
-    >(data);
     const result = await this.db
       .update(participantsTable)
-      .set(values)
+      .set(data)
       .where(eq(participantsTable.email, email))
       .returning();
     return result[0] || null;

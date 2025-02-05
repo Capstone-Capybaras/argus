@@ -5,7 +5,6 @@ import { eq } from 'drizzle-orm';
 import { masterThreatCubesToThreatActorsTable } from 'src/database/schema';
 import { CreateMasterThreatCubesToThreatActorsDto } from './dto/create-mtc-ta.dto';
 import { UpdateMasterThreatCubesToThreatActorsDto } from './dto/update-mtc-ta.dto';
-import { dtoToInsertModel } from 'src/utils/dtoToModel';
 
 @Injectable()
 export class MtcToThreatActorService {
@@ -15,13 +14,9 @@ export class MtcToThreatActorService {
   ) {}
 
   async createMTCToTA(data: CreateMasterThreatCubesToThreatActorsDto) {
-    const values = dtoToInsertModel<
-      typeof masterThreatCubesToThreatActorsTable.$inferInsert,
-      CreateMasterThreatCubesToThreatActorsDto
-    >(data);
     const result = await this.db
       .insert(masterThreatCubesToThreatActorsTable)
-      .values(values)
+      .values(data)
       .returning();
     return result[0];
   }
@@ -45,13 +40,9 @@ export class MtcToThreatActorService {
     id: string,
     data: UpdateMasterThreatCubesToThreatActorsDto,
   ) {
-    const values = dtoToInsertModel<
-      typeof masterThreatCubesToThreatActorsTable.$inferInsert,
-      UpdateMasterThreatCubesToThreatActorsDto
-    >(data);
     const result = await this.db
       .update(masterThreatCubesToThreatActorsTable)
-      .set(values)
+      .set(data)
       .where(
         eq(masterThreatCubesToThreatActorsTable.threat_cube_id, parseInt(id)),
       )

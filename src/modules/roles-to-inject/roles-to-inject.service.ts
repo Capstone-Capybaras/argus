@@ -5,7 +5,6 @@ import { rolesToInjectsTable } from 'src/database/schema';
 import { eq } from 'drizzle-orm';
 import { CreateRolesToInjectDto } from './dto/create-role-inj.dto';
 import { UpdateRolesToInjectDto } from './dto/update-role-inject.dto';
-import { dtoToInsertModel, dtoToUpdateModel } from 'src/utils/dtoToModel';
 
 @Injectable()
 export class RolesToInjectService {
@@ -16,13 +15,9 @@ export class RolesToInjectService {
 
   // Create new CII
   async createRolesToInject(data: CreateRolesToInjectDto) {
-    const values = dtoToInsertModel<
-      typeof rolesToInjectsTable.$inferInsert,
-      CreateRolesToInjectDto
-    >(data);
     const result = await this.db
       .insert(rolesToInjectsTable)
-      .values(values)
+      .values(data)
       .returning();
     return result[0];
   }
@@ -41,13 +36,9 @@ export class RolesToInjectService {
   }
 
   async updateRolesToInject(id: string, data: UpdateRolesToInjectDto) {
-    const values = dtoToUpdateModel<
-      typeof rolesToInjectsTable.$inferInsert,
-      UpdateRolesToInjectDto
-    >(data);
     const result = await this.db
       .update(rolesToInjectsTable)
-      .set(values)
+      .set(data)
       .where(eq(rolesToInjectsTable.inject_id, id))
       .returning();
     return result[0];

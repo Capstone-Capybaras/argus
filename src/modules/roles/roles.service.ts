@@ -5,7 +5,6 @@ import { rolesTable } from 'src/database/schema';
 import { eq } from 'drizzle-orm';
 import { CreateRoleDto } from './dto/create-roles.dto';
 import { UpdateRoleDto } from './dto/update-roles.dto';
-import { dtoToInsertModel, dtoToUpdateModel } from 'src/utils/dtoToModel';
 
 @Injectable()
 export class RolesService {
@@ -16,11 +15,7 @@ export class RolesService {
 
   // Create new role
   async createRole(data: CreateRoleDto) {
-    const values = dtoToInsertModel<
-      typeof rolesTable.$inferInsert,
-      CreateRoleDto
-    >(data);
-    const result = await this.db.insert(rolesTable).values(values).returning();
+    const result = await this.db.insert(rolesTable).values(data).returning();
     return result[0];
   }
 
@@ -38,13 +33,9 @@ export class RolesService {
   }
 
   async updateRole(name: string, data: UpdateRoleDto) {
-    const values = dtoToUpdateModel<
-      typeof rolesTable.$inferInsert,
-      UpdateRoleDto
-    >(data);
     const result = await this.db
       .update(rolesTable)
-      .set(values)
+      .set(data)
       .where(eq(rolesTable.name, name))
       .returning();
     return result[0];

@@ -5,7 +5,6 @@ import { projectsTable } from '../../database/schema'; // Import other tables as
 import { eq } from 'drizzle-orm';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import { dtoToInsertModel, dtoToUpdateModel } from 'src/utils/dtoToModel';
 
 @Injectable()
 export class ProjectService {
@@ -16,14 +15,7 @@ export class ProjectService {
 
   // Create a new project
   async createProject(data: CreateProjectDto) {
-    const projectData = dtoToInsertModel<
-      typeof projectsTable.$inferInsert,
-      CreateProjectDto
-    >(data);
-    const result = await this.db
-      .insert(projectsTable)
-      .values(projectData)
-      .returning();
+    const result = await this.db.insert(projectsTable).values(data).returning();
     return result[0];
   }
 
@@ -45,13 +37,9 @@ export class ProjectService {
 
   // Update a project by name
   async updateProject(name: string, data: UpdateProjectDto) {
-    const values = dtoToUpdateModel<
-      typeof projectsTable.$inferInsert,
-      UpdateProjectDto
-    >(data);
     const result = await this.db
       .update(projectsTable)
-      .set(values)
+      .set(data)
       .where(eq(projectsTable.name, name))
       .returning();
     return result[0] || null;

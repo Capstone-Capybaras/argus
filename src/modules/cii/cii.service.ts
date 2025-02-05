@@ -5,7 +5,6 @@ import { CIITable } from '../../database/schema';
 import { eq } from 'drizzle-orm';
 import { CreateCiiDto } from './dto/create-cii.dto';
 import { UpdateCiiDto } from './dto/update-cii.dto';
-import { dtoToInsertModel, dtoToUpdateModel } from 'src/utils/dtoToModel';
 
 @Injectable()
 export class CiiService {
@@ -16,10 +15,7 @@ export class CiiService {
 
   // Create new CII
   async createCII(data: CreateCiiDto) {
-    const values = dtoToInsertModel<typeof CIITable.$inferInsert, CreateCiiDto>(
-      data,
-    );
-    const result = await this.db.insert(CIITable).values(values).returning();
+    const result = await this.db.insert(CIITable).values(data).returning();
     return result[0];
   }
 
@@ -37,12 +33,9 @@ export class CiiService {
   }
 
   async updateCii(id: string, data: UpdateCiiDto) {
-    const values = dtoToUpdateModel<typeof CIITable.$inferInsert, UpdateCiiDto>(
-      data,
-    );
     const result = await this.db
       .update(CIITable)
-      .set(values)
+      .set(data)
       .where(eq(CIITable.id, parseInt(id)))
       .returning();
     return result[0];

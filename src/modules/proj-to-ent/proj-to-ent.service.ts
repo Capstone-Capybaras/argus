@@ -5,7 +5,6 @@ import { eq } from 'drizzle-orm';
 import { projectsToEntitiesTable } from 'src/database/schema';
 import { CreateProjectToEntityDto } from './dto/create-proj-ent.dto';
 import { UpdateProjectToEntityDto } from './dto/update-proj-ent.dto';
-import { dtoToInsertModel, dtoToUpdateModel } from 'src/utils/dtoToModel';
 
 @Injectable()
 export class ProjToEntService {
@@ -16,13 +15,9 @@ export class ProjToEntService {
 
   // Create new project-entity relationship
   async createProjectEntity(data: CreateProjectToEntityDto) {
-    const values = dtoToInsertModel<
-      typeof projectsToEntitiesTable.$inferInsert,
-      CreateProjectToEntityDto
-    >(data);
     const result = await this.db
       .insert(projectsToEntitiesTable)
-      .values(values)
+      .values(data)
       .returning();
     return result[0];
   }
@@ -43,13 +38,9 @@ export class ProjToEntService {
   }
 
   async updateProjectEntity(entity_id: number, data: UpdateProjectToEntityDto) {
-    const values = dtoToUpdateModel<
-      typeof projectsToEntitiesTable.$inferInsert,
-      UpdateProjectToEntityDto
-    >(data);
     const result = await this.db
       .update(projectsToEntitiesTable)
-      .set(values)
+      .set(data)
       .where(eq(projectsToEntitiesTable.entity_id, entity_id))
       .returning();
     return result[0];

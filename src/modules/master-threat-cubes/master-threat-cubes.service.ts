@@ -5,7 +5,6 @@ import { masterThreatCubesTable } from 'src/database/schema';
 import { eq } from 'drizzle-orm';
 import { CreateMasterThreatCubeDto } from './dto/create-master-threat.dto';
 import { UpdateMasterThreatCubeDto } from './dto/update-master-threat.dto';
-import { dtoToInsertModel, dtoToUpdateModel } from 'src/utils/dtoToModel';
 
 @Injectable()
 export class MasterThreatCubesService {
@@ -16,13 +15,9 @@ export class MasterThreatCubesService {
 
   // Create new master threat cube
   async createMasterThreatCube(data: CreateMasterThreatCubeDto) {
-    const values = dtoToInsertModel<
-      typeof masterThreatCubesTable.$inferInsert,
-      CreateMasterThreatCubeDto
-    >(data);
     const result = await this.db
       .insert(masterThreatCubesTable)
-      .values(values)
+      .values(data)
       .returning();
     return result[0];
   }
@@ -43,13 +38,9 @@ export class MasterThreatCubesService {
   }
 
   async updateMasterThreatCube(id: string, data: UpdateMasterThreatCubeDto) {
-    const values = dtoToUpdateModel<
-      typeof masterThreatCubesTable.$inferInsert,
-      UpdateMasterThreatCubeDto
-    >(data);
     const result = await this.db
       .update(masterThreatCubesTable)
-      .set(values)
+      .set(data)
       .where(eq(masterThreatCubesTable.id, parseInt(id)))
       .returning();
     return result[0];
