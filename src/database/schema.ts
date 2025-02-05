@@ -292,3 +292,18 @@ export const rolesToInjectsTable = pgTable(
     pk: primaryKey({ columns: [table.role_name, table.inject_id] }),
   }),
 );
+
+export const emailsTable = pgTable('emails', {
+  id: serial('id').unique().primaryKey(),
+  project_id: integer().notNull(),//.references(()=>projectsTable.id),
+  to: text().array().notNull(),
+  cc: text().array(),
+  subject: text().notNull(),
+  html: text().notNull(),
+  attachments: text().array(),
+  job_id: integer(),
+  schedule_date_time: timestamp(),
+  error_message: text(),
+  status: text().default('notScheduled'), // status: notScheduled, scheduled, sent, failed
+ observations: text()
+});

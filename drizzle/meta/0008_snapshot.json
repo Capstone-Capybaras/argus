@@ -1,6 +1,6 @@
 {
-  "id": "e2304110-c263-47d6-b19e-27f70d9bcc6e",
-  "prevId": "236a6311-0f9b-44ea-90bb-8e0f4d64ede2",
+  "id": "69792e6a-0df3-45a4-b8ef-973302578eca",
+  "prevId": "7799b92e-2cd0-4519-9184-b2636abb6621",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -204,21 +204,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "emails_projectId_projects_id_fk": {
-          "name": "emails_projectId_projects_id_fk",
-          "tableFrom": "emails",
-          "tableTo": "projects",
-          "columnsFrom": [
-            "projectId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "emails_id_unique": {
@@ -833,8 +819,7 @@
         },
         "exercise_type": {
           "name": "exercise_type",
-          "type": "exercise_type",
-          "typeSchema": "public",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -1480,16 +1465,7 @@
       "checkConstraints": {}
     }
   },
-  "enums": {
-    "public.exercise_type": {
-      "name": "exercise_type",
-      "schema": "public",
-      "values": [
-        "executive",
-        "sectorial"
-      ]
-    }
-  },
+  "enums": {},
   "schemas": {},
   "sequences": {},
   "views": {},

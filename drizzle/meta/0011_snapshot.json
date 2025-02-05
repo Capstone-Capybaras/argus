@@ -1,6 +1,6 @@
 {
-  "id": "e2304110-c263-47d6-b19e-27f70d9bcc6e",
-  "prevId": "236a6311-0f9b-44ea-90bb-8e0f4d64ede2",
+  "id": "b3ae1f95-dfa8-4420-b260-d30c8b073814",
+  "prevId": "90a93d83-184a-443e-8de3-86f9264a962a",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -147,8 +147,8 @@
           "primaryKey": true,
           "notNull": true
         },
-        "projectId": {
-          "name": "projectId",
+        "project_id": {
+          "name": "project_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -158,6 +158,12 @@
           "type": "text[]",
           "primaryKey": false,
           "notNull": true
+        },
+        "cc": {
+          "name": "cc",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
         },
         "subject": {
           "name": "subject",
@@ -177,20 +183,20 @@
           "primaryKey": false,
           "notNull": false
         },
-        "jobId": {
-          "name": "jobId",
+        "job_id": {
+          "name": "job_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
-        "scheduleDateTime": {
-          "name": "scheduleDateTime",
+        "schedule_date_time": {
+          "name": "schedule_date_time",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
-        "errorMessage": {
-          "name": "errorMessage",
+        "error_message": {
+          "name": "error_message",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -201,16 +207,22 @@
           "primaryKey": false,
           "notNull": false,
           "default": "'notScheduled'"
+        },
+        "observations": {
+          "name": "observations",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "emails_projectId_projects_id_fk": {
-          "name": "emails_projectId_projects_id_fk",
+        "emails_project_id_projects_id_fk": {
+          "name": "emails_project_id_projects_id_fk",
           "tableFrom": "emails",
           "tableTo": "projects",
           "columnsFrom": [
-            "projectId"
+            "project_id"
           ],
           "columnsTo": [
             "id"
@@ -833,8 +845,7 @@
         },
         "exercise_type": {
           "name": "exercise_type",
-          "type": "exercise_type",
-          "typeSchema": "public",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -1480,16 +1491,7 @@
       "checkConstraints": {}
     }
   },
-  "enums": {
-    "public.exercise_type": {
-      "name": "exercise_type",
-      "schema": "public",
-      "values": [
-        "executive",
-        "sectorial"
-      ]
-    }
-  },
+  "enums": {},
   "schemas": {},
   "sequences": {},
   "views": {},
