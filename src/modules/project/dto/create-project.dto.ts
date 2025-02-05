@@ -7,8 +7,8 @@ export class CreateProjectDto implements InferInsert<typeof projectsTable> {
   @IsString()
   name: string;
 
-  @IsIn(['Executive', 'Sectorial'])
-  exercise_type: 'Executive' | 'Sectorial';
+  @IsIn(['executive', 'sectorial'])
+  exercise_type: 'executive' | 'sectorial';
 
   @IsDate()
   start_date: string;
