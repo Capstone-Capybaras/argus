@@ -4,15 +4,12 @@ import { getImapConfig } from './imap.config';
 import * as schemas from 'src/database/schema';
 import * as imapSimple from 'imap-simple';
 import { ConfigService } from '@nestjs/config';
-import * as fs from 'fs';
 import { DATABASE_CONNECTION } from 'src/database/connection';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { eq } from 'drizzle-orm';
 import { AttachmentDto, CreateMailDto, UpdateMailDBDto, } from './email.dto';
-import { BullQueueService } from './bullqueue.service';
 import { RawEmail } from './email.interface';
 import { S3Service } from './s3.service';
-import { secretManagerConfig } from 'src/config/secrets';
 
 @Injectable()
 export class EmailService {
