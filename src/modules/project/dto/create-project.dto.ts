@@ -1,5 +1,6 @@
 // create-project.dto.ts
-import { IsString, IsDate, IsIn } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsString, IsDate, IsIn, IsDateString } from 'class-validator';
 import { projectsTable } from 'src/database/schema';
 import { InferInsert } from 'src/utils/modelToDtoTypes';
 
@@ -10,10 +11,11 @@ export class CreateProjectDto implements InferInsert<typeof projectsTable> {
   @IsIn(['executive', 'sectorial'])
   exercise_type: 'executive' | 'sectorial';
 
-  @IsDate()
+  @IsDateString()
   start_date: string;
 
-  @IsDate()
+  @IsDateString()
+  //@Type(()=>Date)
   end_date: string;
 
   @IsString()
@@ -22,6 +24,6 @@ export class CreateProjectDto implements InferInsert<typeof projectsTable> {
   @IsString()
   email_footer: string;
 
-  @IsString()
-  entity_name: string;
+  // @IsString()
+  // entity_name: string;
 }

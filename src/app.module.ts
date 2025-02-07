@@ -24,6 +24,9 @@ import { ResponsesModule } from './modules/responses/responses.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { RolesToInjectModule } from './modules/roles-to-inject/roles-to-inject.module';
 import { ThreatActorModule } from './modules/threat-actor/threat-actor.module';
+import { EmailModule } from './email/email.module';
+import { BullQueueModule } from './email/bullqueue.module';
+import { ImapModule } from './email/imap/imap.module';
 
 @Module({
   imports: [
@@ -56,6 +59,9 @@ import { ThreatActorModule } from './modules/threat-actor/threat-actor.module';
     RolesModule,
     RolesToInjectModule,
     ThreatActorModule,
+    BullQueueModule,
+    EmailModule,
+    ImapModule
   ],
   controllers: [],
   providers: [],

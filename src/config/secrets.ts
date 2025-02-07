@@ -13,6 +13,9 @@ export interface Secrets {
   JWT_SECRET: string;
   SALT_OR_ROUNDS: string;
   JWT_REFRESH_SECRET: string;
+  RESOURCE_ACCESS_KEY: string;
+  RESOURCE_ACCESS_SECRET: string;
+  REGION: string;
 }
 
 const fetchSecrets = async (secretName: string): Promise<Secrets> => {
