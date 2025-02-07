@@ -18,8 +18,6 @@ import { MtcToScenarioModule } from './modules/mtc-to-scenario/mtc-to-scenario.m
 import { MtcToThreatActorModule } from './modules/mtc-to-threat-actor/mtc-to-threat-actor.module';
 import { PartToRoleModule } from './modules/part-to-role/part-to-role.module';
 import { ParticipantsModule } from './modules/participants/participants.module';
-import { ProjToEntModule } from './modules/proj-to-ent/proj-to-ent.module';
-import { ProjToThreatActorModule } from './modules/proj-to-threat-actor/proj-to-threat-actor.module';
 import { ResponsesModule } from './modules/responses/responses.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { RolesToInjectModule } from './modules/roles-to-inject/roles-to-inject.module';
@@ -53,15 +51,13 @@ import { ImapModule } from './email/imap/imap.module';
     MtcToThreatActorModule,
     PartToRoleModule,
     ParticipantsModule,
-    ProjToEntModule,
-    ProjToThreatActorModule,
     ResponsesModule,
     RolesModule,
     RolesToInjectModule,
     ThreatActorModule,
     BullQueueModule,
     EmailModule,
-    ImapModule
+    ImapModule,
   ],
   controllers: [],
   providers: [],

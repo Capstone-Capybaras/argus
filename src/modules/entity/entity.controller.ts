@@ -10,11 +10,13 @@ import {
   HttpStatus,
   BadRequestException,
   Logger,
+  Query,
 } from '@nestjs/common';
 import { EntityService } from './entity.service';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
 import { SelectEntityDto } from './dto/select-entity.dto';
+import { AssignEntityDto } from './dto/assign-entity.dto';
 
 @Controller('entities')
 export class EntityController {
@@ -33,16 +35,38 @@ export class EntityController {
     }
   }
 
+  /**
+   * This route is to assign an existing entity from global db and tag it to project
+   */
+  @Post('assign')
+  async assignEntity(
+    @Body() assignEntityDto: AssignEntityDto,
+  ): Promise<boolean> {
+    try {
+      const insertResult =
+        await this.entityService.assignEntityToProject(assignEntityDto);
+      return !!insertResult;
+    } catch (error) {
+      Logger.error(error);
+      throw new BadRequestException('Failed to create entity');
+    }
+  }
+
   // Retrieve all entities
   @Get()
-  async getEntities(): Promise<SelectEntityDto[]> {
+  async getEntities(
+    @Query('project_id') projectId: number,
+  ): Promise<SelectEntityDto[]> {
+    if (projectId) {
+      return await this.entityService.getEntitiesByProjectId(projectId);
+    }
     return await this.entityService.getEntities();
   }
 
-  // Retrieve a specific entity by name
-  @Get(':name')
-  async getEntityByName(@Param('name') name: string): Promise<SelectEntityDto> {
-    const entity = await this.entityService.getEntityByName(name);
+  // Retrieve a specific entity by id
+  @Get(':id')
+  async getEntityById(@Param('id') id: number): Promise<SelectEntityDto> {
+    const entity = await this.entityService.getEntityById(id);
     if (!entity) {
       throw new HttpException('Entity not found', HttpStatus.NOT_FOUND);
     }

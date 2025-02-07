@@ -51,15 +51,15 @@ export class ProjectController {
     return project;
   }
 
-  // Update a project by name
-  @Patch(':name')
+  // Update a project by id
+  @Patch(':id')
   async updateProject(
-    @Param('name') name: string,
+    @Param('id') id: number,
     @Body() updateProjectDto: UpdateProjectDto,
   ): Promise<SelectProjectDto> {
     try {
       const updatedProject = await this.projectService.updateProject(
-        name,
+        id,
         updateProjectDto,
       );
       if (!updatedProject) {
@@ -73,9 +73,9 @@ export class ProjectController {
   }
 
   // Delete a project by name
-  @Delete(':name')
-  async deleteProject(@Param('name') name: string) {
-    const deleted = await this.projectService.deleteProject(name);
+  @Delete(':id')
+  async deleteProject(@Param('id') id: number) {
+    const deleted = await this.projectService.deleteProject(id);
     if (!deleted) {
       throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
     }
