@@ -35,21 +35,21 @@ export class ProjectService {
     return project[0] || null;
   }
 
-  // Update a project by name
-  async updateProject(name: string, data: UpdateProjectDto) {
+  // Update a project by id
+  async updateProject(id: number, data: UpdateProjectDto) {
     const result = await this.db
       .update(projectsTable)
       .set(data)
-      .where(eq(projectsTable.name, name))
+      .where(eq(projectsTable.id, id))
       .returning();
     return result[0] || null;
   }
 
-  // Delete a project by name
-  async deleteProject(name: string): Promise<boolean> {
+  // Delete a project by id
+  async deleteProject(id: number): Promise<boolean> {
     const result = await this.db
       .delete(projectsTable)
-      .where(eq(projectsTable.name, name))
+      .where(eq(projectsTable.id, id))
       .returning();
     return result.length > 0;
   }
