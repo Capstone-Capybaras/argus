@@ -295,7 +295,9 @@ export const rolesToInjectsTable = pgTable(
 
 export const emailsTable = pgTable('emails', {
   id: serial('id').unique().primaryKey(),
-  project_id: integer().notNull().references(()=>projectsTable.id),
+  project_id: integer()
+    .notNull()
+    .references(() => projectsTable.id),
   to: text().array().notNull(),
   cc: text().array(),
   subject: text().notNull(),
@@ -305,5 +307,5 @@ export const emailsTable = pgTable('emails', {
   schedule_date_time: timestamp(),
   error_message: text(),
   status: text().default('notScheduled'), // status: notScheduled, scheduled, sent, failed
- observations: text()
+  observations: text(),
 });

@@ -1,6 +1,11 @@
 import { ImapSimpleOptions } from 'imap-simple';
 import { ConfigService } from '@nestjs/config';
-export async function getImapConfig(configService: ConfigService): Promise<ImapSimpleOptions> {
+
+// TODO: might pull env vars from secrets, so prepare this method to use with config service
+export async function getImapConfig(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  configService: ConfigService,
+): Promise<ImapSimpleOptions> {
   return {
     imap: {
       user: String(process.env.EMAIL_USERNAME),

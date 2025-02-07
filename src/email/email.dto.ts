@@ -1,5 +1,4 @@
-import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsArray, IsOptional, IsDateString } from 'class-validator';
+import { IsNotEmpty, IsArray, IsDateString } from 'class-validator';
 
 export class CreateMailDto {
   @IsNotEmpty()
@@ -62,8 +61,8 @@ export class UpdateMailClient {
 
 export class AttachmentDto {
   filename: string;
-  content: string; 
-  encoding:string;
+  content: string;
+  encoding: string;
   contentDisposition?: 'attachment' | 'inline' | undefined;
 }
 
@@ -76,7 +75,7 @@ export class SendMailDto {
 
 export class ScheduleMailDto {
   @IsNotEmpty()
-  emailId: number
+  emailId: number;
   @IsNotEmpty()
   scheduleDateTime: Date;
 }
@@ -89,4 +88,3 @@ export class UpdateScheduleDto {
   @IsNotEmpty()
   scheduleDateTime: Date;
 }
-

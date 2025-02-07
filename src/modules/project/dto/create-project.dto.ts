@@ -1,6 +1,5 @@
 // create-project.dto.ts
-import { Type } from 'class-transformer';
-import { IsString, IsDate, IsIn, IsDateString } from 'class-validator';
+import { IsString, IsIn, IsDateString } from 'class-validator';
 import { projectsTable } from 'src/database/schema';
 import { InferInsert } from 'src/utils/modelToDtoTypes';
 
