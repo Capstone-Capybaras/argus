@@ -6,9 +6,6 @@ export class UpdateProjectDto implements InferUpdate<typeof projectsTable> {
   @IsNumber()
   id: number;
 
-  @IsString()
-  name: string;
-
   @IsIn(['executive', 'sectorial'])
   exercise_type: 'executive' | 'sectorial';
 

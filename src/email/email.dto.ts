@@ -62,8 +62,8 @@ export class UpdateMailClient {
 
 export class AttachmentDto {
   filename: string;
-  content: string; 
-  encoding:string;
+  content: string;
+  encoding: string;
   contentDisposition?: 'attachment' | 'inline' | undefined;
 }
 
@@ -76,7 +76,7 @@ export class SendMailDto {
 
 export class ScheduleMailDto {
   @IsNotEmpty()
-  emailId: number
+  emailId: number;
   @IsNotEmpty()
   scheduleDateTime: Date;
 }
@@ -89,4 +89,3 @@ export class UpdateScheduleDto {
   @IsNotEmpty()
   scheduleDateTime: Date;
 }
-

@@ -13,5 +13,4 @@ export class SelectInjectDto implements InferSelect<typeof injectsTable> {
   artefact: string;
   from: string;
   to_recipient: string;
-  observation: string | null;
 }

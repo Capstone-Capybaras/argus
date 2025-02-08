@@ -1,6 +1,8 @@
 import { ImapSimpleOptions } from 'imap-simple';
 import { ConfigService } from '@nestjs/config';
-export async function getImapConfig(configService: ConfigService): Promise<ImapSimpleOptions> {
+export async function getImapConfig(
+  configService: ConfigService,
+): Promise<ImapSimpleOptions> {
   return {
     imap: {
       user: String(process.env.EMAIL_USERNAME),

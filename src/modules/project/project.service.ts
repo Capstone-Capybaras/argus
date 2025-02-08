@@ -36,11 +36,11 @@ export class ProjectService {
   }
 
   // Update a project by name
-  async updateProject(name: string, data: UpdateProjectDto) {
+  async updateProject(id: number, data: UpdateProjectDto) {
     const result = await this.db
       .update(projectsTable)
       .set(data)
-      .where(eq(projectsTable.name, name))
+      .where(eq(projectsTable.id, id))
       .returning();
     return result[0] || null;
   }

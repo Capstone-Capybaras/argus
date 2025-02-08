@@ -48,8 +48,4 @@ export class CreateInjectDto implements InferInsert<typeof injectsTable> {
 
   @IsString()
   project: string;
-
-  @IsString()
-  @IsOptional()
-  observation: string;
 }

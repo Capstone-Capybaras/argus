@@ -9,5 +9,8 @@ export class CreateProjectToThreatActorDto
   project_id: number;
 
   @IsInt()
-  threat_actor_id: number;
+  threat_cube_id: number;
+
+  @IsInt()
+  score: number;
 }

@@ -19,9 +19,10 @@ import { ImapController } from './imap.controller';
         },
       }),
       inject: [ConfigService],
-    })],
+    }),
+  ],
   providers: [ImapService],
   controllers: [ImapController],
-  exports: [ImapService]
+  exports: [ImapService],
 })
 export class ImapModule {}

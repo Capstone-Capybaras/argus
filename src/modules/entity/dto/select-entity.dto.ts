@@ -7,5 +7,6 @@ export class SelectEntityDto implements InferSelect<typeof entitiesTable> {
   description: string;
   victim_sector: string;
   critical_function: string;
-  policy_documents: string;
+  policy_documents: string[];
+  severity_levels: string | null;
 }

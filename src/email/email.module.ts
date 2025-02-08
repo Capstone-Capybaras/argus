@@ -24,9 +24,10 @@ import { S3Module } from './s3.module';
         },
       }),
       inject: [ConfigService],
-    })],
+    }),
+  ],
   providers: [EmailService],
   controllers: [EmailController],
-  exports: [EmailService]
+  exports: [EmailService],
 })
 export class EmailModule {}

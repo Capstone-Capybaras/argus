@@ -52,14 +52,14 @@ export class ProjectController {
   }
 
   // Update a project by name
-  @Patch(':name')
+  @Patch(':id')
   async updateProject(
-    @Param('name') name: string,
+    @Param('id') id: number,
     @Body() updateProjectDto: UpdateProjectDto,
   ): Promise<SelectProjectDto> {
     try {
       const updatedProject = await this.projectService.updateProject(
-        name,
+        id,
         updateProjectDto,
       );
       if (!updatedProject) {
