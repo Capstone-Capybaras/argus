@@ -28,7 +28,6 @@ import { ImapModule } from './email/imap/imap.module';
 import { TtpUsedModule } from './modules/ttp-used/ttp-used.module';
 import { ThreatLandscapeModule } from './modules/threat-landscape/threat-landscape.module';
 import { TacticsModule } from './modules/tactics/tactics.module';
-import { SenderModule } from './modules/sender/sender.module';
 
 @Module({
   imports: [
@@ -62,6 +61,9 @@ import { SenderModule } from './modules/sender/sender.module';
     BullQueueModule,
     EmailModule,
     ImapModule,
+    TtpUsedModule,
+    ThreatLandscapeModule,
+    TacticsModule,
   ],
   controllers: [],
   providers: [],
