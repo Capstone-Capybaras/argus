@@ -5,12 +5,12 @@ import { InferUpdate } from 'src/utils/modelToDtoTypes';
 export class CreateMasterThreatCubeDto
   implements InferUpdate<typeof masterThreatCubesTable>
 {
+  @IsInt()
+  threat_cube_id: number;
+
   @IsString()
-  category: string;
+  tactic: string;
 
   @IsString()
   name: string;
-
-  @IsInt()
-  id: number;
 }

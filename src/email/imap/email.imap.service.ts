@@ -1,4 +1,8 @@
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  OnModuleDestroy,
+} from '@nestjs/common';
 import * as Imap from 'node-imap';
 //import { MailParser, ParsedMail, simpleParser, Source } from 'mailparser';
 import * as MailParser from 'mailparser';

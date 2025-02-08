@@ -4,6 +4,7 @@ import {
   Get,
   InternalServerErrorException,
   Post,
+  Res,
 } from '@nestjs/common';
 import { BullQueueService } from './bullqueue.service';
 import {
@@ -19,12 +20,12 @@ export class BullQueueController {
 
   @Get('scheduleJob')
   async scheduleJob(@Body() scheduleDto: ScheduleMailDto) {
-    // const dummydata = {
-    //   from: 'Exercise Control <athenachua27@gmail.com>',
-    //   to: ['athenachua27@gmail.com'],
-    //   subject: 'Test bull',
-    //   html: 'Test Bull Queue Message - scheduled at 12.55am',
-    // };
+    const dummydata = {
+      from: 'Exercise Control <athenachua27@gmail.com>',
+      to: ['athenachua27@gmail.com'],
+      subject: 'Test bull',
+      html: 'Test Bull Queue Message - scheduled at 12.55am',
+    };
     const sendAt: Date = new Date(scheduleDto.scheduleDateTime);
     const emailId: number = scheduleDto.emailId; //1;
     try {
@@ -44,8 +45,8 @@ export class BullQueueController {
     try {
       const sendAt: Date = new Date();
       sendAt.setHours(0, 55, 0, 0);
-      // const jobid = 4;
-      await this.bullService.updateJob(
+      const jobid = 4;
+      const mail = await this.bullService.updateJob(
         updateDto.jobId,
         updateDto.emailId,
         updateDto.scheduleDateTime,
