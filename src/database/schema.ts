@@ -180,7 +180,7 @@ export const responsesTable = pgTable('responses', {
 });
 
 export const masterThreatCubesTable = pgTable('master_threat_cubes', {
-  threat_cube_id: serial('id').unique().primaryKey(), // Use only `id` as primary key
+  threat_cube_id: serial('thread_cube_id').unique().primaryKey(), // Use only `id` as primary key
   tactic: text().references(() => tacticsTable.id),
   name: text(),
 });
