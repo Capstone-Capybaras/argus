@@ -51,7 +51,7 @@ export class ProjectController {
     return project;
   }
 
-  // Update a project by id
+  // Update a project by name
   @Patch(':id')
   async updateProject(
     @Param('id') id: number,
