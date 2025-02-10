@@ -12,6 +12,8 @@ import { eq } from 'drizzle-orm';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
 import { AssignEntityDto } from './dto/assign-entity.dto';
+import { ISelectEntity, SelectEntityDto } from './dto/select-entity.dto';
+import { DeepSet } from 'src/utils/DeepSet';
 
 @Injectable()
 export class EntityService {
@@ -49,9 +51,13 @@ export class EntityService {
   }
 
   // Retrieve a specific entity by id
-  async getEntityById(id: number) {
-    const results = await this.db
-      .select()
+  async getEntityById(id: number): Promise<SelectEntityDto | null> {
+    const rows = await this.db
+      .select({
+        entity: entitiesTable,
+        participant: participantsTable,
+        cii: CIITable,
+      })
       .from(entitiesTable)
       .leftJoin(
         participantsTable,
@@ -60,18 +66,30 @@ export class EntityService {
       .leftJoin(CIITable, eq(entitiesTable.id, CIITable.entity_id))
       .where(eq(entitiesTable.id, id));
 
-    if (results.length === 0) return null;
+    if (rows.length === 0) return null;
 
-    const entityInfo = results[0].entities;
-    const participants = results
-      .map((item) => item.participants)
-      .filter((p) => !!p);
-    const cii = results.map((item) => item.CII).filter((c) => !!c);
+    const results = rows.reduce<ISelectEntity>((acc, row) => {
+      const { entity, participant, cii } = row;
+
+      if (!acc.id) {
+        acc = { ...entity, participants: new DeepSet(), cii: new DeepSet() };
+      }
+
+      if (participant) {
+        acc.participants.add(participant);
+      }
+
+      if (cii) {
+        acc.cii.add(cii);
+      }
+
+      return acc;
+    }, {} as ISelectEntity);
 
     return {
-      ...entityInfo,
-      participants,
-      cii,
+      ...results,
+      participants: Array.from(results.participants),
+      cii: Array.from(results.cii),
     };
   }
 

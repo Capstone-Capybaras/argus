@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body } from '@nestjs/common';
 import { ParticipantsService } from './participants.service';
 import { CreateParticipantDto } from './dto/create-participant.dto';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
@@ -8,7 +8,7 @@ export class ParticipantsController {
   constructor(private readonly participantsService: ParticipantsService) {}
 
   @Post()
-  async createParticipant(data: CreateParticipantDto) {
+  async createParticipant(@Body() data: CreateParticipantDto) {
     return this.participantsService.createParticipant(data);
   }
 
@@ -23,7 +23,7 @@ export class ParticipantsController {
   }
 
   @Patch(':email')
-  async updateParticipant(email: string, data: UpdateParticipantDto) {
+  async updateParticipant(email: string, @Body() data: UpdateParticipantDto) {
     return this.participantsService.updateParticipant(email, data);
   }
 

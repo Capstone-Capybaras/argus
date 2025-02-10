@@ -1,12 +1,9 @@
 // create-cii.dto.ts
-import { IsNotEmpty, IsString, IsNumber, IsInt } from 'class-validator';
+import { IsNotEmpty, IsString, IsInt } from 'class-validator';
 import { CIITable } from 'src/database/schema';
-import { InferUpdate } from 'src/utils/modelToDtoTypes';
+import { InferInsert } from 'src/utils/modelToDtoTypes';
 
-export class CreateCiiDto implements InferUpdate<typeof CIITable> {
-  @IsNumber()
-  id: number;
-
+export class CreateCiiDto implements InferInsert<typeof CIITable> {
   @IsNotEmpty()
   @IsString()
   name: string;
