@@ -2,7 +2,7 @@ import { isEqual } from 'lodash';
 
 export class DeepSet<T> extends Set {
   add(o: T) {
-    for (let i of this) if (this.deepCompare(o, i)) return this;
+    for (const i of this) if (this.deepCompare(o, i)) return this;
     super.add.call(this, o);
     return this;
   }
