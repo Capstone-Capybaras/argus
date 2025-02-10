@@ -15,7 +15,7 @@ import {
 import { EntityService } from './entity.service';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
-import { SelectEntityDto } from './dto/select-entity.dto';
+import { SelectEntityDto, SelectEntityOnlyDto } from './dto/select-entity.dto';
 import { AssignEntityDto } from './dto/assign-entity.dto';
 
 @Controller('entities')
@@ -56,7 +56,7 @@ export class EntityController {
   @Get()
   async getEntities(
     @Query('project_id') projectId: number,
-  ): Promise<SelectEntityDto[]> {
+  ): Promise<SelectEntityOnlyDto[]> {
     if (projectId) {
       return await this.entityService.getEntitiesByProjectId(projectId);
     }
