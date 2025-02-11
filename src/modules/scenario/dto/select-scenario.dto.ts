@@ -6,7 +6,6 @@ export class SelectScenarioDto implements InferSelect<typeof scenariosTable> {
   scenario_number: string;
   asset: string;
   additional_context: string;
-  threat_actor_id: number;
   threat_actor_motivation: string;
   entity_id: number;
   intended_system_impact: string;

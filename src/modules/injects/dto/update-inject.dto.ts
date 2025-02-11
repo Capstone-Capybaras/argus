@@ -35,7 +35,4 @@ export class UpdateInjectDto implements InferUpdate<typeof injectsTable> {
 
   @IsString()
   project: string;
-
-  @IsString()
-  observation: string;
 }
