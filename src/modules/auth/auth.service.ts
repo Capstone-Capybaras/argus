@@ -9,7 +9,7 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { createHash } from 'crypto';
-import { DATABASE_CONNECTION } from 'src/database/connection';
+import { DATABASE_CONNECTION } from 'src/config/providers';
 import { ConfigService } from '@nestjs/config';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { eq } from 'drizzle-orm';

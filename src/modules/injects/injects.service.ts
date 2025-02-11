@@ -1,6 +1,6 @@
 // injects.service.ts
 import { Injectable, Inject } from '@nestjs/common';
-import { DATABASE_CONNECTION } from 'src/database/connection';
+import { DATABASE_CONNECTION } from 'src/config/providers';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { eq } from 'drizzle-orm';
 import { injectsTable } from 'src/database/schema';

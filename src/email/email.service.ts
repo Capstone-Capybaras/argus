@@ -8,7 +8,7 @@ import { getImapConfig } from './imap.config';
 import * as schemas from 'src/database/schema';
 import * as imapSimple from 'imap-simple';
 import { ConfigService } from '@nestjs/config';
-import { DATABASE_CONNECTION } from 'src/database/connection';
+import { DATABASE_CONNECTION } from 'src/config/providers';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { eq } from 'drizzle-orm';
 import { AttachmentDto, CreateMailDto, UpdateMailDBDto } from './email.dto';

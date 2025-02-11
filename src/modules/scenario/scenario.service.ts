@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { DATABASE_CONNECTION } from '../../database/connection';
+import { DATABASE_CONNECTION } from '../../config/providers';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { scenariosTable } from '../../database/schema';
 import { CreateScenarioDto } from './dto/create-scenario.dto';
