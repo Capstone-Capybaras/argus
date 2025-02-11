@@ -4,7 +4,7 @@ import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
 export class UpdateEntityDto implements InferUpdate<typeof entitiesTable> {
   @IsNumber()
-  id?: number;
+  id: number;
 
   @IsString()
   name?: string;

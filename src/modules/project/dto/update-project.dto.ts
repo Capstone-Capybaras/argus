@@ -1,4 +1,10 @@
-import { IsString, IsDateString, IsIn, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsDateString,
+  IsIn,
+  IsNumber,
+  IsOptional,
+} from 'class-validator';
 import { projectsTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
@@ -7,20 +13,26 @@ export class UpdateProjectDto implements InferUpdate<typeof projectsTable> {
   id: number;
 
   @IsString()
-  name: string;
+  @IsOptional()
+  name?: string;
 
   @IsIn(['executive', 'sectorial'])
-  exercise_type: 'executive' | 'sectorial';
+  @IsOptional()
+  exercise_type?: 'executive' | 'sectorial';
 
   @IsDateString()
-  start_date: string;
+  @IsOptional()
+  start_date?: string;
 
   @IsDateString()
-  end_date: string;
+  @IsOptional()
+  end_date?: string;
 
   @IsString()
-  email_header: string;
+  @IsOptional()
+  email_header?: string;
 
   @IsString()
-  email_footer: string;
+  @IsOptional()
+  email_footer?: string;
 }

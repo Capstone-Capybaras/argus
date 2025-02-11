@@ -35,11 +35,11 @@ export class ResponsesService {
     return response[0];
   }
 
-  async updateResponse(id: string, data: UpdateResponsesDto) {
+  async updateResponse(id: number, data: UpdateResponsesDto) {
     const result = await this.db
       .update(responsesTable)
       .set(data)
-      .where(eq(responsesTable.id, parseInt(id)))
+      .where(eq(responsesTable.id, id))
       .returning();
     return result[0];
   }

@@ -34,11 +34,11 @@ export class ThreatActorService {
     return threatActor[0];
   }
 
-  async updateThreatActor(id: string, data: UpdateThreatActorDto) {
+  async updateThreatActor(id: number, data: UpdateThreatActorDto) {
     const result = await this.db
       .update(threatActorsTable)
       .set(data)
-      .where(eq(threatActorsTable.id, parseInt(id)))
+      .where(eq(threatActorsTable.id, id))
       .returning();
     return result[0];
   }

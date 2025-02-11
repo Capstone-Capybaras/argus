@@ -51,14 +51,13 @@ export class InjectsController {
   }
 
   // Update a specific inject by ID
-  @Patch(':id')
+  @Patch()
   async updateInject(
-    @Param('id') id: string,
     @Body() updateInjectDto: UpdateInjectDto,
   ): Promise<SelectInjectDto> {
     try {
       const updatedInject = await this.injectsService.updateInject(
-        id,
+        updateInjectDto.inject_id,
         updateInjectDto,
       );
       if (!updatedInject) {

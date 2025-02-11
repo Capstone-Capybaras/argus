@@ -37,11 +37,11 @@ export class MasterThreatCubesService {
     return masterThreatCube[0];
   }
 
-  async updateMasterThreatCube(id: string, data: UpdateMasterThreatCubeDto) {
+  async updateMasterThreatCube(id: number, data: UpdateMasterThreatCubeDto) {
     const result = await this.db
       .update(masterThreatCubesTable)
       .set(data)
-      .where(eq(masterThreatCubesTable.id, parseInt(id)))
+      .where(eq(masterThreatCubesTable.id, id))
       .returning();
     return result[0];
   }

@@ -56,14 +56,11 @@ export class ResponsesController {
     }
   }
 
-  @Patch(':id')
-  async updateResponse(
-    @Param('id') id: string,
-    @Body() updateResponsesDto: UpdateResponsesDto,
-  ) {
+  @Patch()
+  async updateResponse(@Body() updateResponsesDto: UpdateResponsesDto) {
     try {
       const updatedResponse = await this.responsesService.updateResponse(
-        id,
+        updateResponsesDto.id,
         updateResponsesDto,
       );
       if (!updatedResponse) {

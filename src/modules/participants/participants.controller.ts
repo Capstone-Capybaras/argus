@@ -22,9 +22,9 @@ export class ParticipantsController {
     return this.participantsService.getParticipantByEmail(email);
   }
 
-  @Patch(':email')
-  async updateParticipant(email: string, @Body() data: UpdateParticipantDto) {
-    return this.participantsService.updateParticipant(email, data);
+  @Patch()
+  async updateParticipant(@Body() data: UpdateParticipantDto) {
+    return this.participantsService.updateParticipant(data.email, data);
   }
 
   @Delete(':email')

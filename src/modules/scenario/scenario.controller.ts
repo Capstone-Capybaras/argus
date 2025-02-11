@@ -55,14 +55,13 @@ export class ScenarioController {
   }
 
   // Update a scenario by scenario_number
-  @Patch(':scenario_number')
+  @Patch()
   async updateScenario(
-    @Param('scenario_number') scenario_number: string,
     @Body() updateScenarioDto: UpdateScenarioDto,
   ): Promise<SelectScenarioDto> {
     try {
       const updatedScenario = await this.scenarioService.updateScenario(
-        scenario_number,
+        updateScenarioDto.scenario_number,
         updateScenarioDto,
       );
       if (!updatedScenario) {

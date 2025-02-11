@@ -67,15 +67,14 @@ export class MasterThreatCubesController {
     }
   }
 
-  @Patch(':id')
+  @Patch()
   async updateMasterThreatCube(
-    @Param('id') id: string,
     @Body() updateMasterThreatCubeDto: UpdateMasterThreatCubeDto,
   ) {
     try {
       const updatedMasterThreatCube =
         await this.masterThreatCubesService.updateMasterThreatCube(
-          id,
+          updateMasterThreatCubeDto.id,
           updateMasterThreatCubeDto,
         );
       if (!updatedMasterThreatCube) {

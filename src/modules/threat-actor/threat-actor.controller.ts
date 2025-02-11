@@ -35,13 +35,13 @@ export class ThreatActorController {
     return this.threatActorService.getThreatActorById(id);
   }
 
-  // Update a threat actor by ID
-  @Patch(':id')
-  async updateThreatActor(
-    @Param('id') id: string,
-    @Body() updateThreatActorDto: UpdateThreatActorDto,
-  ) {
-    return this.threatActorService.updateThreatActor(id, updateThreatActorDto);
+  // Update a threat actor
+  @Patch()
+  async updateThreatActor(@Body() updateThreatActorDto: UpdateThreatActorDto) {
+    return this.threatActorService.updateThreatActor(
+      updateThreatActorDto.id,
+      updateThreatActorDto,
+    );
   }
 
   // Delete a threat actor by ID

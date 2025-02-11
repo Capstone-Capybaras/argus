@@ -94,11 +94,11 @@ export class EntityService {
   }
 
   // Update an entity by name
-  async updateEntity(name: string, data: UpdateEntityDto) {
+  async updateEntity(id: number, data: UpdateEntityDto) {
     const result = await this.db
       .update(entitiesTable)
       .set(data)
-      .where(eq(entitiesTable.name, name))
+      .where(eq(entitiesTable.id, id))
       .returning();
     return result[0] || null;
   }

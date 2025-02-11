@@ -56,11 +56,14 @@ export class CiiController {
     }
   }
 
-  // Update a CII by ID
-  @Patch(':id')
-  async updateCii(@Param('id') id: string, @Body() updateCiiDto: UpdateCiiDto) {
+  // Update a CII
+  @Patch()
+  async updateCii(@Body() updateCiiDto: UpdateCiiDto) {
     try {
-      const updatedCii = await this.ciiService.updateCii(id, updateCiiDto);
+      const updatedCii = await this.ciiService.updateCii(
+        updateCiiDto.id,
+        updateCiiDto,
+      );
       if (!updatedCii) {
         throw new HttpException('CII not found', HttpStatus.NOT_FOUND);
       }

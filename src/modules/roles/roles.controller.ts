@@ -59,14 +59,11 @@ export class RolesController {
   }
 
   // Update a role by name
-  @Patch(':name')
-  async updateRole(
-    @Param('name') name: string,
-    @Body() updateRoleDto: UpdateRoleDto,
-  ) {
+  @Patch()
+  async updateRole(@Body() updateRoleDto: UpdateRoleDto) {
     try {
       const updatedRole = await this.rolesService.updateRole(
-        name,
+        updateRoleDto.name,
         updateRoleDto,
       );
       if (!updatedRole) {

@@ -1,25 +1,28 @@
-import { IsString, IsInt } from 'class-validator';
+import { IsString, IsInt, IsNumber } from 'class-validator';
 import { threatActorsTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
 export class UpdateThreatActorDto
   implements InferUpdate<typeof threatActorsTable>
 {
-  @IsString()
-  name: string;
+  @IsNumber()
+  id: number;
 
   @IsString()
-  category: string;
+  name?: string;
 
   @IsString()
-  intent: string;
+  category?: string;
 
   @IsString()
-  rationale: string;
+  intent?: string;
 
   @IsString()
-  capabilities: string;
+  rationale?: string;
+
+  @IsString()
+  capabilities?: string;
 
   @IsInt()
-  project_id: number;
+  project_id?: number;
 }

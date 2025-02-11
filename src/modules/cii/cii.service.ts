@@ -32,11 +32,11 @@ export class CiiService {
     return cii[0];
   }
 
-  async updateCii(id: string, data: UpdateCiiDto) {
+  async updateCii(id: number, data: UpdateCiiDto) {
     const result = await this.db
       .update(CIITable)
       .set(data)
-      .where(eq(CIITable.id, parseInt(id)))
+      .where(eq(CIITable.id, id))
       .returning();
     return result[0];
   }

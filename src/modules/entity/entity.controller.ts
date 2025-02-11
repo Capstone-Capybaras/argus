@@ -74,14 +74,13 @@ export class EntityController {
   }
 
   // Update an entity by name
-  @Patch(':name')
+  @Patch()
   async updateEntity(
-    @Param('name') name: string,
     @Body() updateEntityDto: UpdateEntityDto,
   ): Promise<SelectEntityDto> {
     try {
       const updatedEntity = await this.entityService.updateEntity(
-        name,
+        updateEntityDto.id,
         updateEntityDto,
       );
       if (!updatedEntity) {
