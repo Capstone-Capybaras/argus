@@ -24,9 +24,8 @@ export class AuthGuard implements CanActivate {
       IS_PUBLIC_ROUTE,
       [context.getHandler(), context.getClass()],
     );
-    // ignore public routes and all routes if local development
-    if (isPublic) return true;
-    // if (isPublic || process.env.NODE_ENV === 'local') return true;
+    // ignore public routes and all routes if local development\
+    if (isPublic || process.env.NODE_ENV === 'local') return true;
 
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
