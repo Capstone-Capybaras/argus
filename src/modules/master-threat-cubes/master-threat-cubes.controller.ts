@@ -14,6 +14,7 @@ import {
 import { MasterThreatCubesService } from './master-threat-cubes.service';
 import { CreateMasterThreatCubeDto } from './dto/create-master-threat.dto';
 import { UpdateMasterThreatCubeDto } from './dto/update-master-threat.dto';
+import { SelectMasterThreatCubeDto } from './dto/select-master-threat.dto';
 
 @Controller('master-threat-cubes')
 export class MasterThreatCubesController {
@@ -24,7 +25,7 @@ export class MasterThreatCubesController {
   @Post()
   async createMasterThreatCube(
     @Body() createMasterThreatCubeDto: CreateMasterThreatCubeDto,
-  ) {
+  ): Promise<SelectMasterThreatCubeDto> {
     try {
       const masterThreatCube =
         await this.masterThreatCubesService.createMasterThreatCube(
@@ -38,7 +39,7 @@ export class MasterThreatCubesController {
   }
 
   @Get()
-  async getAllMasterThreatCubes() {
+  async getAllMasterThreatCubes(): Promise<SelectMasterThreatCubeDto[]> {
     try {
       const masterThreatCubes =
         await this.masterThreatCubesService.getAllMasterThreatCubes();
@@ -50,7 +51,9 @@ export class MasterThreatCubesController {
   }
 
   @Get(':id')
-  async getMasterThreatCubeById(@Param('id') id: number) {
+  async getMasterThreatCubeById(
+    @Param('id') id: number,
+  ): Promise<SelectMasterThreatCubeDto> {
     try {
       const masterThreatCube =
         await this.masterThreatCubesService.getMasterThreatCubeById(id);
@@ -70,7 +73,7 @@ export class MasterThreatCubesController {
   @Patch()
   async updateMasterThreatCube(
     @Body() updateMasterThreatCubeDto: UpdateMasterThreatCubeDto,
-  ) {
+  ): Promise<SelectMasterThreatCubeDto> {
     try {
       const updatedMasterThreatCube =
         await this.masterThreatCubesService.updateMasterThreatCube(

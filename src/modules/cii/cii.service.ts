@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { DATABASE_CONNECTION } from '../../database/connection';
+import { DATABASE_CONNECTION } from '../../config/providers';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { CIITable } from '../../database/schema';
 import { eq } from 'drizzle-orm';

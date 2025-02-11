@@ -2,16 +2,11 @@ import { scenariosTable } from 'src/database/schema';
 import { InferInsert } from 'src/utils/modelToDtoTypes';
 
 export class CreateScenarioDto implements InferInsert<typeof scenariosTable> {
+  scenario_number: string;
   asset: string;
   additional_context: string;
-  threat_actor_id: number;
-  entity_id: number;
-  project_id: number;
-  scenario_number: string;
-  threat_actor: string;
   threat_actor_motivation: string;
-  entity: string;
-  CII: number;
+  entity_id: number;
   intended_system_impact: string;
   intended_biz_impact: string;
   attack_solution: string;
@@ -19,6 +14,7 @@ export class CreateScenarioDto implements InferInsert<typeof scenariosTable> {
   initial_access: string;
   exploit: string;
   impact: string;
+  project_id: number;
+  CII: number;
   tactics_techniques: string;
-  project: string;
 }

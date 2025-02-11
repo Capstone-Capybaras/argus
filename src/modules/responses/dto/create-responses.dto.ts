@@ -1,8 +1,8 @@
 import { IsString, IsInt } from 'class-validator';
 import { responsesTable } from 'src/database/schema';
-import { InferUpdate } from 'src/utils/modelToDtoTypes';
+import { InferInsert } from 'src/utils/modelToDtoTypes';
 
-export class CreateResponsesDto implements InferUpdate<typeof responsesTable> {
+export class CreateResponsesDto implements InferInsert<typeof responsesTable> {
   @IsString()
   inject_id: string;
 

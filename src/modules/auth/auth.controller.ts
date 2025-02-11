@@ -10,15 +10,14 @@ import {
   Req,
   UnauthorizedException,
   Logger,
-  UseGuards,
   Get,
 } from '@nestjs/common';
 import { Response, Request, CookieOptions } from 'express';
 import { AuthService } from './auth.service';
 import { AccessTokenResponse, SignInDto } from './auth.dto';
 import { RegisterDto } from './auth.dto';
-import { AuthGuard } from './auth.guard';
 import { SelectUserDto } from '../users/dto/select-user.dto';
+import { Public } from './public.guard';
 
 const cookieConfig: CookieOptions = {
   httpOnly: true,
@@ -33,6 +32,7 @@ const REFRESH_TOKEN_COOKIE = 'refreshToken';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Public()
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async signIn(
@@ -47,6 +47,7 @@ export class AuthController {
     return { accessToken };
   }
 
+  @Public()
   @HttpCode(HttpStatus.OK)
   @Post('register')
   async register(@Body() registerDto: RegisterDto): Promise<SelectUserDto[]> {
@@ -64,6 +65,7 @@ export class AuthController {
     }
   }
 
+  @Public()
   @Post('refresh')
   async refreshTokens(@Req() request: Request): Promise<AccessTokenResponse> {
     const storedRefreshToken = request.cookies[REFRESH_TOKEN_COOKIE];
@@ -78,6 +80,7 @@ export class AuthController {
     return { accessToken };
   }
 
+  @Public()
   @Post('logout')
   @HttpCode(204)
   async logout(@Req() request: Request) {
@@ -94,7 +97,6 @@ export class AuthController {
     return true;
   }
 
-  @UseGuards(AuthGuard)
   @Get('verify')
   async verifyToken() {
     return { success: true };

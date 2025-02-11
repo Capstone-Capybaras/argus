@@ -1,8 +1,8 @@
 import { IsString, IsInt } from 'class-validator';
 import { rolesTable } from 'src/database/schema';
-import { InferUpdate } from 'src/utils/modelToDtoTypes';
+import { InferInsert } from 'src/utils/modelToDtoTypes';
 
-export class CreateRoleDto implements InferUpdate<typeof rolesTable> {
+export class CreateRoleDto implements InferInsert<typeof rolesTable> {
   @IsString()
   name: string;
 

@@ -1,10 +1,10 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { DATABASE_CONNECTION } from '../../database/connection';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { ttpUsedTable } from '../../database/schema';
 import { CreateTtpUsedDto } from './dto/create-ttp-used.dto';
 import { UpdateTtpUsedDto } from './dto/update-ttp-used.dto';
 import { eq } from 'drizzle-orm';
+import { DATABASE_CONNECTION } from 'src/config/providers';
 
 @Injectable()
 export class TtpUsedService {

@@ -1,10 +1,10 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { DATABASE_CONNECTION } from '../../database/connection';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { tacticsTable } from '../../database/schema';
 import { CreateTacticsDto } from './dto/create-tactics.dto';
 import { UpdateTacticsDto } from './dto/update-tactics.dto';
 import { eq } from 'drizzle-orm';
+import { DATABASE_CONNECTION } from 'src/config/providers';
 
 @Injectable()
 export class TacticsService {
