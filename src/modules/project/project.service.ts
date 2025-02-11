@@ -35,7 +35,7 @@ export class ProjectService {
     return project[0] || null;
   }
 
-  // Update a project by id
+  // Update a project by name
   async updateProject(id: number, data: UpdateProjectDto) {
     const result = await this.db
       .update(projectsTable)
