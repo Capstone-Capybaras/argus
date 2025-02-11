@@ -14,6 +14,7 @@ import {
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-roles.dto';
 import { UpdateRoleDto } from './dto/update-roles.dto';
+import { SelectRoleDto } from './dto/select-roles.dto';
 
 @Controller('roles')
 export class RolesController {
@@ -21,7 +22,9 @@ export class RolesController {
 
   // Create a new role
   @Post()
-  async createRole(@Body() createRoleDto: CreateRoleDto) {
+  async createRole(
+    @Body() createRoleDto: CreateRoleDto,
+  ): Promise<SelectRoleDto> {
     try {
       const role = await this.rolesService.createRole(createRoleDto);
       return role;
@@ -33,7 +36,7 @@ export class RolesController {
 
   // Get all roles
   @Get()
-  async getAllRoles() {
+  async getAllRoles(): Promise<SelectRoleDto[]> {
     try {
       const roles = await this.rolesService.getAllRoles();
       return roles;
@@ -45,7 +48,7 @@ export class RolesController {
 
   // Get a role by name
   @Get(':name')
-  async getRoleById(@Param('name') name: string) {
+  async getRoleById(@Param('name') name: string): Promise<SelectRoleDto> {
     try {
       const role = await this.rolesService.getRoleById(name);
       if (!role) {
@@ -60,7 +63,9 @@ export class RolesController {
 
   // Update a role by name
   @Patch()
-  async updateRole(@Body() updateRoleDto: UpdateRoleDto) {
+  async updateRole(
+    @Body() updateRoleDto: UpdateRoleDto,
+  ): Promise<SelectRoleDto> {
     try {
       const updatedRole = await this.rolesService.updateRole(
         updateRoleDto.name,

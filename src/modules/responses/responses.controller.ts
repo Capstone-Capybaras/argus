@@ -14,13 +14,16 @@ import {
 import { ResponsesService } from './responses.service';
 import { CreateResponsesDto } from './dto/create-responses.dto';
 import { UpdateResponsesDto } from './dto/update-responses.dto';
+import { SelectResponsesDto } from './dto/select-responses.dto';
 
 @Controller('responses')
 export class ResponsesController {
   constructor(private readonly responsesService: ResponsesService) {}
 
   @Post()
-  async createResponse(@Body() createResponsesDto: CreateResponsesDto) {
+  async createResponse(
+    @Body() createResponsesDto: CreateResponsesDto,
+  ): Promise<SelectResponsesDto> {
     try {
       const response =
         await this.responsesService.createResponse(createResponsesDto);
@@ -32,7 +35,7 @@ export class ResponsesController {
   }
 
   @Get()
-  async getAllResponses() {
+  async getAllResponses(): Promise<SelectResponsesDto[]> {
     try {
       const responses = await this.responsesService.getAllResponses();
       return responses;
@@ -43,7 +46,7 @@ export class ResponsesController {
   }
 
   @Get(':id')
-  async getResponseById(@Param('id') id: number) {
+  async getResponseById(@Param('id') id: number): Promise<SelectResponsesDto> {
     try {
       const response = await this.responsesService.getResponseById(id);
       if (!response) {
@@ -57,7 +60,9 @@ export class ResponsesController {
   }
 
   @Patch()
-  async updateResponse(@Body() updateResponsesDto: UpdateResponsesDto) {
+  async updateResponse(
+    @Body() updateResponsesDto: UpdateResponsesDto,
+  ): Promise<SelectResponsesDto> {
     try {
       const updatedResponse = await this.responsesService.updateResponse(
         updateResponsesDto.id,

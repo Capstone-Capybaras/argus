@@ -14,6 +14,7 @@ import {
 import { CiiService } from './cii.service';
 import { CreateCiiDto } from './dto/create-cii.dto';
 import { UpdateCiiDto } from './dto/update-cii.dto';
+import { SelectCIIDto } from './dto/select-cii.dto';
 
 @Controller('cii')
 export class CiiController {
@@ -21,7 +22,7 @@ export class CiiController {
 
   // Create a new CII
   @Post()
-  async createCii(@Body() createCiiDto: CreateCiiDto) {
+  async createCii(@Body() createCiiDto: CreateCiiDto): Promise<SelectCIIDto> {
     try {
       return await this.ciiService.createCII(createCiiDto);
     } catch (error) {
@@ -32,7 +33,7 @@ export class CiiController {
 
   // Get all CII
   @Get()
-  async getAllCii() {
+  async getAllCii(): Promise<SelectCIIDto[]> {
     try {
       return await this.ciiService.getAllCii();
     } catch (error) {
@@ -43,7 +44,7 @@ export class CiiController {
 
   // Get a CII by ID
   @Get(':id')
-  async getCiiById(@Param('id') id: number) {
+  async getCiiById(@Param('id') id: number): Promise<SelectCIIDto> {
     try {
       const cii = await this.ciiService.getCiiById(id);
       if (!cii) {
@@ -58,7 +59,7 @@ export class CiiController {
 
   // Update a CII
   @Patch()
-  async updateCii(@Body() updateCiiDto: UpdateCiiDto) {
+  async updateCii(@Body() updateCiiDto: UpdateCiiDto): Promise<SelectCIIDto> {
     try {
       const updatedCii = await this.ciiService.updateCii(
         updateCiiDto.id,

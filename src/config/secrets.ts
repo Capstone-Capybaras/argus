@@ -16,6 +16,7 @@ export interface Secrets {
   RESOURCE_ACCESS_KEY: string;
   RESOURCE_ACCESS_SECRET: string;
   REGION: string;
+  AETHER_PUBLIC_KEY: string;
 }
 
 const fetchSecrets = async (secretName: string): Promise<Secrets> => {
