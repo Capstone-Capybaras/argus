@@ -1,5 +1,5 @@
 // create-entity.dto.ts
-import { IsNumber, IsString, IsArray } from 'class-validator';
+import { IsString, IsArray } from 'class-validator';
 import { entitiesTable } from 'src/database/schema';
 import { InferInsert } from 'src/utils/modelToDtoTypes';
 
