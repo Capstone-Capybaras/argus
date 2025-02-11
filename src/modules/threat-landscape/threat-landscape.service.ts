@@ -1,10 +1,10 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { DATABASE_CONNECTION } from '../../database/connection';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { threatLandscapeTable } from '../../database/schema';
 import { CreateThreatLandscapeDto } from './dto/create-threat-landscape.dto';
 import { UpdateThreatLandscapeDto } from './dto/update-threat-landscape.dto';
 import { eq } from 'drizzle-orm';
+import { DATABASE_CONNECTION } from 'src/config/providers';
 
 @Injectable()
 export class ThreatLandscapeService {

@@ -9,6 +9,7 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { IS_PUBLIC_ROUTE } from './public.guard';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -23,7 +24,9 @@ export class AuthGuard implements CanActivate {
       IS_PUBLIC_ROUTE,
       [context.getHandler(), context.getClass()],
     );
+    // ignore public routes and all routes if local development
     if (isPublic) return true;
+    // if (isPublic || process.env.NODE_ENV === 'local') return true;
 
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
@@ -38,7 +41,27 @@ export class AuthGuard implements CanActivate {
       // so that we can access it in our route handlers
       request['user'] = payload;
     } catch {
-      throw new UnauthorizedException();
+      // if user cannot be authenticated,
+
+      // try to verify if it's coming from aether microservice
+      const publicKey = Buffer.from(
+        this.formatPublicKey(
+          this.configService.getOrThrow<string>('AETHER_PUBLIC_KEY'),
+        ),
+        'utf8',
+      );
+
+      jwt.verify(
+        token,
+        publicKey,
+        { algorithms: ['RS256'] },
+        (err, decoded) => {
+          if (err) {
+            throw new UnauthorizedException(err);
+          }
+          request['user'] = decoded;
+        },
+      );
     }
     return true;
   }
@@ -46,5 +69,28 @@ export class AuthGuard implements CanActivate {
   private extractTokenFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
+  }
+
+  private formatPublicKey(keyString: string) {
+    // 1. Trim and remove the BEGIN/END lines, if present
+    let body = keyString
+      .replace(/-----BEGIN PUBLIC KEY-----/g, '')
+      .replace(/-----END PUBLIC KEY-----/g, '')
+      .trim();
+
+    // 2. Remove all whitespace
+    body = body.replace(/\s+/g, '');
+
+    // 3. Chunk the base64 string into lines of 64 characters
+    const chunkSize = 64;
+    let formatted = '';
+    for (let i = 0; i < body.length; i += chunkSize) {
+      formatted += body.substring(i, i + chunkSize) + '\n';
+    }
+
+    // 4. Re-wrap in the standard PEM format
+    return (
+      '-----BEGIN PUBLIC KEY-----\n' + formatted + '-----END PUBLIC KEY-----\n'
+    );
   }
 }
