@@ -14,10 +14,12 @@ import { MasterThreatCubesModule } from './modules/master-threat-cubes/master-th
 import { ParticipantsModule } from './modules/participants/participants.module';
 import { ResponsesModule } from './modules/responses/responses.module';
 import { RolesModule } from './modules/roles/roles.module';
-import { ThreatActorModule } from './modules/threat-actor/threat-actor.module';
 import { EmailModule } from './email/email.module';
 import { BullQueueModule } from './email/bullqueue.module';
 import { ImapModule } from './email/imap/imap.module';
+import { TtpUsedModule } from './modules/ttp-used/ttp-used.module';
+import { ThreatLandscapeModule } from './modules/threat-landscape/threat-landscape.module';
+import { TacticsModule } from './modules/tactics/tactics.module';
 
 @Module({
   imports: [
@@ -40,10 +42,12 @@ import { ImapModule } from './email/imap/imap.module';
     ParticipantsModule,
     ResponsesModule,
     RolesModule,
-    ThreatActorModule,
     BullQueueModule,
     EmailModule,
     ImapModule,
+    TtpUsedModule,
+    ThreatLandscapeModule,
+    TacticsModule,
   ],
   controllers: [],
   providers: [],

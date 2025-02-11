@@ -74,7 +74,7 @@ export class MasterThreatCubesController {
     try {
       const updatedMasterThreatCube =
         await this.masterThreatCubesService.updateMasterThreatCube(
-          updateMasterThreatCubeDto.id,
+          updateMasterThreatCubeDto.threat_cube_id,
           updateMasterThreatCubeDto,
         );
       if (!updatedMasterThreatCube) {

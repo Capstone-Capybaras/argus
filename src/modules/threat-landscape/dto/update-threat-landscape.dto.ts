@@ -1,0 +1,37 @@
+import { IsString, IsInt } from 'class-validator';
+import { threatLandscapeTable } from 'src/database/schema';
+import { InferUpdate } from 'src/utils/modelToDtoTypes';
+
+export class UpdateThreatLandscapeDto
+  implements InferUpdate<typeof threatLandscapeTable>
+{
+  @IsInt()
+  project_id: number;
+
+  @IsInt()
+  entity_id: number;
+
+  @IsString()
+  threat_actor_name: string;
+
+  @IsString()
+  category: string;
+
+  @IsString()
+  capability: string;
+
+  @IsString()
+  capability_reason: string;
+
+  @IsString()
+  intent: string;
+
+  @IsString()
+  intent_reason: string;
+
+  @IsString()
+  opportunity: string;
+
+  @IsString()
+  opportunity_reason: string;
+}

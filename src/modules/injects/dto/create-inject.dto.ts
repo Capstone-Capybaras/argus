@@ -1,11 +1,5 @@
 // create-inject.dto.ts
-import {
-  IsString,
-  IsBoolean,
-  IsDate,
-  IsOptional,
-  IsNumber,
-} from 'class-validator';
+import { IsString, IsBoolean, IsDate, IsNumber } from 'class-validator';
 import { injectsTable } from 'src/database/schema';
 import { InferInsert } from 'src/utils/modelToDtoTypes';
 
@@ -48,8 +42,4 @@ export class CreateInjectDto implements InferInsert<typeof injectsTable> {
 
   @IsString()
   project: string;
-
-  @IsString()
-  @IsOptional()
-  observation: string;
 }
