@@ -33,7 +33,7 @@ export class MasterThreatCubesService {
     const masterThreatCube = await this.db
       .select()
       .from(masterThreatCubesTable)
-      .where(eq(masterThreatCubesTable.id, id));
+      .where(eq(masterThreatCubesTable.threat_cube_id, id));
     return masterThreatCube[0];
   }
 
@@ -41,7 +41,7 @@ export class MasterThreatCubesService {
     const result = await this.db
       .update(masterThreatCubesTable)
       .set(data)
-      .where(eq(masterThreatCubesTable.id, parseInt(id)))
+      .where(eq(masterThreatCubesTable.threat_cube_id, parseInt(id)))
       .returning();
     return result[0];
   }
@@ -49,7 +49,7 @@ export class MasterThreatCubesService {
   async deleteMasterThreatCube(id: number): Promise<boolean> {
     const result = await this.db
       .delete(masterThreatCubesTable)
-      .where(eq(masterThreatCubesTable.id, id))
+      .where(eq(masterThreatCubesTable.threat_cube_id, id))
       .returning();
     return result.length > 0;
   }

@@ -13,4 +13,7 @@ export class CreateEntToThreatDto
 
   @IsInt()
   threat_cube_id: number;
+
+  @IsInt()
+  project_id: number;
 }
