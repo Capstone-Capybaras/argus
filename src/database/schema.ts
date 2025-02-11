@@ -224,7 +224,7 @@ export const entitiesToThreatCubesTable = pgTable(
     threat_cube_id: integer() // do we foreign key or not
       .notNull(), // Foreign key referencing threat cube ID
     score: integer().notNull(), // Associated score for entity-threat cube relationship
-    project_id: integer().notNull(),
+    project_id: integer().notNull().references(() => projectsTable.id),
   },
   (table) => ({
     pk: primaryKey({
@@ -236,7 +236,7 @@ export const entitiesToThreatCubesTable = pgTable(
 export const projectsToThreatCubesTable = pgTable(
   'projects_to_threat_cubes',
   {
-    project_id: integer().notNull(),
+    project_id: integer().notNull().references(() => projectsTable.id),
     threat_cube_id: integer().notNull(),
     score: integer().notNull(),
   },
