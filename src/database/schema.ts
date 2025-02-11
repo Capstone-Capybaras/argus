@@ -81,7 +81,7 @@ export const participantsTable = pgTable('participants', {
 // });
 
 export const threatLandscapeTable = pgTable(
-  'threatLandscape',
+  'threat_landscape',
   {
     project_id: integer().references(() => projectsTable.id),
     entity_id: integer().references(() => entitiesTable.id),
@@ -185,7 +185,7 @@ export const masterThreatCubesTable = pgTable('master_threat_cubes', {
   name: text(),
 });
 
-export const tacticsTable = pgTable('tacticsTable', {
+export const tacticsTable = pgTable('tactics', {
   id: text().primaryKey(),
   name: text().notNull(),
 });

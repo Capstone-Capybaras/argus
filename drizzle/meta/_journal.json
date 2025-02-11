@@ -113,6 +113,27 @@
       "when": 1739257333794,
       "tag": "0015_clear_eternity",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1739267845135,
+      "tag": "0016_flaky_kitty_pryde",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1739267888277,
+      "tag": "0017_petite_genesis",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1739267921366,
+      "tag": "0018_steady_franklin_richards",
+      "breakpoints": true
     }
   ]
 }
