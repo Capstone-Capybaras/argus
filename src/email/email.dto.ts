@@ -1,3 +1,4 @@
+//import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsArray, IsDateString } from 'class-validator';
 
 export class CreateMailDto {
@@ -8,6 +9,8 @@ export class CreateMailDto {
   to: string[];
   @IsArray()
   cc?: string[];
+  @IsArray()
+  bcc?: string[];
   @IsNotEmpty()
   subject: string;
   @IsNotEmpty()
@@ -27,6 +30,8 @@ export class UpdateMailDBDto {
   to?: string[];
   @IsArray()
   cc?: string[];
+  @IsArray()
+  bcc?: string[];
   @IsNotEmpty()
   subject?: string;
   @IsNotEmpty()
@@ -46,6 +51,10 @@ export class UpdateMailClient {
   @IsNotEmpty()
   @IsArray()
   to?: string[];
+  @IsArray()
+  cc?: string[];
+  @IsArray()
+  bcc?: string[];
   @IsNotEmpty()
   subject?: string;
   @IsNotEmpty()
@@ -64,13 +73,6 @@ export class AttachmentDto {
   content: string;
   encoding: string;
   contentDisposition?: 'attachment' | 'inline' | undefined;
-}
-
-export class SendMailDto {
-  to: string[];
-  subject: string;
-  html: string;
-  attachments?: AttachmentDto[];
 }
 
 export class ScheduleMailDto {

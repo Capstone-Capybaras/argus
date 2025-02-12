@@ -1,3 +1,5 @@
+import SMTPTransport from "nodemailer/lib/smtp-transport";
+
 export interface Attachments {
   filename: string;
   content: string;
@@ -8,7 +10,9 @@ export interface RawEmail {
   from: string;
   to: string[];
   cc?: string[];
+  bcc?: string[];
   subject: string;
   html: string;
   attachments?: Attachments[];
+  transport: string | SMTPTransport | SMTPTransport.Options;
 }

@@ -20,6 +20,7 @@ import { ImapModule } from './email/imap/imap.module';
 import { TtpUsedModule } from './modules/ttp-used/ttp-used.module';
 import { ThreatLandscapeModule } from './modules/threat-landscape/threat-landscape.module';
 import { TacticsModule } from './modules/tactics/tactics.module';
+import { BatchScheduleModule } from './email/batch-schedule/batch-schedule.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { TacticsModule } from './modules/tactics/tactics.module';
     TtpUsedModule,
     ThreatLandscapeModule,
     TacticsModule,
+    BatchScheduleModule,
   ],
   controllers: [],
   providers: [],

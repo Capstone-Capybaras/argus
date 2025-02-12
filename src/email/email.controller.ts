@@ -14,12 +14,13 @@ export class EmailController {
   @Get('test')
   async getAll() {
     //const emails = await this.emailService.sendMail(1);
-    //const emails = await this.emailService.getEmailsById(2);
+    //const emails = await this.emailService.getEmailsByProject(1);
     //const emailId = 4
     //const data = { job_id: 1, schedule_date_time: new Date(), status:"scheduled" }
     //const emails = await this.emailService.updateEmail(emailId, data);
-    const del = await this.emailService.deleteEmailByProj(1);
-    return { emails: del };
+    const resp = await this.emailService.sendTest();
+    //const del = await this.emailService.deleteEmailByProj(1);
+    return { emails: resp.resp };
   }
 
   @Get(':projectId')
