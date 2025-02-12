@@ -7,5 +7,5 @@ export class CreateRoleDto implements InferInsert<typeof rolesTable> {
   name: string;
 
   @IsInt()
-  project_id: number;
+  entity_id: number;
 }

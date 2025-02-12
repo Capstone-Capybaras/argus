@@ -3,5 +3,5 @@ import { InferSelect } from 'src/utils/modelToDtoTypes';
 
 export class SelectRoleDto implements InferSelect<typeof rolesTable> {
   name: string;
-  project_id: number;
+  entity_id: number;
 }

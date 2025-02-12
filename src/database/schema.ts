@@ -185,7 +185,9 @@ export const rolesTable = pgTable(
   'roles',
   {
     name: varchar().notNull(),
-    entity_id: integer().references(() => entitiesTable.id),
+    entity_id: integer()
+      .notNull()
+      .references(() => entitiesTable.id),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.name, table.entity_id] }),

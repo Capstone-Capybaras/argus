@@ -3,16 +3,17 @@ import {
   Get,
   Post,
   Patch,
-  Param,
   Body,
   HttpException,
   HttpStatus,
   BadRequestException,
   Logger,
+  Query,
 } from '@nestjs/common';
 import { ThreatLandscapeService } from './threat-landscape.service';
 import { CreateThreatLandscapeDto } from './dto/create-threat-landscape.dto';
 import { UpdateThreatLandscapeDto } from './dto/update-threat-landscape.dto';
+import { SelectThreatLandscapeDto } from './dto/select-threat-landscape.dto';
 
 @Controller('threat-landscape')
 export class ThreatLandscapeController {
@@ -23,7 +24,7 @@ export class ThreatLandscapeController {
   @Post()
   async createThreatLandscape(
     @Body() createThreatLandscapeDto: CreateThreatLandscapeDto,
-  ) {
+  ): Promise<SelectThreatLandscapeDto> {
     try {
       const threatLandscape =
         await this.threatLandscapeService.createThreatLandscape(
@@ -37,44 +38,29 @@ export class ThreatLandscapeController {
   }
 
   @Get()
-  async getAllThreatLandscape() {
+  async getAllThreatLandscapes(
+    @Query('entity_id') entity_id: number,
+  ): Promise<SelectThreatLandscapeDto[]> {
     try {
-      const threatLandscape =
-        await this.threatLandscapeService.getAllThreatLandscape();
-      return threatLandscape;
+      const threatLandscapes = Number.isInteger(entity_id)
+        ? await this.threatLandscapeService.getThreatLandscapeByEntityId(
+            entity_id,
+          )
+        : await this.threatLandscapeService.getAllThreatLandscape();
+      return threatLandscapes;
     } catch (error) {
       Logger.error(error);
       throw new BadRequestException('Failed to fetch threat landscapes');
     }
   }
 
-  @Get(':id')
-  async getThreatLandscapeById(@Param('id') id: number) {
-    try {
-      const threatLandscape =
-        await this.threatLandscapeService.getThreatLandscapeById(id);
-      if (!threatLandscape) {
-        throw new HttpException(
-          'Threat landscape not found',
-          HttpStatus.NOT_FOUND,
-        );
-      }
-      return threatLandscape;
-    } catch (error) {
-      Logger.error(error);
-      throw new BadRequestException('Failed to fetch threat landscape');
-    }
-  }
-
-  @Patch(':id')
+  @Patch()
   async updateThreatLandscape(
-    @Param('id') id: number,
     @Body() updateThreatLandscapeDto: UpdateThreatLandscapeDto,
-  ) {
+  ): Promise<SelectThreatLandscapeDto> {
     try {
       const updatedThreatLandscape =
         await this.threatLandscapeService.updateThreatLandscape(
-          id,
           updateThreatLandscapeDto,
         );
       if (!updatedThreatLandscape) {

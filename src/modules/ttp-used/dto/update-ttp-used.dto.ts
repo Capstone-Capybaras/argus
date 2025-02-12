@@ -3,13 +3,15 @@ import { ttpUsedTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
 export class UpdateTtpUsedDto implements InferUpdate<typeof ttpUsedTable> {
-  // composite primary key
+  // primary key
   @IsInt()
-  project_id: number;
+  id: number;
 
+  // foreign keys
+  @IsInt()
+  scenario_project_id: number;
   @IsString()
   scenario_number: string;
-  // -----------
 
   @IsString()
   @IsOptional()
