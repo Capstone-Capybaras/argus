@@ -2,7 +2,7 @@ import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import * as Imap from 'node-imap';
 //import { MailParser, ParsedMail, simpleParser, Source } from 'mailparser';
 import * as MailParser from 'mailparser';
-import * as fs from 'fs';
+//import * as fs from 'fs';
 
 @Injectable()
 export class ImapService implements OnModuleDestroy {
@@ -59,46 +59,46 @@ export class ImapService implements OnModuleDestroy {
     });
   }
 
-  isSupportedAttachment(attachment: { filename: string }) {
-    const supportedExtensions = [
-      '.pdf',
-      '.xlsx',
-      '.jpg',
-      '.zip',
-      '.rar',
-      '.docx',
-    ];
+  // isSupportedAttachment(attachment: { filename: string }) {
+  //   const supportedExtensions = [
+  //     '.pdf',
+  //     '.xlsx',
+  //     '.jpg',
+  //     '.zip',
+  //     '.rar',
+  //     '.docx',
+  //   ];
 
-    if (attachment.filename) {
-      const extension = attachment.filename.toLowerCase().split('.').pop();
-      return supportedExtensions.includes(`.${extension}`);
-    }
+  //   if (attachment.filename) {
+  //     const extension = attachment.filename.toLowerCase().split('.').pop();
+  //     return supportedExtensions.includes(`.${extension}`);
+  //   }
 
-    return false;
-  }
+  //   return false;
+  // }
 
-  findAttachmentParts(struct: any, attachments: any[]) {
-    attachments = attachments || [];
-    for (let i = 0; i < struct.length; ++i) {
-      if (Array.isArray(struct[i])) {
-        this.findAttachmentParts(struct[i], attachments);
-      } else {
-        if (
-          struct[i].disposition &&
-          ['INLINE', 'ATTACHMENT'].indexOf(
-            this.toUpper(struct[i].disposition.type),
-          ) > -1
-        ) {
-          attachments.push(struct[i]);
-        }
-      }
-    }
-    return attachments;
-  }
+  // findAttachmentParts(struct: any, attachments: any[]) {
+  //   attachments = attachments || [];
+  //   for (var i = 0, len = struct.length, r; i < len; ++i) {
+  //     if (Array.isArray(struct[i])) {
+  //       this.findAttachmentParts(struct[i], attachments);
+  //     } else {
+  //       if (
+  //         struct[i].disposition &&
+  //         ['INLINE', 'ATTACHMENT'].indexOf(
+  //           this.toUpper(struct[i].disposition.type),
+  //         ) > -1
+  //       ) {
+  //         attachments.push(struct[i]);
+  //       }
+  //     }
+  //   }
+  //   return attachments;
+  // }
 
-  toUpper(thing: string) {
-    return thing && thing.toUpperCase ? thing.toUpperCase() : thing;
-  }
+  // toUpper(thing: string) {
+  //   return thing && thing.toUpperCase ? thing.toUpperCase() : thing;
+  // }
 
   async fetchMail(
     threadTopic: string,
@@ -107,8 +107,8 @@ export class ImapService implements OnModuleDestroy {
     skip: number = 0,
   ): Promise<any> {
     return new Promise((resolve, reject) => {
-      // const mid = '<6cc2ba4a-818d-98b2-3ab0-ff6fe9fc747a@gmail.com>';
-      // const midyest = '<42a7fc3d-ae93-ac61-d6db-b14163245314@gmail.com>';
+      //const mid = '<6cc2ba4a-818d-98b2-3ab0-ff6fe9fc747a@gmail.com>';
+      //const midyest = '<42a7fc3d-ae93-ac61-d6db-b14163245314@gmail.com>';
       //const threadTopic = "test forwarding";
       //const date = 'Dec 2, 2024'
       const searchCriteria = [
@@ -142,7 +142,7 @@ export class ImapService implements OnModuleDestroy {
 
         const emails = this.imap.fetch(results, fetchOptions);
         console.log('Emails content: ', emails);
-        const emailArray: MailParser.ParsedMail[] = [];
+        const emailArray: string[] = [];
         const emailPromises: Promise<MailParser.ParsedMail>[] = [];
 
         emails.on('message', (message) => {
@@ -161,54 +161,56 @@ export class ImapService implements OnModuleDestroy {
                       console.log('Error while parsing', err);
                     } else {
                       console.log('Parsed email:', parsed);
-                      emailArray.push(parsed);
+                      if (parsed.html) {
+                        emailArray.push(parsed.html);
+                      }
                       resolveMail(parsed);
                     }
                   });
                 });
               });
-              message.once(
-                'attributes',
-                (attrs: Imap.ImapMessageAttributes) => {
-                  const parts = this.findAttachmentParts(attrs.struct, []);
-                  for (let i = 0, len = parts.length; i < len; ++i) {
-                    const attachment = parts[i];
-                    console.log(
-                      'Fetching attachment %s',
-                      attachment.params.name,
-                    );
-                    const f = this.imap.fetch(attrs.uid, {
-                      //do not use imap.seq.fetch here
-                      bodies: [attachment.partID],
-                      struct: true,
-                    });
-                    f.on('message', (message) => {
-                      let buffer = '';
-                      message.on('body', (stream) => {
-                        // Collect the body content of the attachment
-                        stream.on('data', function (chunk) {
-                          buffer += chunk.toString('utf8');
-                        });
-                        stream.once('end', function () {
-                          // Prepare the file path for saving
-                          const fileName = attachment.params.name;
-                          console.log('filename: ', fileName);
-                          const filePath = './downloads/' + fileName;
-                          //const filePath = path.join(__dirname, 'downloads', fileName);
-                          // Write the attachment data to a file
-                          fs.writeFile(filePath, buffer, (err) => {
-                            if (err) {
-                              console.error('Error saving attachment:', err);
-                            } else {
-                              console.log(`Attachment saved: ${filePath}`);
-                            }
-                          });
-                        });
-                      });
-                    });
-                  }
-                },
-              );
+              // message.once(
+              //   'attributes',
+              //   (attrs: Imap.ImapMessageAttributes) => {
+              //     const parts = this.findAttachmentParts(attrs.struct, []);
+              //     for (let i = 0, len = parts.length; i < len; ++i) {
+              //       const attachment = parts[i];
+              //       console.log(
+              //         'Fetching attachment %s',
+              //         attachment.params.name,
+              //       );
+              //       const f = this.imap.fetch(attrs.uid, {
+              //         //do not use imap.seq.fetch here
+              //         bodies: [attachment.partID],
+              //         struct: true,
+              //       });
+              //       f.on('message', (message) => {
+              //         let buffer = '';
+              //         message.on('body', (stream) => {
+              //           // Collect the body content of the attachment
+              //           stream.on('data', function (chunk) {
+              //             buffer += chunk.toString('utf8');
+              //           });
+              //           stream.once('end', function () {
+              //             // Prepare the file path for saving
+              //             //const fileName = attachment.params.name;
+              //             //console.log('filename: ', fileName);
+              //             //const filePath = './downloads/' + fileName;
+              //             //const filePath = path.join(__dirname, 'downloads', fileName);
+              //             // Write the attachment data to a file
+              //             // fs.writeFile(filePath, buffer, (err) => {
+              //             //   if (err) {
+              //             //     console.error('Error saving attachment:', err);
+              //             //   } else {
+              //             //     console.log(`Attachment saved: ${filePath}`);
+              //             //   }
+              //             // });
+              //           });
+              //         });
+              //       });
+              //     }
+              //   },
+              // );
             }),
           );
         });

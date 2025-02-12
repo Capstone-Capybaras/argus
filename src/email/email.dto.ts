@@ -1,13 +1,18 @@
+//import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsArray, IsDateString } from 'class-validator';
+import { emailsTable } from 'src/database/schema';
+import { InferInsert, InferUpdate } from 'src/utils/modelToDtoTypes';
 
-export class CreateMailDto {
+export class CreateMailDto implements InferInsert<typeof emailsTable> {
   @IsNotEmpty()
-  projectId: number;
+  project_id: number;
   @IsNotEmpty()
   @IsArray()
   to: string[];
   @IsArray()
   cc?: string[];
+  @IsArray()
+  bcc?: string[];
   @IsNotEmpty()
   subject: string;
   @IsNotEmpty()
@@ -21,12 +26,14 @@ export class CreateMailDto {
   errorMessage?: string | null;
 }
 
-export class UpdateMailDBDto {
+export class UpdateMailDBDto implements InferUpdate<typeof emailsTable> {
   @IsNotEmpty()
   @IsArray()
   to?: string[];
   @IsArray()
   cc?: string[];
+  @IsArray()
+  bcc?: string[];
   @IsNotEmpty()
   subject?: string;
   @IsNotEmpty()
@@ -46,6 +53,10 @@ export class UpdateMailClient {
   @IsNotEmpty()
   @IsArray()
   to?: string[];
+  @IsArray()
+  cc?: string[];
+  @IsArray()
+  bcc?: string[];
   @IsNotEmpty()
   subject?: string;
   @IsNotEmpty()
@@ -64,13 +75,6 @@ export class AttachmentDto {
   content: string;
   encoding: string;
   contentDisposition?: 'attachment' | 'inline' | undefined;
-}
-
-export class SendMailDto {
-  to: string[];
-  subject: string;
-  html: string;
-  attachments?: AttachmentDto[];
 }
 
 export class ScheduleMailDto {

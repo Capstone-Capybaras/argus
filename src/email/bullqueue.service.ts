@@ -13,6 +13,7 @@ export class BullQueueService {
 
   async scheduleEmail(emailId: number, scheduleDateTime: Date) {
     if (scheduleDateTime.getTime() - Date.now() < 0) {
+      await this.emailService.deleteEmail(emailId);
       throw new Error('Schedule cannot be made in the past');
     } else {
       const job = await this.emailQueue.add(
@@ -26,6 +27,16 @@ export class BullQueueService {
       console.log('######### PRINT JOB #########');
       console.log(job);
       return { jobId: job.id };
+    }
+  }
+
+  async removeJob(jobId: number) {
+    const job = await this.emailQueue.getJob(jobId);
+    if (job) {
+      await job.remove();
+      return { success: true };
+    } else {
+      return { success: false, error: `no job with id ${jobId} found` };
     }
   }
 
@@ -45,16 +56,20 @@ export class BullQueueService {
       const emailData: CreateMailDto = {
         projectId: data.projectId,
         to: data.to,
+        cc: data.cc,
+        bcc: data.bcc,
         subject: data.subject,
         html: data.html,
         attachments: data.attachments,
       };
       const entry = await this.emailService.addEmail(emailData);
+      console.log('entry', entry);
       const emailId = entry[0].id;
       let resp;
       if (data.scheduleDateTime != null) {
         const delay = new Date(data.scheduleDateTime);
         const job = await this.scheduleEmail(entry[0].id, delay);
+        console.log('job created', job);
         const scheduleData: UpdateMailDBDto = {
           job_id: Number(job.jobId),
           schedule_date_time: delay,
@@ -111,9 +126,12 @@ export class BullQueueService {
             delay,
           );
           jobId = newJob.jobId;
+        } else if (update.job_id != null && updateMailDto.jobId == null) {
+          await this.removeJob(update.job_id);
+          jobId = null;
         }
         const scheduleData: UpdateMailDBDto = {
-          job_id: Number(jobId),
+          job_id: isNaN(Number(jobId)) ? null : Number(jobId),
           schedule_date_time:
             updateMailDto.scheduleDateTime != null
               ? new Date(updateMailDto.scheduleDateTime)

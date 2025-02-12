@@ -42,9 +42,6 @@ export class BullQueueController {
   @Post('updateJob')
   async updateJob(@Body() updateDto: UpdateScheduleDto) {
     try {
-      const sendAt: Date = new Date();
-      sendAt.setHours(0, 55, 0, 0);
-      // const jobid = 4;
       await this.bullService.updateJob(
         updateDto.jobId,
         updateDto.emailId,

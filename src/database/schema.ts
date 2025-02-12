@@ -346,6 +346,7 @@ export const emailsTable = pgTable('emails', {
     .references(() => projectsTable.id),
   to: text().array().notNull(),
   cc: text().array(),
+  bcc: text().array(),
   subject: text().notNull(),
   html: text().notNull(),
   attachments: text().array(),

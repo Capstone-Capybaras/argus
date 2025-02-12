@@ -4,24 +4,26 @@ import { EmailController } from './email.controller';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { DatabaseModule } from 'src/database/database.module';
 import { S3Module } from './s3.module';
+import { ServerSelectorService } from './server-selector/server-selector.service';
+import { ServerSelectorModule } from './server-selector/server-selector.module';
+//import { ServerSelectorService } from './server-selector/server-selector.service';
 
 @Module({
   imports: [
     DatabaseModule,
     S3Module,
-    MailerModule.forRoot({
-      transport: {
-        host: process.env.EMAIL_HOST,
-        port: 465, //587 not secure
-        secure: true,
-        auth: {
-          user: process.env.EMAIL_USERNAME,
-          pass: process.env.EMAIL_PASSWORD,
-        },
+    ServerSelectorModule,
+    MailerModule.forRootAsync({
+      imports: [ServerSelectorModule],
+      inject: [ServerSelectorService],
+      useFactory: async (selectorService: ServerSelectorService) => {
+        return {
+          transport: await selectorService.getEmailConfig(), // Dynamic transport
+        };
       },
     }),
   ],
-  providers: [EmailService],
+  providers: [EmailService, ServerSelectorService],
   controllers: [EmailController],
   exports: [EmailService],
 })
