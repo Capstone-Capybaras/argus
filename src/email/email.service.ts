@@ -62,7 +62,7 @@ export class EmailService {
     const result = this.database
       .insert(schemas.emailsTable)
       .values({
-        project_id: data.projectId,
+        project_id: data.project_id,
         to: data.to,
         cc: data.cc ?? null,
         bcc: data.bcc ?? null,

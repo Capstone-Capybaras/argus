@@ -109,30 +109,33 @@ export const ttpUsedTable = pgTable(
   },
 );
 
-export const scenariosTable = pgTable('scenarios', {
-  scenario_number: varchar().unique().primaryKey(),
-  additional_context: text().notNull(),
-  threat_actor_motivation: text().notNull(),
-  entity_id: integer()
-    .notNull()
-    .references(() => entitiesTable.id),
-  intended_system_impact: text().notNull(),
-  intended_biz_impact: text().notNull(),
-  attack_solution: text().notNull(),
-  severity_level: integer().notNull(),
-  initial_access: text().notNull(),
-  exploit: text().notNull(),
-  impact: text().notNull(),
-  project_id: integer()
-    .notNull()
-    .references(() => projectsTable.id),
-  asset_id: integer()
-    .notNull()
-    .references(() => assetsTable.id),
-  tactics_techniques: text()
-    .notNull()
-    .references(() => masterThreatCubesTable.name),
-});
+export const scenariosTable = pgTable(
+  'scenarios',
+  {
+    scenario_number: varchar().notNull(),
+    additional_context: text().notNull(),
+    threat_actor_motivation: text().notNull(),
+    intended_system_impact: text().notNull(),
+    intended_biz_impact: text().notNull(),
+    attack_solution: text().notNull(),
+    severity_level: integer().notNull(),
+    initial_access: text().notNull(),
+    exploit: text().notNull(),
+    impact: text().notNull(),
+    project_id: integer()
+      .notNull()
+      .references(() => projectsTable.id),
+    asset_id: integer()
+      .notNull()
+      .references(() => assetsTable.id),
+    tactics_techniques: text()
+      .notNull()
+      .references(() => masterThreatCubesTable.name),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.scenario_number, table.project_id] }),
+  }),
+);
 
 export const injectsTable = pgTable('injects', {
   inject_id: varchar().unique().primaryKey(),
