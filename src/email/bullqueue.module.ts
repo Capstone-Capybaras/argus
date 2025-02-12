@@ -9,29 +9,25 @@ import { ServerSelectorModule } from './server-selector/server-selector.module';
 
 @Module({
   imports: [
-    BullModule.forRootAsync({
-      useFactory: () => ({
-        redis: {
-          host: 'localhost',
-          port: 6379,
-        },
-      }),
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6379,
+      },
     }),
     BullModule.registerQueue({
       name: 'emailSending',
     }),
-    MailerModule.forRootAsync({
-      useFactory: async () => ({
-        transport: {
-          host: process.env.EMAIL_HOST,
-          port: 465,
-          secure: true,
-          auth: {
-            user: process.env.EMAIL_USERNAME,
-            pass: process.env.EMAIL_PASSWORD,
-          },
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.EMAIL_HOST,
+        port: 465,
+        secure: true,
+        auth: {
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
         },
-      }),
+      },
     }),
     EmailModule,
     ServerSelectorModule,
