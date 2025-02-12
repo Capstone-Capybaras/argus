@@ -4,7 +4,7 @@ import { InferSelect } from 'src/utils/modelToDtoTypes';
 export class SelectThreatLandscapeDto
   implements InferSelect<typeof threatLandscapeTable>
 {
-  entity_id: number | null;
+  entity_id: number;
   threat_actor_name: string | null;
   category: string | null;
   capability: string | null;

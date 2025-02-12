@@ -72,7 +72,9 @@ export const participantsTable = pgTable('participants', {
 export const threatLandscapeTable = pgTable(
   'threat_landscape',
   {
-    entity_id: integer().references(() => entitiesTable.id),
+    entity_id: integer()
+      .notNull()
+      .references(() => entitiesTable.id),
     threat_actor_name: text(),
     category: text(),
     capability: text(),
@@ -171,7 +173,9 @@ export const responsesTable = pgTable('responses', {
 
 export const masterThreatCubesTable = pgTable('master_threat_cubes', {
   threat_cube_id: serial('thread_cube_id').unique().primaryKey(), // Use only `id` as primary key
-  tactic: text().references(() => tacticsTable.id),
+  tactic: text()
+    .notNull()
+    .references(() => tacticsTable.id),
   name: text(),
 });
 
@@ -199,8 +203,12 @@ export const rolesTable = pgTable(
 export const participantsToEntitiesTable = pgTable(
   'entities_to_participants',
   {
-    participant_email: integer().references(() => participantsTable.email),
-    entity_id: integer().references(() => entitiesTable.id),
+    participant_email: integer()
+      .notNull()
+      .references(() => participantsTable.email),
+    entity_id: integer()
+      .notNull()
+      .references(() => entitiesTable.id),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.participant_email, table.entity_id] }),

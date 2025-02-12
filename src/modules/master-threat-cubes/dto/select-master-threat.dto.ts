@@ -6,5 +6,5 @@ export class SelectMasterThreatCubeDto
 {
   threat_cube_id: number;
   name: string | null;
-  tactic: string | null;
+  tactic: string;
 }
