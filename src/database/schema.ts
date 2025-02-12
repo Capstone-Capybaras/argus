@@ -68,18 +68,6 @@ export const participantsTable = pgTable('participants', {
     .references(() => entitiesTable.id),
 });
 
-// export const threatActorsTable = pgTable('threat_actors', {
-//   id: serial('id').unique().primaryKey(),
-//   name: text().notNull(),
-//   category: text().notNull(),
-//   intent: text().notNull(),
-//   rationale: text().notNull(),
-//   capabilities: text().notNull(),
-//   project_id: integer()
-//     .notNull()
-//     .references(() => projectsTable.id),
-// });
-
 export const threatLandscapeTable = pgTable(
   'threat_landscape',
   {
@@ -198,20 +186,16 @@ export const rolesTable = pgTable('roles', {
 
 // ------- JOIN TABLES -------
 
-// export const entitiesToMasterThreatCubesTable = pgTable(
-//   'entities_to_master_threat_cubes',
-//   {
-//     master_threat_cube_id: integer()
-//       .notNull()
-//       .references(() => masterThreatCubesTable.id),
-//     entity_id: integer()
-//       .notNull()
-//       .references(() => entitiesTable.id),
-//   },
-//   (table) => ({
-//     pk: primaryKey({ columns: [table.entity_id, table.master_threat_cube_id] }),
-//   }),
-// );
+export const participantsToEntitiesTable = pgTable(
+  'entities_to_participants',
+  {
+    participant_email: integer().references(() => participantsTable.email),
+    entity_id: integer().references(() => entitiesTable.id),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.participant_email, table.entity_id] }),
+  }),
+);
 
 export const entitiesToThreatCubesTable = pgTable(
   'entities_to_threat_cubes',
@@ -275,7 +259,7 @@ export const projectsToEntitiesTable = pgTable(
   }),
 );
 
-export const AssetsToScenariosTable = pgTable(
+export const assetsToScenariosTable = pgTable(
   'assets_to_scenarios',
   {
     asset_id: integer()
