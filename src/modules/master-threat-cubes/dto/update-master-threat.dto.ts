@@ -1,4 +1,4 @@
-import { IsString, IsInt } from 'class-validator';
+import { IsString, IsInt, IsOptional } from 'class-validator';
 import { masterThreatCubesTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
@@ -9,8 +9,10 @@ export class UpdateMasterThreatCubeDto
   threat_cube_id: number;
 
   @IsString()
-  tactic: string;
+  @IsOptional()
+  tactic?: string;
 
   @IsString()
-  name: string;
+  @IsOptional()
+  name?: string;
 }

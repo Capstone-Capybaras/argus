@@ -1,6 +1,7 @@
 import { scenariosTable } from 'src/database/schema';
 import { InferInsert } from 'src/utils/modelToDtoTypes';
 
+// TODO: class validator
 export class CreateScenarioDto implements InferInsert<typeof scenariosTable> {
   scenario_number: string;
   asset: string;

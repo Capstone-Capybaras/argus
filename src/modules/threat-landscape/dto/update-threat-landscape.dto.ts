@@ -1,10 +1,11 @@
-import { IsString, IsInt } from 'class-validator';
+import { IsString, IsInt, IsOptional } from 'class-validator';
 import { threatLandscapeTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
 export class UpdateThreatLandscapeDto
   implements InferUpdate<typeof threatLandscapeTable>
 {
+  // composite-primary-key
   @IsInt()
   project_id: number;
 
@@ -13,25 +14,33 @@ export class UpdateThreatLandscapeDto
 
   @IsString()
   threat_actor_name: string;
+  // ---------
 
   @IsString()
-  category: string;
+  @IsOptional()
+  category?: string;
 
   @IsString()
-  capability: string;
+  @IsOptional()
+  capability?: string;
 
   @IsString()
-  capability_reason: string;
+  @IsOptional()
+  capability_reason?: string;
 
   @IsString()
-  intent: string;
+  @IsOptional()
+  intent?: string;
 
   @IsString()
-  intent_reason: string;
+  @IsOptional()
+  intent_reason?: string;
 
   @IsString()
-  opportunity: string;
+  @IsOptional()
+  opportunity?: string;
 
   @IsString()
-  opportunity_reason: string;
+  @IsOptional()
+  opportunity_reason?: string;
 }

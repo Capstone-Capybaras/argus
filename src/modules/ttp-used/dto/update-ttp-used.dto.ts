@@ -1,20 +1,25 @@
-import { IsString, IsInt } from 'class-validator';
+import { IsString, IsInt, IsOptional } from 'class-validator';
 import { ttpUsedTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
 export class UpdateTtpUsedDto implements InferUpdate<typeof ttpUsedTable> {
+  // composite primary key
   @IsInt()
   project_id: number;
 
   @IsString()
   scenario_number: string;
+  // -----------
 
   @IsString()
-  tactic: string;
+  @IsOptional()
+  tactic?: string;
 
   @IsString()
-  technique: string;
+  @IsOptional()
+  technique?: string;
 
   @IsString()
-  notes: string;
+  @IsOptional()
+  notes?: string;
 }

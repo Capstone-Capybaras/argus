@@ -1,4 +1,4 @@
-import { IsString, IsInt } from 'class-validator';
+import { IsString, IsInt, IsOptional } from 'class-validator';
 import { rolesTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
@@ -7,5 +7,6 @@ export class UpdateRoleDto implements InferUpdate<typeof rolesTable> {
   name: string;
 
   @IsInt()
-  project_id: number;
+  @IsOptional()
+  project_id?: number;
 }

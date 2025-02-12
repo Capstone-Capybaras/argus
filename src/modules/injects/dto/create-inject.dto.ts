@@ -4,17 +4,17 @@ import { injectsTable } from 'src/database/schema';
 import { InferInsert } from 'src/utils/modelToDtoTypes';
 
 export class CreateInjectDto implements InferInsert<typeof injectsTable> {
-  @IsNumber()
-  project_id: number;
-
-  @IsNumber()
-  entity_id: number;
-
   @IsString()
   inject_id: string;
 
   @IsString()
   scenario_number: string;
+
+  @IsNumber()
+  entity_id: number;
+
+  @IsNumber()
+  project_id: number;
 
   @IsDate()
   date_time: Date;
@@ -32,14 +32,8 @@ export class CreateInjectDto implements InferInsert<typeof injectsTable> {
   artefact: string;
 
   @IsString()
-  entity: string;
-
-  @IsString()
   from: string;
 
   @IsString()
   to_recipient: string;
-
-  @IsString()
-  project: string;
 }

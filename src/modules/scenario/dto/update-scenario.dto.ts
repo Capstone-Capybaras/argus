@@ -1,6 +1,7 @@
 import { scenariosTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
+// TODO: class validator
 export class UpdateScenarioDto implements InferUpdate<typeof scenariosTable> {
   scenario_number: string;
 

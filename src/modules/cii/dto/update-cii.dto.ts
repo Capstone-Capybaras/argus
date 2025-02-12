@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber, IsInt } from 'class-validator';
+import { IsOptional, IsString, IsNumber, IsInt } from 'class-validator';
 import { CIITable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
@@ -6,24 +6,27 @@ export class UpdateCiiDto implements InferUpdate<typeof CIITable> {
   @IsNumber()
   id: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  name: string;
+  name?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  users: string;
+  users?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  function: string;
+  function?: string;
 
+  @IsOptional()
   @IsString()
-  sensitive_info: string;
+  sensitive_info?: string;
 
+  @IsOptional()
   @IsString()
-  category: string;
+  category?: string;
 
+  @IsOptional()
   @IsInt()
-  entity_id: number;
+  entity_id?: number;
 }

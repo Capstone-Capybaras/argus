@@ -1,4 +1,4 @@
-import { IsString, IsInt } from 'class-validator';
+import { IsString } from 'class-validator';
 import { responsesTable } from 'src/database/schema';
 import { InferInsert } from 'src/utils/modelToDtoTypes';
 
@@ -8,7 +8,4 @@ export class CreateResponsesDto implements InferInsert<typeof responsesTable> {
 
   @IsString()
   response: string;
-
-  @IsInt()
-  id: number;
 }

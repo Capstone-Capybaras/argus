@@ -12,9 +12,6 @@ export class CreateParticipantDto
   @IsString()
   name: string;
 
-  @IsString()
-  role: string;
-
   @IsNumber()
   entity_id: number;
 }

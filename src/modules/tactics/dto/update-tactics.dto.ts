@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { tacticsTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
@@ -7,5 +7,6 @@ export class UpdateTacticsDto implements InferUpdate<typeof tacticsTable> {
   id: string;
 
   @IsString()
-  name: string;
+  @IsOptional()
+  name?: string;
 }
