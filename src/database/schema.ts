@@ -93,6 +93,7 @@ export const threatLandscapeTable = pgTable(
 export const ttpUsedTable = pgTable(
   'ttp_used',
   {
+    // todo: this is not FK-ed, shouldn't it only be a reference to scenario table?
     project_id: integer().notNull(),
     scenario_number: varchar()
       .unique()
@@ -176,15 +177,17 @@ export const tacticsTable = pgTable('tactics', {
   name: text().notNull(),
 });
 
-// TODO: should there be a composite primary key for name + project ID?
-// if we decide to pursue that, participants + roles join table will be abit complicated
-export const rolesTable = pgTable('roles', {
-  name: varchar().unique().primaryKey(),
-  // 1 project to many roles OR 1 role to 1 project?
-  project_id: integer()
-    .notNull()
-    .references(() => projectsTable.id),
-});
+// a role is unique identified by the combination of role name and entity id
+export const rolesTable = pgTable(
+  'roles',
+  {
+    name: varchar().notNull(),
+    entity_id: integer().references(() => entitiesTable.id),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.name, table.entity_id] }),
+  }),
+);
 
 // ------- JOIN TABLES -------
 
