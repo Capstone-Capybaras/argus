@@ -203,7 +203,7 @@ export const rolesTable = pgTable(
 export const participantsToEntitiesTable = pgTable(
   'entities_to_participants',
   {
-    participant_email: integer()
+    participant_email: varchar()
       .notNull()
       .references(() => participantsTable.email),
     entity_id: integer()
