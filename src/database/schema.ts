@@ -10,6 +10,7 @@ import {
   timestamp,
   primaryKey,
   pgEnum,
+  foreignKey,
 } from 'drizzle-orm/pg-core';
 
 // Existing tables
@@ -93,20 +94,22 @@ export const threatLandscapeTable = pgTable(
 export const ttpUsedTable = pgTable(
   'ttp_used',
   {
-    // todo: this is not FK-ed, shouldn't it only be a reference to scenario table?
-    project_id: integer().notNull(),
-    scenario_number: varchar()
-      .unique()
-      .references(() => scenariosTable.scenario_number),
+    id: serial('id').primaryKey(),
+    scenario_project_id: integer().notNull(),
+    scenario_number: varchar().notNull(),
     tactic: text().notNull(),
     technique: text(),
     notes: text(),
   },
-  (table) => {
-    return {
-      pk: primaryKey({ columns: [table.project_id, table.scenario_number] }),
-    };
-  },
+  (table) => ({
+    fk: foreignKey({
+      columns: [table.scenario_number, table.scenario_project_id],
+      foreignColumns: [
+        scenariosTable.scenario_number,
+        scenariosTable.project_id,
+      ],
+    }),
+  }),
 );
 
 export const scenariosTable = pgTable(
@@ -267,15 +270,21 @@ export const projectsToEntitiesTable = pgTable(
 export const assetsToScenariosTable = pgTable(
   'assets_to_scenarios',
   {
+    id: serial('id').unique().primaryKey(),
     asset_id: integer()
       .notNull()
       .references(() => assetsTable.id),
-    scenario_number: varchar()
-      .notNull()
-      .references(() => scenariosTable.scenario_number),
+    scenario_number: varchar().notNull(),
+    scenario_project_id: integer().notNull(),
   },
   (table) => ({
-    pk: primaryKey({ columns: [table.asset_id, table.scenario_number] }),
+    fk: foreignKey({
+      columns: [table.scenario_number, table.scenario_project_id],
+      foreignColumns: [
+        scenariosTable.scenario_number,
+        scenariosTable.project_id,
+      ],
+    }),
   }),
 );
 
