@@ -7,6 +7,6 @@ import { DatabaseModule } from 'src/database/database.module';
   imports: [DatabaseModule],
   providers: [ServerSelectorService],
   controllers: [ServerSelectorController],
-  exports:[ServerSelectorService]
+  exports: [ServerSelectorService],
 })
 export class ServerSelectorModule {}

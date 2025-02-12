@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ImapService } from './email.imap.service';
 import { ImapController } from './imap.controller';
-import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -18,7 +17,6 @@ import { ConfigService } from '@nestjs/config';
           },
         },
       }),
-      inject: [ConfigService],
     }),
   ],
   providers: [ImapService],

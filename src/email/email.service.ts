@@ -173,7 +173,7 @@ export class EmailService {
       subject: 'testing config email server',
       html: 'this is a test message',
       attachments: [],
-      transport: transport
+      transport: transport,
     };
     const resp = await this.mailService.sendMail(email);
     return { resp: resp };
@@ -190,7 +190,7 @@ export class EmailService {
         subject: '',
         html: '',
         attachments: [],
-        transport: transport
+        transport: transport,
       };
       const emailContent = await this.getEmailsById(emailId);
       console.log('email Content:', emailContent);

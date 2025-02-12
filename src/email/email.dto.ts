@@ -1,9 +1,11 @@
 //import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsArray, IsDateString } from 'class-validator';
+import { emailsTable } from 'src/database/schema';
+import { InferInsert, InferUpdate } from 'src/utils/modelToDtoTypes';
 
-export class CreateMailDto {
+export class CreateMailDto implements InferInsert<typeof emailsTable> {
   @IsNotEmpty()
-  projectId: number;
+  project_id: number;
   @IsNotEmpty()
   @IsArray()
   to: string[];
@@ -24,7 +26,7 @@ export class CreateMailDto {
   errorMessage?: string | null;
 }
 
-export class UpdateMailDBDto {
+export class UpdateMailDBDto implements InferUpdate<typeof emailsTable> {
   @IsNotEmpty()
   @IsArray()
   to?: string[];

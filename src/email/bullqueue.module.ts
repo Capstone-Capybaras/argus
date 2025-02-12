@@ -6,7 +6,6 @@ import { BullQueueService } from './bullqueue.service';
 import { EmailProcessor } from './bullqueue.process';
 import { EmailModule } from './email.module';
 import { ServerSelectorModule } from './server-selector/server-selector.module';
-import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -33,7 +32,6 @@ import { ConfigService } from '@nestjs/config';
           },
         },
       }),
-      inject: [ConfigService],
     }),
     EmailModule,
     ServerSelectorModule,
