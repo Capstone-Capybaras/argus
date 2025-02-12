@@ -134,6 +134,20 @@
       "when": 1739267921366,
       "tag": "0018_steady_franklin_richards",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1739347098977,
+      "tag": "0019_pale_power_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1739347105879,
+      "tag": "0020_strong_joseph",
+      "breakpoints": true
     }
   ]
 }

@@ -12,7 +12,12 @@ export class UsersService {
   ) {}
 
   async getUsers() {
-    return this.database.select().from(schemas.usersTable);
+    return this.database
+      .select({
+        id: schemas.usersTable.id,
+        username: schemas.usersTable.username,
+      })
+      .from(schemas.usersTable);
   }
 
   async findOne(
