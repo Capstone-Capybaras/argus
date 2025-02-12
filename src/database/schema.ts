@@ -71,7 +71,6 @@ export const participantsTable = pgTable('participants', {
 export const threatLandscapeTable = pgTable(
   'threat_landscape',
   {
-    project_id: integer().references(() => projectsTable.id),
     entity_id: integer().references(() => entitiesTable.id),
     threat_actor_name: text(),
     category: text(),
@@ -85,7 +84,7 @@ export const threatLandscapeTable = pgTable(
   (table) => {
     return {
       pk: primaryKey({
-        columns: [table.project_id, table.entity_id, table.threat_actor_name],
+        columns: [table.entity_id, table.threat_actor_name],
       }),
     };
   },

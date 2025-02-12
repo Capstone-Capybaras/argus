@@ -169,6 +169,13 @@
       "when": 1739350166862,
       "tag": "0023_absent_wiccan",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1739350876098,
+      "tag": "0024_gigantic_mephistopheles",
+      "breakpoints": true
     }
   ]
 }

@@ -6,9 +6,6 @@ export class CreateThreatLandscapeDto
   implements InferUpdate<typeof threatLandscapeTable>
 {
   @IsInt()
-  project_id: number;
-
-  @IsInt()
   entity_id: number;
 
   @IsString()
