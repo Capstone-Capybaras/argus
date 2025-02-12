@@ -1,7 +1,7 @@
 import { entitiesTable } from 'src/database/schema';
 import { InferSelect } from 'src/utils/modelToDtoTypes';
 import { SelectParticipantDto } from 'src/modules/participants/dto/select-participant.dto';
-import { SelectCIIDto } from 'src/modules/cii/dto/select-cii.dto';
+import { SelectAssetDto } from 'src/modules/assets/dto/select-asset.dto';
 import { DeepSet } from 'src/utils/DeepSet';
 
 export class SelectEntityOnlyDto implements InferSelect<typeof entitiesTable> {
@@ -15,7 +15,7 @@ export class SelectEntityOnlyDto implements InferSelect<typeof entitiesTable> {
 }
 export class SelectEntityDto extends SelectEntityOnlyDto {
   participants?: SelectParticipantDto[];
-  cii?: SelectCIIDto[];
+  assets?: SelectAssetDto[];
 }
 
 /**
@@ -23,5 +23,5 @@ export class SelectEntityDto extends SelectEntityOnlyDto {
  */
 export class ISelectEntity extends SelectEntityOnlyDto {
   participants: DeepSet<SelectParticipantDto>;
-  cii: DeepSet<SelectCIIDto>;
+  assets: DeepSet<SelectAssetDto>;
 }

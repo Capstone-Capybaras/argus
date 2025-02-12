@@ -1,8 +1,8 @@
 import { IsOptional, IsString, IsNumber, IsInt } from 'class-validator';
-import { CIITable } from 'src/database/schema';
+import { assetsTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
-export class UpdateCiiDto implements InferUpdate<typeof CIITable> {
+export class UpdateAssetDto implements InferUpdate<typeof assetsTable> {
   @IsNumber()
   id: number;
 

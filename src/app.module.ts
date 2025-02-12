@@ -9,7 +9,7 @@ import { ProjectModule } from './modules/project/project.module';
 import { EntityModule } from './modules/entity/entity.module';
 import { ScenarioModule } from './modules/scenario/scenario.module';
 import { InjectsModule } from './modules/injects/injects.module';
-import { CiiModule } from './modules/cii/cii.module';
+import { AssetsModule } from './modules/assets/assets.module';
 import { MasterThreatCubesModule } from './modules/master-threat-cubes/master-threat-cubes.module';
 import { ParticipantsModule } from './modules/participants/participants.module';
 import { ResponsesModule } from './modules/responses/responses.module';
@@ -38,7 +38,7 @@ import { BatchScheduleModule } from './email/batch-schedule/batch-schedule.modul
     EntityModule,
     ScenarioModule,
     InjectsModule,
-    CiiModule,
+    AssetsModule,
     MasterThreatCubesModule,
     ParticipantsModule,
     ResponsesModule,

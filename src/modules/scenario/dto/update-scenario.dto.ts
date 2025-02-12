@@ -8,7 +8,7 @@ export class UpdateScenarioDto implements InferUpdate<typeof scenariosTable> {
   threat_actor?: string;
   threat_actor_motivation?: string;
   entity?: string;
-  CII?: number;
+  asset_id?: number;
   intended_system_impact?: string;
   intended_biz_impact?: string;
   attack_solution?: string;

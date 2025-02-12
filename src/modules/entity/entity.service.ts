@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { DATABASE_CONNECTION } from '../../config/providers';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import {
-  CIITable,
+  assetsTable,
   entitiesTable,
   participantsTable,
   projectsTable,
@@ -56,31 +56,31 @@ export class EntityService {
       .select({
         entity: entitiesTable,
         participant: participantsTable,
-        cii: CIITable,
+        asset: assetsTable,
       })
       .from(entitiesTable)
       .leftJoin(
         participantsTable,
         eq(entitiesTable.id, participantsTable.entity_id),
       )
-      .leftJoin(CIITable, eq(entitiesTable.id, CIITable.entity_id))
+      .leftJoin(assetsTable, eq(entitiesTable.id, assetsTable.entity_id))
       .where(eq(entitiesTable.id, id));
 
     if (rows.length === 0) return null;
 
     const results = rows.reduce<ISelectEntity>((acc, row) => {
-      const { entity, participant, cii } = row;
+      const { entity, participant, asset } = row;
 
       if (!acc.id) {
-        acc = { ...entity, participants: new DeepSet(), cii: new DeepSet() };
+        acc = { ...entity, participants: new DeepSet(), assets: new DeepSet() };
       }
 
       if (participant) {
         acc.participants.add(participant);
       }
 
-      if (cii) {
-        acc.cii.add(cii);
+      if (asset) {
+        acc.assets.add(asset);
       }
 
       return acc;
@@ -89,7 +89,7 @@ export class EntityService {
     return {
       ...results,
       participants: Array.from(results.participants),
-      cii: Array.from(results.cii),
+      assets: Array.from(results.assets),
     };
   }
 

@@ -16,6 +16,6 @@ export class CreateScenarioDto implements InferInsert<typeof scenariosTable> {
   exploit: string;
   impact: string;
   project_id: number;
-  CII: number;
+  asset_id: number;
   tactics_techniques: string;
 }

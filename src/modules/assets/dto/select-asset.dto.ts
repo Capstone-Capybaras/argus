@@ -1,7 +1,7 @@
-import { CIITable } from 'src/database/schema';
+import { assetsTable } from 'src/database/schema';
 import { InferSelect } from 'src/utils/modelToDtoTypes';
 
-export class SelectCIIDto implements InferSelect<typeof CIITable> {
+export class SelectAssetDto implements InferSelect<typeof assetsTable> {
   function: string;
   id: number;
   name: string;
