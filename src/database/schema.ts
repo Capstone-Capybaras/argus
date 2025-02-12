@@ -240,15 +240,18 @@ export const projectsToThreatCubesTable = pgTable(
 export const participantsToRolesTable = pgTable(
   'participants_to_roles',
   {
+    id: serial('id').unique().primaryKey(),
     participant_email: varchar()
       .notNull()
       .references(() => participantsTable.email),
-    role_name: varchar()
-      .notNull()
-      .references(() => rolesTable.name),
+    role_name: varchar().notNull(),
+    role_entity_id: integer().notNull(),
   },
   (table) => ({
-    pk: primaryKey({ columns: [table.participant_email, table.role_name] }),
+    fk: foreignKey({
+      columns: [table.role_name, table.role_entity_id],
+      foreignColumns: [rolesTable.name, rolesTable.entity_id],
+    }),
   }),
 );
 
@@ -291,15 +294,18 @@ export const assetsToScenariosTable = pgTable(
 export const rolesToInjectsTable = pgTable(
   'roles_to_injects',
   {
-    role_name: varchar()
-      .notNull()
-      .references(() => rolesTable.name),
+    id: serial('id').unique().primaryKey(),
+    role_name: varchar().notNull(),
+    role_entity_id: integer().notNull(),
     inject_id: varchar()
       .notNull()
       .references(() => injectsTable.inject_id),
   },
   (table) => ({
-    pk: primaryKey({ columns: [table.role_name, table.inject_id] }),
+    fk: foreignKey({
+      columns: [table.role_name, table.role_entity_id],
+      foreignColumns: [rolesTable.name, rolesTable.entity_id],
+    }),
   }),
 );
 
