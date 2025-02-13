@@ -19,11 +19,31 @@ export class ParticipantsService {
   ) {}
 
   async createParticipant(data: CreateParticipantDto) {
-    const result = await this.db
-      .insert(participantsTable)
-      .values(data)
-      .returning();
-    return result[0];
+    // when creating a participant we need to do multiple things, so use a SQL transaction
+    return this.db.transaction(async (tx) => {
+      // 1) update base participant table
+      await tx.insert(participantsTable).values({
+        email: data.email,
+        name: data.name,
+      });
+
+      // 2) tag participant to entity
+      await tx.insert(entitesToParticipantsTable).values({
+        participant_email: data.email,
+        entity_id: data.entity_id,
+      });
+
+      // 3) tag participant to role(s)
+      await Promise.all(
+        data.roles.map((role) =>
+          tx.insert(participantsToRolesTable).values({
+            participant_email: data.email,
+            role_name: role,
+            role_entity_id: data.entity_id,
+          }),
+        ),
+      );
+    });
   }
 
   // whenever we query for participants, we should return their roles as well

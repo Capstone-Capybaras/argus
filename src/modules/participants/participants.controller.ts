@@ -23,10 +23,12 @@ export class ParticipantsController {
   constructor(private readonly participantsService: ParticipantsService) {}
 
   @Post()
-  async createParticipant(
-    @Body() data: CreateParticipantDto,
-  ): Promise<SelectParticipantDto> {
-    return this.participantsService.createParticipant(data);
+  async createParticipant(@Body() data: CreateParticipantDto): Promise<void> {
+    try {
+      return await this.participantsService.createParticipant(data);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
   }
 
   @Get()
