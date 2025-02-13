@@ -54,7 +54,7 @@ export class BullQueueService {
   async createEmailSchedule(data: CreateMailDto) {
     try {
       const emailData: CreateMailDto = {
-        projectId: data.projectId,
+        project_id: data.project_id,
         to: data.to,
         cc: data.cc,
         bcc: data.bcc,

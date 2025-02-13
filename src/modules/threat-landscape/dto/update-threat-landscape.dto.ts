@@ -7,9 +7,6 @@ export class UpdateThreatLandscapeDto
 {
   // composite-primary-key
   @IsInt()
-  project_id: number;
-
-  @IsInt()
   entity_id: number;
 
   @IsString()

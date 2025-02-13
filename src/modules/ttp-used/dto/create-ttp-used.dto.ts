@@ -1,10 +1,10 @@
-import { IsString, IsInt } from 'class-validator';
+import { IsString, IsInt, IsOptional } from 'class-validator';
 import { ttpUsedTable } from 'src/database/schema';
-import { InferUpdate } from 'src/utils/modelToDtoTypes';
+import { InferInsert } from 'src/utils/modelToDtoTypes';
 
-export class CreateTtpUsedDto implements InferUpdate<typeof ttpUsedTable> {
+export class CreateTtpUsedDto implements InferInsert<typeof ttpUsedTable> {
   @IsInt()
-  project_id: number;
+  scenario_project_id: number;
 
   @IsString()
   scenario_number: string;
@@ -13,8 +13,10 @@ export class CreateTtpUsedDto implements InferUpdate<typeof ttpUsedTable> {
   tactic: string;
 
   @IsString()
-  technique: string;
+  @IsOptional()
+  technique?: string;
 
   @IsString()
-  notes: string;
+  @IsOptional()
+  notes?: string;
 }

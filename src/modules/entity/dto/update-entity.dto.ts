@@ -20,10 +20,6 @@ export class UpdateEntityDto implements InferUpdate<typeof entitiesTable> {
 
   @IsString()
   @IsOptional()
-  CII?: string;
-
-  @IsString()
-  @IsOptional()
   critical_function?: string;
 
   @IsArray()

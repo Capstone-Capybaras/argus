@@ -411,7 +411,7 @@ export class BatchScheduleService {
         );
       }
       const data: CreateMailDto = {
-        projectId: projectId,
+        project_id: projectId,
         to: tos,
         subject: value.subject,
         html: this.convertPlainTextToHTML(value.inject),

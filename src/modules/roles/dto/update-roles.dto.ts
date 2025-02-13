@@ -8,5 +8,5 @@ export class UpdateRoleDto implements InferUpdate<typeof rolesTable> {
 
   @IsInt()
   @IsOptional()
-  project_id?: number;
+  entity_id?: number;
 }

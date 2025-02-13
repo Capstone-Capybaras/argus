@@ -10,6 +10,7 @@ import {
   timestamp,
   primaryKey,
   pgEnum,
+  foreignKey,
 } from 'drizzle-orm/pg-core';
 
 // Existing tables
@@ -48,7 +49,7 @@ export const entitiesTable = pgTable('entities', {
   severity_levels: text(),
 });
 
-export const CIITable = pgTable('CII', {
+export const assetsTable = pgTable('assets', {
   id: serial('id').unique().primaryKey(),
   name: varchar().notNull(),
   users: text().notNull(),
@@ -68,23 +69,12 @@ export const participantsTable = pgTable('participants', {
     .references(() => entitiesTable.id),
 });
 
-// export const threatActorsTable = pgTable('threat_actors', {
-//   id: serial('id').unique().primaryKey(),
-//   name: text().notNull(),
-//   category: text().notNull(),
-//   intent: text().notNull(),
-//   rationale: text().notNull(),
-//   capabilities: text().notNull(),
-//   project_id: integer()
-//     .notNull()
-//     .references(() => projectsTable.id),
-// });
-
 export const threatLandscapeTable = pgTable(
   'threat_landscape',
   {
-    project_id: integer().references(() => projectsTable.id),
-    entity_id: integer().references(() => entitiesTable.id),
+    entity_id: integer()
+      .notNull()
+      .references(() => entitiesTable.id),
     threat_actor_name: text(),
     category: text(),
     capability: text(),
@@ -97,7 +87,7 @@ export const threatLandscapeTable = pgTable(
   (table) => {
     return {
       pk: primaryKey({
-        columns: [table.project_id, table.entity_id, table.threat_actor_name],
+        columns: [table.entity_id, table.threat_actor_name],
       }),
     };
   },
@@ -106,49 +96,48 @@ export const threatLandscapeTable = pgTable(
 export const ttpUsedTable = pgTable(
   'ttp_used',
   {
-    project_id: integer().notNull(),
-    scenario_number: varchar()
-      .unique()
-      .references(() => scenariosTable.scenario_number),
+    id: serial('id').primaryKey(),
+    scenario_project_id: integer().notNull(),
+    scenario_number: varchar().notNull(),
     tactic: text().notNull(),
     technique: text(),
     notes: text(),
   },
-  (table) => {
-    return {
-      pk: primaryKey({ columns: [table.project_id, table.scenario_number] }),
-    };
-  },
+  (table) => ({
+    fk: foreignKey({
+      columns: [table.scenario_number, table.scenario_project_id],
+      foreignColumns: [
+        scenariosTable.scenario_number,
+        scenariosTable.project_id,
+      ],
+    }),
+  }),
 );
 
-export const scenariosTable = pgTable('scenarios', {
-  scenario_number: varchar().unique().primaryKey(),
-  asset: varchar().notNull(),
-  additional_context: text().notNull(),
-  // threat_actor_id: integer()
-  //   .notNull()
-  //   .references(() => threatActorsTable.id),
-  threat_actor_motivation: text().notNull(),
-  entity_id: integer()
-    .notNull()
-    .references(() => entitiesTable.id),
-  intended_system_impact: text().notNull(),
-  intended_biz_impact: text().notNull(),
-  attack_solution: text().notNull(),
-  severity_level: integer().notNull(),
-  initial_access: text().notNull(),
-  exploit: text().notNull(),
-  impact: text().notNull(),
-  project_id: integer()
-    .notNull()
-    .references(() => projectsTable.id),
-  CII: integer()
-    .notNull()
-    .references(() => CIITable.id),
-  tactics_techniques: text()
-    .notNull()
-    .references(() => masterThreatCubesTable.name),
-});
+export const scenariosTable = pgTable(
+  'scenarios',
+  {
+    scenario_number: varchar().notNull(),
+    additional_context: text().notNull(),
+    threat_actor_motivation: text().notNull(),
+    intended_system_impact: text().notNull(),
+    intended_biz_impact: text().notNull(),
+    attack_sophistication: text().notNull(),
+    severity_level: integer().notNull(),
+    initial_access: text().notNull(),
+    exploit: text().notNull(),
+    impact: text().notNull(),
+    project_id: integer()
+      .notNull()
+      .references(() => projectsTable.id),
+    asset_id: integer()
+      .notNull()
+      .references(() => assetsTable.id),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.scenario_number, table.project_id] }),
+  }),
+);
 
 export const injectsTable = pgTable('injects', {
   inject_id: varchar().unique().primaryKey(),
@@ -181,7 +170,9 @@ export const responsesTable = pgTable('responses', {
 
 export const masterThreatCubesTable = pgTable('master_threat_cubes', {
   threat_cube_id: serial('thread_cube_id').unique().primaryKey(), // Use only `id` as primary key
-  tactic: text().references(() => tacticsTable.id),
+  tactic: text()
+    .notNull()
+    .references(() => tacticsTable.id),
   name: text(),
 });
 
@@ -190,77 +181,70 @@ export const tacticsTable = pgTable('tactics', {
   name: text().notNull(),
 });
 
-// TODO: should there be a composite primary key for name + project ID?
-// if we decide to pursue that, participants + roles join table will be abit complicated
-export const rolesTable = pgTable('roles', {
-  name: varchar().unique().primaryKey(),
-  // 1 project to many roles OR 1 role to 1 project?
-  project_id: integer()
-    .notNull()
-    .references(() => projectsTable.id),
-});
+// a role is unique identified by the combination of role name and entity id
+export const rolesTable = pgTable(
+  'roles',
+  {
+    name: varchar().notNull(),
+    entity_id: integer()
+      .notNull()
+      .references(() => entitiesTable.id),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.name, table.entity_id] }),
+  }),
+);
 
 // ------- JOIN TABLES -------
 
-// export const entitiesToMasterThreatCubesTable = pgTable(
-//   'entities_to_master_threat_cubes',
-//   {
-//     master_threat_cube_id: integer()
-//       .notNull()
-//       .references(() => masterThreatCubesTable.id),
-//     entity_id: integer()
-//       .notNull()
-//       .references(() => entitiesTable.id),
-//   },
-//   (table) => ({
-//     pk: primaryKey({ columns: [table.entity_id, table.master_threat_cube_id] }),
-//   }),
-// );
+export const participantsToEntitiesTable = pgTable(
+  'entities_to_participants',
+  {
+    participant_email: varchar()
+      .notNull()
+      .references(() => participantsTable.email),
+    entity_id: integer()
+      .notNull()
+      .references(() => entitiesTable.id),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.participant_email, table.entity_id] }),
+  }),
+);
 
 export const entitiesToThreatCubesTable = pgTable(
   'entities_to_threat_cubes',
   {
-    entity_id: integer().notNull(),
-    threat_cube_id: integer() // do we foreign key or not
-      .notNull(), // Foreign key referencing threat cube ID
-    score: integer().notNull(), // Associated score for entity-threat cube relationship
-    project_id: integer()
+    entity_id: integer()
       .notNull()
-      .references(() => projectsTable.id),
+      .references(() => entitiesTable.id),
+    threat_cube_id: integer()
+      .notNull()
+      .references(() => masterThreatCubesTable.threat_cube_id),
+    score: integer().notNull(), // Associated score for entity-threat cube relationship
   },
   (table) => ({
     pk: primaryKey({
-      columns: [table.entity_id, table.threat_cube_id, table.project_id],
+      columns: [table.entity_id, table.threat_cube_id],
     }),
-  }),
-);
-
-export const projectsToThreatCubesTable = pgTable(
-  'projects_to_threat_cubes',
-  {
-    project_id: integer()
-      .notNull()
-      .references(() => projectsTable.id),
-    threat_cube_id: integer().notNull(),
-    score: integer().notNull(),
-  },
-  (table) => ({
-    pk: primaryKey({ columns: [table.project_id, table.threat_cube_id] }),
   }),
 );
 
 export const participantsToRolesTable = pgTable(
   'participants_to_roles',
   {
+    id: serial('id').unique().primaryKey(),
     participant_email: varchar()
       .notNull()
       .references(() => participantsTable.email),
-    role_name: varchar()
-      .notNull()
-      .references(() => rolesTable.name),
+    role_name: varchar().notNull(),
+    role_entity_id: integer().notNull(),
   },
   (table) => ({
-    pk: primaryKey({ columns: [table.participant_email, table.role_name] }),
+    fk: foreignKey({
+      columns: [table.role_name, table.role_entity_id],
+      foreignColumns: [rolesTable.name, rolesTable.entity_id],
+    }),
   }),
 );
 
@@ -279,63 +263,42 @@ export const projectsToEntitiesTable = pgTable(
   }),
 );
 
-export const CIIToScenariosTable = pgTable(
-  'CII_to_scenarios',
+export const assetsToScenariosTable = pgTable(
+  'assets_to_scenarios',
   {
-    CII_id: integer()
+    id: serial('id').unique().primaryKey(),
+    asset_id: integer()
       .notNull()
-      .references(() => CIITable.id),
-    scenario_number: varchar()
-      .notNull()
-      .references(() => scenariosTable.scenario_number),
+      .references(() => assetsTable.id),
+    scenario_number: varchar().notNull(),
+    scenario_project_id: integer().notNull(),
   },
   (table) => ({
-    pk: primaryKey({ columns: [table.CII_id, table.scenario_number] }),
+    fk: foreignKey({
+      columns: [table.scenario_number, table.scenario_project_id],
+      foreignColumns: [
+        scenariosTable.scenario_number,
+        scenariosTable.project_id,
+      ],
+    }),
   }),
 );
-
-// export const masterThreatCubesToThreatActorsTable = pgTable(
-//   'master_threat_cubes_to_threat_actors',
-//   {
-//     threat_cube_id: integer()
-//       .notNull()
-//       .references(() => masterThreatCubesTable.id),
-//     threat_actor_id: integer()
-//       .notNull()
-//       .references(() => threatActorsTable.id),
-//   },
-//   (table) => ({
-//     pk: primaryKey({ columns: [table.threat_actor_id, table.threat_cube_id] }),
-//   }),
-// );
-
-// export const masterThreatCubesToScenariosTable = pgTable(
-//   'master_threat_cubes_to_scenarios',
-//   {
-//     threat_cube_id: integer()
-//       .notNull()
-//       .references(() => masterThreatCubesTable.id),
-//     scenario_number: varchar()
-//       .notNull()
-//       .references(() => scenariosTable.scenario_number),
-//   },
-//   (table) => ({
-//     pk: primaryKey({ columns: [table.threat_cube_id, table.scenario_number] }),
-//   }),
-// );
 
 export const rolesToInjectsTable = pgTable(
   'roles_to_injects',
   {
-    role_name: varchar()
-      .notNull()
-      .references(() => rolesTable.name),
+    id: serial('id').unique().primaryKey(),
+    role_name: varchar().notNull(),
+    role_entity_id: integer().notNull(),
     inject_id: varchar()
       .notNull()
       .references(() => injectsTable.inject_id),
   },
   (table) => ({
-    pk: primaryKey({ columns: [table.role_name, table.inject_id] }),
+    fk: foreignKey({
+      columns: [table.role_name, table.role_entity_id],
+      foreignColumns: [rolesTable.name, rolesTable.entity_id],
+    }),
   }),
 );
 
