@@ -1,0 +1,25 @@
+# .gitlab-ci.yml
+stages:
+  - lint
+  - build
+
+lint:
+  stage: lint
+  image: node:16
+  script:
+    - npm install
+    - npm run lint
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+
+build:
+  stage: build
+  image: node:16
+  script:
+    - npm run build
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/

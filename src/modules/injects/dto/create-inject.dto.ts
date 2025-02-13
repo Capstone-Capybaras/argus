@@ -14,7 +14,7 @@ export class CreateInjectDto implements InferInsert<typeof injectsTable> {
   entity_id: number;
 
   @IsNumber()
-  project_id: number;
+  scenario_project_id: number;
 
   @IsDate()
   date_time: Date;

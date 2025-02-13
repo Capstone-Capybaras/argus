@@ -22,7 +22,7 @@ export class UpdateInjectDto implements InferUpdate<typeof injectsTable> {
 
   @IsNumber()
   @IsOptional()
-  project_id?: number;
+  scenario_project_id?: number;
 
   @IsDate()
   @IsOptional()
