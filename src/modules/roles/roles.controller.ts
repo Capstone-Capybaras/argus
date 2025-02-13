@@ -10,6 +10,8 @@ import {
   HttpStatus,
   BadRequestException,
   Logger,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-roles.dto';
@@ -36,9 +38,11 @@ export class RolesController {
 
   // Get all roles
   @Get()
-  async getAllRoles(): Promise<SelectRoleDto[]> {
+  async getAllRolesByEntityId(
+    @Query('entity_id', ParseIntPipe) entityId: number,
+  ): Promise<SelectRoleDto[]> {
     try {
-      const roles = await this.rolesService.getAllRoles();
+      const roles = await this.rolesService.getAllRolesForEntity(entityId);
       return roles;
     } catch (error) {
       Logger.error(error);

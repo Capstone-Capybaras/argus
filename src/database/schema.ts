@@ -64,9 +64,6 @@ export const assetsTable = pgTable('assets', {
 export const participantsTable = pgTable('participants', {
   email: varchar().primaryKey().unique(),
   name: text().notNull(),
-  entity_id: integer()
-    .notNull()
-    .references(() => entitiesTable.id),
 });
 
 export const threatLandscapeTable = pgTable(
@@ -205,7 +202,7 @@ export const rolesTable = pgTable(
 
 // ------- JOIN TABLES -------
 
-export const participantsToEntitiesTable = pgTable(
+export const entitesToParticipantsTable = pgTable(
   'entities_to_participants',
   {
     participant_email: varchar()

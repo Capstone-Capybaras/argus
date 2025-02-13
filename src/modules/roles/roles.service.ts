@@ -19,8 +19,11 @@ export class RolesService {
     return result[0];
   }
 
-  async getAllRoles() {
-    const rolesList = await this.db.select().from(rolesTable);
+  async getAllRolesForEntity(entityId: number) {
+    const rolesList = await this.db
+      .select()
+      .from(rolesTable)
+      .where(eq(rolesTable.entity_id, entityId));
     return rolesList;
   }
 

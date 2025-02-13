@@ -9,6 +9,7 @@ import {
   BadRequestException,
   Logger,
   Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ThreatLandscapeService } from './threat-landscape.service';
 import { CreateThreatLandscapeDto } from './dto/create-threat-landscape.dto';
@@ -39,7 +40,7 @@ export class ThreatLandscapeController {
 
   @Get()
   async getAllThreatLandscapes(
-    @Query('entity_id') entity_id: number,
+    @Query('entity_id', ParseIntPipe) entity_id: number,
   ): Promise<SelectThreatLandscapeDto[]> {
     try {
       const threatLandscapes = Number.isInteger(entity_id)

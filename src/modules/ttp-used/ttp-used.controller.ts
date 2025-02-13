@@ -11,6 +11,7 @@ import {
   BadRequestException,
   Logger,
   Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { TtpUsedService } from './ttp-used.service';
 import { CreateTtpUsedDto } from './dto/create-ttp-used.dto';
@@ -38,7 +39,7 @@ export class TtpUsedController {
   @Get()
   async getAllTtpUsedForScenario(
     @Query('scenario_number') scenario_number: string,
-    @Query('project_id') scenario_project_id: number,
+    @Query('project_id', ParseIntPipe) scenario_project_id: number,
   ): Promise<SelectTtpUsedDto[]> {
     try {
       const ttpUsedList = await this.ttpUsedService.getAllTtpUsedByScenario(

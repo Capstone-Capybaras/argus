@@ -169,6 +169,13 @@
       "when": 1739450246293,
       "tag": "0023_previous_zaran",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1739467846317,
+      "tag": "0024_stormy_kylun",
+      "breakpoints": true
     }
   ]
 }

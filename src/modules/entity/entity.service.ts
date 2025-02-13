@@ -4,7 +4,6 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import {
   assetsTable,
   entitiesTable,
-  participantsTable,
   projectsTable,
   projectsToEntitiesTable,
 } from '../../database/schema';
@@ -12,14 +11,21 @@ import { eq } from 'drizzle-orm';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
 import { AssignEntityDto } from './dto/assign-entity.dto';
-import { ISelectEntity, SelectEntityDto } from './dto/select-entity.dto';
+import { SelectEntityDto, SelectEntityOnlyDto } from './dto/select-entity.dto';
 import { DeepSet } from 'src/utils/DeepSet';
+import { ParticipantsService } from '../participants/participants.service';
+import { SelectAssetDto } from '../assets/dto/select-asset.dto';
+
+class ISelectEntity extends SelectEntityOnlyDto {
+  assets: DeepSet<SelectAssetDto>;
+}
 
 @Injectable()
 export class EntityService {
   constructor(
     @Inject(DATABASE_CONNECTION)
     private readonly db: ReturnType<typeof drizzle>,
+    private readonly participantsService: ParticipantsService,
   ) {}
 
   // Create a new entity
@@ -52,31 +58,25 @@ export class EntityService {
 
   // Retrieve a specific entity by id
   async getEntityById(id: number): Promise<SelectEntityDto | null> {
+    const entityParticipants =
+      await this.participantsService.getAllParticipantsByEntity(id);
+
     const rows = await this.db
       .select({
         entity: entitiesTable,
-        participant: participantsTable,
         asset: assetsTable,
       })
       .from(entitiesTable)
-      .leftJoin(
-        participantsTable,
-        eq(entitiesTable.id, participantsTable.entity_id),
-      )
       .leftJoin(assetsTable, eq(entitiesTable.id, assetsTable.entity_id))
       .where(eq(entitiesTable.id, id));
 
     if (rows.length === 0) return null;
 
     const results = rows.reduce<ISelectEntity>((acc, row) => {
-      const { entity, participant, asset } = row;
+      const { entity, asset } = row;
 
       if (!acc.id) {
-        acc = { ...entity, participants: new DeepSet(), assets: new DeepSet() };
-      }
-
-      if (participant) {
-        acc.participants.add(participant);
+        acc = { ...entity, assets: new DeepSet() };
       }
 
       if (asset) {
@@ -88,7 +88,7 @@ export class EntityService {
 
     return {
       ...results,
-      participants: Array.from(results.participants),
+      participants: entityParticipants,
       assets: Array.from(results.assets),
     };
   }

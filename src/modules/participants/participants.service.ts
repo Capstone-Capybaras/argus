@@ -1,10 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DATABASE_CONNECTION } from '../../config/providers';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { eq } from 'drizzle-orm';
-import { participantsTable } from 'src/database/schema';
+import { and, eq } from 'drizzle-orm';
+import {
+  entitesToParticipantsTable,
+  participantsTable,
+  participantsToRolesTable,
+} from 'src/database/schema';
 import { CreateParticipantDto } from './dto/create-participant.dto';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
+import { ParticipantWithRoles } from './dto/select-participant.dto';
 
 @Injectable()
 export class ParticipantsService {
@@ -21,18 +26,118 @@ export class ParticipantsService {
     return result[0];
   }
 
-  async getAllParticipants() {
-    const participants = await this.db.select().from(participantsTable);
-    return participants;
+  // whenever we query for participants, we should return their roles as well
+  async getAllParticipantsByEntity(entityId: number) {
+    const participant_emails = this.db
+      .$with('participant_emails')
+      .as(
+        this.db
+          .select()
+          .from(entitesToParticipantsTable)
+          .where(eq(entitesToParticipantsTable.entity_id, entityId)),
+      );
+
+    const rows = await this.db
+      .with(participant_emails)
+      .select()
+      .from(participant_emails)
+      .leftJoin(
+        participantsToRolesTable,
+        eq(
+          participant_emails.participant_email,
+          participantsToRolesTable.participant_email,
+        ),
+      )
+      .leftJoin(
+        participantsTable,
+        eq(participantsTable.email, participant_emails.participant_email),
+      );
+
+    if (rows.length === 0) return [];
+
+    const visitedEmails = new Set<string>();
+    return rows.reduce<ParticipantWithRoles[]>((acc, row) => {
+      const { participants_to_roles, participant_emails, participants } = row;
+
+      if (!participants) return acc;
+
+      if (!visitedEmails.has(participant_emails.participant_email)) {
+        acc.push({
+          roles: [],
+          email: participant_emails.participant_email,
+          entity_id: participant_emails.entity_id,
+          name: participants.name,
+        });
+        visitedEmails.add(participant_emails.participant_email);
+      }
+
+      if (!participants_to_roles) return acc;
+
+      acc
+        .find((p) => p.email === participants.email)
+        ?.roles.push(participants_to_roles.role_name);
+
+      return acc;
+    }, [] as ParticipantWithRoles[]);
   }
 
-  async getParticipantByEmail(email: string) {
-    const participant = await this.db
+  // whenever we query for participants, we should return their roles as well
+  async getParticipantByEmailAndEntity(email: string, entityId: number) {
+    const participant = this.db.$with('participant').as(
+      this.db
+        .select()
+        .from(entitesToParticipantsTable)
+        .where(
+          and(
+            eq(entitesToParticipantsTable.entity_id, entityId),
+            eq(entitesToParticipantsTable.participant_email, email),
+          ),
+        )
+        .limit(1),
+    );
+
+    const rows = await this.db
+      .with(participant)
       .select()
-      .from(participantsTable)
-      .where(eq(participantsTable.email, email))
-      .limit(1);
-    return participant[0] || null;
+      .from(participant)
+      .leftJoin(
+        participantsToRolesTable,
+        eq(
+          participant.participant_email,
+          participantsToRolesTable.participant_email,
+        ),
+      )
+      .leftJoin(
+        participantsTable,
+        eq(participantsTable.email, participant.participant_email),
+      );
+
+    if (rows.length === 0) return;
+
+    return rows.reduce<ParticipantWithRoles>((acc, row) => {
+      const {
+        participants_to_roles,
+        participant,
+        participants: participant_info,
+      } = row;
+
+      if (!participant_info) return acc;
+
+      if (!acc.email) {
+        acc = {
+          roles: [],
+          email: participant.participant_email,
+          entity_id: participant.entity_id,
+          name: participant_info.name,
+        };
+      }
+
+      if (!participants_to_roles) return acc;
+
+      acc.roles.push(participants_to_roles.role_name);
+
+      return acc;
+    }, {} as ParticipantWithRoles);
   }
 
   async updateParticipant(email: string, data: UpdateParticipantDto) {
@@ -44,10 +149,18 @@ export class ParticipantsService {
     return result[0] || null;
   }
 
-  async deleteParticipant(email: string) {
+  /**
+   * Unlink these two by removing entry from join table. No real delete is done
+   */
+  async deleteParticipantFromEntity(email: string, entityId: number) {
     const result = await this.db
-      .delete(participantsTable)
-      .where(eq(participantsTable.email, email))
+      .delete(entitesToParticipantsTable)
+      .where(
+        and(
+          eq(entitesToParticipantsTable.entity_id, entityId),
+          eq(entitesToParticipantsTable.participant_email, email),
+        ),
+      )
       .returning();
     return result.length > 0;
   }
