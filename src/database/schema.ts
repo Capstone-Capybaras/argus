@@ -13,6 +13,7 @@ import {
   json,
   time,
   unique,
+  uuid,
 } from 'drizzle-orm/pg-core';
 
 // Existing tables
@@ -313,6 +314,37 @@ export const rolesTable = pgTable(
     pk: primaryKey({ columns: [table.name, table.entity_id] }),
   }),
 );
+
+export const chatsTable = pgTable('chats', {
+  id: uuid().defaultRandom().primaryKey(),
+  name: text().notNull(),
+  created_at: timestamp().notNull().defaultNow(),
+  updated_at: timestamp()
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+  user_id: integer()
+    .notNull()
+    .references(() => usersTable.id),
+  project_id: integer()
+    .notNull()
+    .references(() => projectsTable.id),
+});
+
+export const chatMessagesTable = pgTable('chat_messages', {
+  id: uuid().defaultRandom().primaryKey(),
+  chat_id: text()
+    .notNull()
+    .references(() => chatsTable.id),
+  role: text().notNull(),
+  content: text().notNull(),
+  files: text(), // TODO: json string or array of strings? ask abram
+  created_at: timestamp().notNull().defaultNow(),
+  updated_at: timestamp()
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});
 
 // ------- JOIN TABLES -------
 
