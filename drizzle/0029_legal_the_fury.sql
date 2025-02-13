@@ -1,1 +1,0 @@
-ALTER TABLE "entities_to_participants" ALTER COLUMN "participant_email" SET DATA TYPE varchar;

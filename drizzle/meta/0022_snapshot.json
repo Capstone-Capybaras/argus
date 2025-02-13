@@ -1,6 +1,6 @@
 {
-  "id": "c9c6e395-a080-4e62-9362-26457fdd3a06",
-  "prevId": "36400deb-6ae9-43c4-bba8-b5a9b59c24e5",
+  "id": "164866eb-63e0-4d93-9474-7f6894b59623",
+  "prevId": "cd3c6c78-dcd2-48f9-b139-59d898eaa849",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -83,6 +83,12 @@
       "name": "assets_to_scenarios",
       "schema": "",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
         "asset_id": {
           "name": "asset_id",
           "type": "integer",
@@ -92,6 +98,12 @@
         "scenario_number": {
           "name": "scenario_number",
           "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "scenario_project_id": {
+          "name": "scenario_project_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         }
@@ -111,30 +123,32 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "assets_to_scenarios_scenario_number_scenarios_scenario_number_fk": {
-          "name": "assets_to_scenarios_scenario_number_scenarios_scenario_number_fk",
+        "assets_to_scenarios_scenario_number_scenario_project_id_scenarios_scenario_number_project_id_fk": {
+          "name": "assets_to_scenarios_scenario_number_scenario_project_id_scenarios_scenario_number_project_id_fk",
           "tableFrom": "assets_to_scenarios",
           "tableTo": "scenarios",
           "columnsFrom": [
-            "scenario_number"
+            "scenario_number",
+            "scenario_project_id"
           ],
           "columnsTo": [
-            "scenario_number"
+            "scenario_number",
+            "project_id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {
-        "assets_to_scenarios_asset_id_scenario_number_pk": {
-          "name": "assets_to_scenarios_asset_id_scenario_number_pk",
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "assets_to_scenarios_id_unique": {
+          "name": "assets_to_scenarios_id_unique",
+          "nullsNotDistinct": false,
           "columns": [
-            "asset_id",
-            "scenario_number"
+            "id"
           ]
         }
       },
-      "uniqueConstraints": {},
       "checkConstraints": {}
     },
     "public.emails": {
@@ -338,37 +352,43 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true
-        },
-        "project_id": {
-          "name": "project_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "entities_to_threat_cubes_project_id_projects_id_fk": {
-          "name": "entities_to_threat_cubes_project_id_projects_id_fk",
+        "entities_to_threat_cubes_entity_id_entities_id_fk": {
+          "name": "entities_to_threat_cubes_entity_id_entities_id_fk",
           "tableFrom": "entities_to_threat_cubes",
-          "tableTo": "projects",
+          "tableTo": "entities",
           "columnsFrom": [
-            "project_id"
+            "entity_id"
           ],
           "columnsTo": [
             "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
+        },
+        "entities_to_threat_cubes_threat_cube_id_master_threat_cubes_thread_cube_id_fk": {
+          "name": "entities_to_threat_cubes_threat_cube_id_master_threat_cubes_thread_cube_id_fk",
+          "tableFrom": "entities_to_threat_cubes",
+          "tableTo": "master_threat_cubes",
+          "columnsFrom": [
+            "threat_cube_id"
+          ],
+          "columnsTo": [
+            "thread_cube_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
-        "entities_to_threat_cubes_entity_id_threat_cube_id_project_id_pk": {
-          "name": "entities_to_threat_cubes_entity_id_threat_cube_id_project_id_pk",
+        "entities_to_threat_cubes_entity_id_threat_cube_id_pk": {
+          "name": "entities_to_threat_cubes_entity_id_threat_cube_id_pk",
           "columns": [
             "entity_id",
-            "threat_cube_id",
-            "project_id"
+            "threat_cube_id"
           ]
         }
       },
@@ -388,6 +408,12 @@
         "scenario_number": {
           "name": "scenario_number",
           "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "scenario_project_id": {
+          "name": "scenario_project_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -438,29 +464,10 @@
           "type": "varchar",
           "primaryKey": false,
           "notNull": true
-        },
-        "project_id": {
-          "name": "project_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "injects_scenario_number_scenarios_scenario_number_fk": {
-          "name": "injects_scenario_number_scenarios_scenario_number_fk",
-          "tableFrom": "injects",
-          "tableTo": "scenarios",
-          "columnsFrom": [
-            "scenario_number"
-          ],
-          "columnsTo": [
-            "scenario_number"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
         "injects_entity_id_entities_id_fk": {
           "name": "injects_entity_id_entities_id_fk",
           "tableFrom": "injects",
@@ -474,15 +481,17 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "injects_project_id_projects_id_fk": {
-          "name": "injects_project_id_projects_id_fk",
+        "injects_scenario_number_scenario_project_id_scenarios_scenario_number_project_id_fk": {
+          "name": "injects_scenario_number_scenario_project_id_scenarios_scenario_number_project_id_fk",
           "tableFrom": "injects",
-          "tableTo": "projects",
+          "tableTo": "scenarios",
           "columnsFrom": [
-            "project_id"
+            "scenario_number",
+            "scenario_project_id"
           ],
           "columnsTo": [
-            "id"
+            "scenario_number",
+            "project_id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -514,7 +523,7 @@
           "name": "tactic",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "name": {
           "name": "name",
@@ -608,15 +617,15 @@
       "columns": {
         "participant_email": {
           "name": "participant_email",
-          "type": "integer",
+          "type": "varchar",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "entity_id": {
           "name": "entity_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -664,6 +673,12 @@
       "name": "participants_to_roles",
       "schema": "",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
         "participant_email": {
           "name": "participant_email",
           "type": "varchar",
@@ -673,6 +688,12 @@
         "role_name": {
           "name": "role_name",
           "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role_entity_id": {
+          "name": "role_entity_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         }
@@ -692,30 +713,32 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "participants_to_roles_role_name_roles_name_fk": {
-          "name": "participants_to_roles_role_name_roles_name_fk",
+        "participants_to_roles_role_name_role_entity_id_roles_name_entity_id_fk": {
+          "name": "participants_to_roles_role_name_role_entity_id_roles_name_entity_id_fk",
           "tableFrom": "participants_to_roles",
           "tableTo": "roles",
           "columnsFrom": [
-            "role_name"
+            "role_name",
+            "role_entity_id"
           ],
           "columnsTo": [
-            "name"
+            "name",
+            "entity_id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {
-        "participants_to_roles_participant_email_role_name_pk": {
-          "name": "participants_to_roles_participant_email_role_name_pk",
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "participants_to_roles_id_unique": {
+          "name": "participants_to_roles_id_unique",
+          "nullsNotDistinct": false,
           "columns": [
-            "participant_email",
-            "role_name"
+            "id"
           ]
         }
       },
-      "uniqueConstraints": {},
       "checkConstraints": {}
     },
     "public.projects": {
@@ -845,108 +868,6 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "public.projects_to_threat_cubes": {
-      "name": "projects_to_threat_cubes",
-      "schema": "",
-      "columns": {
-        "project_id": {
-          "name": "project_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "threat_cube_id": {
-          "name": "threat_cube_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "score": {
-          "name": "score",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "projects_to_threat_cubes_project_id_projects_id_fk": {
-          "name": "projects_to_threat_cubes_project_id_projects_id_fk",
-          "tableFrom": "projects_to_threat_cubes",
-          "tableTo": "projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "projects_to_threat_cubes_project_id_threat_cube_id_pk": {
-          "name": "projects_to_threat_cubes_project_id_threat_cube_id_pk",
-          "columns": [
-            "project_id",
-            "threat_cube_id"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "public.responses": {
-      "name": "responses",
-      "schema": "",
-      "columns": {
-        "inject_id": {
-          "name": "inject_id",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "response": {
-          "name": "response",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "responses_inject_id_injects_inject_id_fk": {
-          "name": "responses_inject_id_injects_inject_id_fk",
-          "tableFrom": "responses",
-          "tableTo": "injects",
-          "columnsFrom": [
-            "inject_id"
-          ],
-          "columnsTo": [
-            "inject_id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "responses_id_unique": {
-          "name": "responses_id_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "id"
-          ]
-        }
-      },
-      "checkConstraints": {}
-    },
     "public.revoked_tokens": {
       "name": "revoked_tokens",
       "schema": "",
@@ -986,11 +907,11 @@
         "name": {
           "name": "name",
           "type": "varchar",
-          "primaryKey": true,
+          "primaryKey": false,
           "notNull": true
         },
-        "project_id": {
-          "name": "project_id",
+        "entity_id": {
+          "name": "entity_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -998,12 +919,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "roles_project_id_projects_id_fk": {
-          "name": "roles_project_id_projects_id_fk",
+        "roles_entity_id_entities_id_fk": {
+          "name": "roles_entity_id_entities_id_fk",
           "tableFrom": "roles",
-          "tableTo": "projects",
+          "tableTo": "entities",
           "columnsFrom": [
-            "project_id"
+            "entity_id"
           ],
           "columnsTo": [
             "id"
@@ -1012,70 +933,12 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "roles_name_unique": {
-          "name": "roles_name_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
-        }
-      },
-      "checkConstraints": {}
-    },
-    "public.roles_to_injects": {
-      "name": "roles_to_injects",
-      "schema": "",
-      "columns": {
-        "role_name": {
-          "name": "role_name",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "inject_id": {
-          "name": "inject_id",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "roles_to_injects_role_name_roles_name_fk": {
-          "name": "roles_to_injects_role_name_roles_name_fk",
-          "tableFrom": "roles_to_injects",
-          "tableTo": "roles",
-          "columnsFrom": [
-            "role_name"
-          ],
-          "columnsTo": [
-            "name"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "roles_to_injects_inject_id_injects_inject_id_fk": {
-          "name": "roles_to_injects_inject_id_injects_inject_id_fk",
-          "tableFrom": "roles_to_injects",
-          "tableTo": "injects",
-          "columnsFrom": [
-            "inject_id"
-          ],
-          "columnsTo": [
-            "inject_id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
       "compositePrimaryKeys": {
-        "roles_to_injects_role_name_inject_id_pk": {
-          "name": "roles_to_injects_role_name_inject_id_pk",
+        "roles_name_entity_id_pk": {
+          "name": "roles_name_entity_id_pk",
           "columns": [
-            "role_name",
-            "inject_id"
+            "name",
+            "entity_id"
           ]
         }
       },
@@ -1089,7 +952,7 @@
         "scenario_number": {
           "name": "scenario_number",
           "type": "varchar",
-          "primaryKey": true,
+          "primaryKey": false,
           "notNull": true
         },
         "additional_context": {
@@ -1101,12 +964,6 @@
         "threat_actor_motivation": {
           "name": "threat_actor_motivation",
           "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "entity_id": {
-          "name": "entity_id",
-          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -1122,8 +979,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "attack_solution": {
-          "name": "attack_solution",
+        "attack_sophistication": {
+          "name": "attack_sophistication",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -1163,29 +1020,10 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true
-        },
-        "tactics_techniques": {
-          "name": "tactics_techniques",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "scenarios_entity_id_entities_id_fk": {
-          "name": "scenarios_entity_id_entities_id_fk",
-          "tableFrom": "scenarios",
-          "tableTo": "entities",
-          "columnsFrom": [
-            "entity_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
         "scenarios_project_id_projects_id_fk": {
           "name": "scenarios_project_id_projects_id_fk",
           "tableFrom": "scenarios",
@@ -1211,31 +1049,18 @@
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
-        },
-        "scenarios_tactics_techniques_master_threat_cubes_name_fk": {
-          "name": "scenarios_tactics_techniques_master_threat_cubes_name_fk",
-          "tableFrom": "scenarios",
-          "tableTo": "master_threat_cubes",
-          "columnsFrom": [
-            "tactics_techniques"
-          ],
-          "columnsTo": [
-            "name"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "scenarios_scenario_number_unique": {
-          "name": "scenarios_scenario_number_unique",
-          "nullsNotDistinct": false,
+      "compositePrimaryKeys": {
+        "scenarios_scenario_number_project_id_pk": {
+          "name": "scenarios_scenario_number_project_id_pk",
           "columns": [
-            "scenario_number"
+            "scenario_number",
+            "project_id"
           ]
         }
       },
+      "uniqueConstraints": {},
       "checkConstraints": {}
     },
     "public.server": {
@@ -1284,17 +1109,11 @@
       "name": "threat_landscape",
       "schema": "",
       "columns": {
-        "project_id": {
-          "name": "project_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
         "entity_id": {
           "name": "entity_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "threat_actor_name": {
           "name": "threat_actor_name",
@@ -1347,19 +1166,6 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "threat_landscape_project_id_projects_id_fk": {
-          "name": "threat_landscape_project_id_projects_id_fk",
-          "tableFrom": "threat_landscape",
-          "tableTo": "projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
         "threat_landscape_entity_id_entities_id_fk": {
           "name": "threat_landscape_entity_id_entities_id_fk",
           "tableFrom": "threat_landscape",
@@ -1375,10 +1181,9 @@
         }
       },
       "compositePrimaryKeys": {
-        "threat_landscape_project_id_entity_id_threat_actor_name_pk": {
-          "name": "threat_landscape_project_id_entity_id_threat_actor_name_pk",
+        "threat_landscape_entity_id_threat_actor_name_pk": {
+          "name": "threat_landscape_entity_id_threat_actor_name_pk",
           "columns": [
-            "project_id",
             "entity_id",
             "threat_actor_name"
           ]
@@ -1391,8 +1196,14 @@
       "name": "ttp_used",
       "schema": "",
       "columns": {
-        "project_id": {
-          "name": "project_id",
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "scenario_project_id": {
+          "name": "scenario_project_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -1401,7 +1212,7 @@
           "name": "scenario_number",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "tactic": {
           "name": "tactic",
@@ -1424,38 +1235,24 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "ttp_used_scenario_number_scenarios_scenario_number_fk": {
-          "name": "ttp_used_scenario_number_scenarios_scenario_number_fk",
+        "ttp_used_scenario_number_scenario_project_id_scenarios_scenario_number_project_id_fk": {
+          "name": "ttp_used_scenario_number_scenario_project_id_scenarios_scenario_number_project_id_fk",
           "tableFrom": "ttp_used",
           "tableTo": "scenarios",
           "columnsFrom": [
-            "scenario_number"
+            "scenario_number",
+            "scenario_project_id"
           ],
           "columnsTo": [
-            "scenario_number"
+            "scenario_number",
+            "project_id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {
-        "ttp_used_project_id_scenario_number_pk": {
-          "name": "ttp_used_project_id_scenario_number_pk",
-          "columns": [
-            "project_id",
-            "scenario_number"
-          ]
-        }
-      },
-      "uniqueConstraints": {
-        "ttp_used_scenario_number_unique": {
-          "name": "ttp_used_scenario_number_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "scenario_number"
-          ]
-        }
-      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "checkConstraints": {}
     },
     "public.users": {

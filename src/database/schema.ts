@@ -139,26 +139,34 @@ export const scenariosTable = pgTable(
   }),
 );
 
-export const injectsTable = pgTable('injects', {
-  inject_id: varchar().unique().primaryKey(),
-  // schema draws 1-1, I believe it's many injects to 1 scenario
-  scenario_number: varchar()
-    .notNull()
-    .references(() => scenariosTable.scenario_number),
-  date_time: timestamp().notNull(),
-  inject_sent: boolean().notNull(),
-  inject_desc: text().notNull(),
-  inject_type: text().notNull(),
-  artefact: text().notNull(),
-  entity_id: integer()
-    .notNull()
-    .references(() => entitiesTable.id),
-  from: varchar().notNull(),
-  to_recipient: varchar().notNull(),
-  project_id: integer()
-    .notNull()
-    .references(() => projectsTable.id),
-});
+export const injectsTable = pgTable(
+  'injects',
+  {
+    inject_id: varchar().unique().primaryKey(),
+    // schema draws 1-1, I believe it's many injects to 1 scenario
+    scenario_number: varchar().notNull(),
+    scenario_project_id: integer().notNull(),
+    date_time: timestamp().notNull(),
+    inject_sent: boolean().notNull(),
+    inject_desc: text().notNull(),
+    inject_type: text().notNull(),
+    artefact: text().notNull(),
+    entity_id: integer()
+      .notNull()
+      .references(() => entitiesTable.id),
+    from: varchar().notNull(),
+    to_recipient: varchar().notNull(),
+  },
+  (table) => ({
+    fk: foreignKey({
+      columns: [table.scenario_number, table.scenario_project_id],
+      foreignColumns: [
+        scenariosTable.scenario_number,
+        scenariosTable.project_id,
+      ],
+    }),
+  }),
+);
 
 export const responsesTable = pgTable('responses', {
   inject_id: varchar()
