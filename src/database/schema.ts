@@ -122,7 +122,7 @@ export const scenariosTable = pgTable(
     threat_actor_motivation: text().notNull(),
     intended_system_impact: text().notNull(),
     intended_biz_impact: text().notNull(),
-    attack_solution: text().notNull(),
+    attack_sophistication: text().notNull(),
     severity_level: integer().notNull(),
     initial_access: text().notNull(),
     exploit: text().notNull(),
@@ -133,9 +133,6 @@ export const scenariosTable = pgTable(
     asset_id: integer()
       .notNull()
       .references(() => assetsTable.id),
-    tactics_techniques: text()
-      .notNull()
-      .references(() => masterThreatCubesTable.name),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.scenario_number, table.project_id] }),
