@@ -215,32 +215,18 @@ export const participantsToEntitiesTable = pgTable(
 export const entitiesToThreatCubesTable = pgTable(
   'entities_to_threat_cubes',
   {
-    entity_id: integer().notNull(),
-    threat_cube_id: integer() // do we foreign key or not
-      .notNull(), // Foreign key referencing threat cube ID
-    score: integer().notNull(), // Associated score for entity-threat cube relationship
-    project_id: integer()
+    entity_id: integer()
       .notNull()
-      .references(() => projectsTable.id),
+      .references(() => entitiesTable.id),
+    threat_cube_id: integer()
+      .notNull()
+      .references(() => masterThreatCubesTable.threat_cube_id),
+    score: integer().notNull(), // Associated score for entity-threat cube relationship
   },
   (table) => ({
     pk: primaryKey({
-      columns: [table.entity_id, table.threat_cube_id, table.project_id],
+      columns: [table.entity_id, table.threat_cube_id],
     }),
-  }),
-);
-
-export const projectsToThreatCubesTable = pgTable(
-  'projects_to_threat_cubes',
-  {
-    project_id: integer()
-      .notNull()
-      .references(() => projectsTable.id),
-    threat_cube_id: integer().notNull(),
-    score: integer().notNull(),
-  },
-  (table) => ({
-    pk: primaryKey({ columns: [table.project_id, table.threat_cube_id] }),
   }),
 );
 
