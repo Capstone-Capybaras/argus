@@ -67,11 +67,8 @@ export class EntityController {
   // Retrieve entities that are NOT linked to a specific project ID
   @Get('unassigned')
   async getUnassignedEntities(
-    @Query('project_id') projectId: number,
+    @Query('project_id', ParseIntPipe) projectId: number,
   ): Promise<SelectEntityOnlyDto[]> {
-    if (!projectId) {
-      throw new BadRequestException('Project ID is required');
-    }
     return await this.entityService.getUnassignedEntitiesByProjectId(projectId);
   }
 
