@@ -64,6 +64,14 @@ export class EntityController {
     return await this.entityService.getEntities();
   }
 
+  // Retrieve entities that are NOT linked to a specific project ID
+  @Get('unassigned')
+  async getUnassignedEntities(
+    @Query('project_id', ParseIntPipe) projectId: number,
+  ): Promise<SelectEntityOnlyDto[]> {
+    return await this.entityService.getUnassignedEntitiesByProjectId(projectId);
+  }
+
   // Retrieve a specific entity by id
   @Get(':id')
   async getEntityById(@Param('id') id: number): Promise<SelectEntityDto> {
@@ -94,10 +102,10 @@ export class EntityController {
     }
   }
 
-  // Delete an entity by name
-  @Delete(':name')
-  async deleteEntity(@Param('name') name: string) {
-    const deleted = await this.entityService.deleteEntity(name);
+  // Delete an entity by id
+  @Delete(':id')
+  async deleteEntity(@Param('id') id: number) {
+    const deleted = await this.entityService.deleteEntity(id);
     if (!deleted) {
       throw new HttpException('Entity not found', HttpStatus.NOT_FOUND);
     }
