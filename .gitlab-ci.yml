@@ -5,7 +5,7 @@ stages:
 
 lint:
   stage: lint
-  image: node:16
+  image: node:20
   script:
     - npm install
     - npm run lint
@@ -16,7 +16,7 @@ lint:
 
 build:
   stage: build
-  image: node:16
+  image: node:20
   script:
     - npm run build
   cache:

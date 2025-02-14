@@ -11,6 +11,7 @@ import {
   BadRequestException,
   Logger,
   Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { EntityService } from './entity.service';
 import { CreateEntityDto } from './dto/create-entity.dto';
@@ -55,7 +56,7 @@ export class EntityController {
   // Retrieve all entities
   @Get()
   async getEntities(
-    @Query('project_id') projectId: number,
+    @Query('project_id', ParseIntPipe) projectId: number,
   ): Promise<SelectEntityOnlyDto[]> {
     if (projectId) {
       return await this.entityService.getEntitiesByProjectId(projectId);

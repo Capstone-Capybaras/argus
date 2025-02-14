@@ -6,5 +6,9 @@ export class SelectParticipantDto
 {
   email: string;
   name: string;
+}
+
+export class ParticipantWithRoles extends SelectParticipantDto {
   entity_id: number;
+  roles: string[];
 }
