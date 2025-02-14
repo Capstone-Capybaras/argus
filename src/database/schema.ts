@@ -330,3 +330,17 @@ export const serverTypeEnum = pgEnum('server_type', ['simx1', 'simx2']);
 export const serverTable = pgTable('server', {
   server: serverTypeEnum().default('simx1'),
 });
+
+export const mselTable = pgTable(
+  'msel',
+  {
+    project_id: integer()
+      .notNull()
+      .references(() => projectsTable.id),
+    msel: text().notNull(),
+    date_uploaded: timestamp().notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.msel, table.project_id] }),
+  }),
+);
