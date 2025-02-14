@@ -7,7 +7,7 @@ import {
   projectsTable,
   projectsToEntitiesTable,
 } from '../../database/schema';
-import { eq } from 'drizzle-orm';
+import { eq, not, inArray } from 'drizzle-orm';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
 import { AssignEntityDto } from './dto/assign-entity.dto';
@@ -54,6 +54,24 @@ export class EntityService {
       )
       .where(eq(projectsTable.id, projectId));
     return results.map((res) => res.entities).filter((res) => !!res);
+  }
+
+  async getUnassignedEntitiesByProjectId(projectId: number) {
+    // Get entity IDs that are already assigned to specified project
+    const assignedEntities = await this.db
+      .select({ entity_id: projectsToEntitiesTable.entity_id })
+      .from(projectsToEntitiesTable)
+      .where(eq(projectsToEntitiesTable.project_id, projectId));
+
+    const assignedEntityIds = assignedEntities.map((row) => row.entity_id);
+
+    // Query entities that are not in the assignedEntityIds
+    const unassignedEntities = await this.db
+      .select()
+      .from(entitiesTable)
+      .where(not(inArray(entitiesTable.id, assignedEntityIds)));
+
+    return unassignedEntities;
   }
 
   // Retrieve a specific entity by id
@@ -103,11 +121,11 @@ export class EntityService {
     return result[0] || null;
   }
 
-  // Delete an entity by name
-  async deleteEntity(name: string): Promise<boolean> {
+  // Delete an entity by id
+  async deleteEntity(id: number): Promise<boolean> {
     const result = await this.db
       .delete(entitiesTable)
-      .where(eq(entitiesTable.name, name))
+      .where(eq(entitiesTable.id, id))
       .returning();
     return result.length > 0;
   }
