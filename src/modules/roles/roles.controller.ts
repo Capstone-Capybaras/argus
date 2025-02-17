@@ -87,8 +87,11 @@ export class RolesController {
 
   // Delete a role by name
   @Delete(':name')
-  async deleteRole(@Param('name') name: string) {
-    const deleted = await this.rolesService.deleteRole(name);
+  async deleteRole(@Query('name') name: string, @Query('entity_id', ParseIntPipe) entityId: number) {
+    if (!name || !entityId) {
+      throw new BadRequestException('Both name and entity_id are required');
+    }
+    const deleted = await this.rolesService.deleteRole(name, entityId);
     if (!deleted) {
       throw new HttpException('Role not found', HttpStatus.NOT_FOUND);
     }

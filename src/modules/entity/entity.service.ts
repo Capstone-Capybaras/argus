@@ -140,11 +140,11 @@ export class EntityService {
     if (result.length === 0) return null;
 
     const entity = await this.db
-    .select()
-    .from(entitiesTable)
-    .where(eq(entitiesTable.id, data.entity_id))
-    .limit(1);
+      .select()
+      .from(entitiesTable)
+      .where(eq(entitiesTable.id, data.entity_id))
+      .limit(1);
 
-    return entity.length> 0 ? entity[0]: null;
+    return entity.length > 0 ? entity[0] : null;
   }
 }

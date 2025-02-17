@@ -46,9 +46,9 @@ export class EntityController {
     try {
       const insertResult =
         await this.entityService.assignEntityToProject(assignEntityDto);
-        if (!insertResult) {
-          throw new BadRequestException('Failed to assign entity');
-        }
+      if (!insertResult) {
+        throw new BadRequestException('Failed to assign entity');
+      }
       return insertResult;
     } catch (error) {
       Logger.error(error);
