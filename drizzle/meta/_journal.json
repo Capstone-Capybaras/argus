@@ -197,6 +197,13 @@
       "when": 1739865925348,
       "tag": "0027_closed_pyro",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1739870929124,
+      "tag": "0028_chunky_old_lace",
+      "breakpoints": true
     }
   ]
 }
