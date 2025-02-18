@@ -58,7 +58,7 @@ export const assetsTable = pgTable('assets', {
   category: text().notNull(),
   entity_id: integer()
     .notNull()
-    .references(() => entitiesTable.id),
+    .references(() => entitiesTable.id, { onDelete: 'cascade' }),
 });
 
 export const participantsTable = pgTable('participants', {
@@ -71,7 +71,7 @@ export const threatLandscapeTable = pgTable(
   {
     entity_id: integer()
       .notNull()
-      .references(() => entitiesTable.id),
+      .references(() => entitiesTable.id, { onDelete: 'cascade' }),
     threat_actor_name: text(),
     category: text(),
     capability: text(),
@@ -107,7 +107,7 @@ export const ttpUsedTable = pgTable(
         scenariosTable.scenario_number,
         scenariosTable.project_id,
       ],
-    }),
+    }).onDelete('cascade'),
   }),
 );
 
@@ -126,10 +126,10 @@ export const scenariosTable = pgTable(
     impact: text().notNull(),
     project_id: integer()
       .notNull()
-      .references(() => projectsTable.id),
+      .references(() => projectsTable.id, { onDelete: 'cascade' }),
     asset_id: integer()
       .notNull()
-      .references(() => assetsTable.id),
+      .references(() => assetsTable.id, { onDelete: 'cascade' }),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.scenario_number, table.project_id] }),
@@ -150,7 +150,7 @@ export const injectsTable = pgTable(
     artefact: text().notNull(),
     entity_id: integer()
       .notNull()
-      .references(() => entitiesTable.id),
+      .references(() => entitiesTable.id, { onDelete: 'cascade' }),
     from: varchar().notNull(),
     to_recipient: varchar().notNull(),
   },
@@ -161,14 +161,14 @@ export const injectsTable = pgTable(
         scenariosTable.scenario_number,
         scenariosTable.project_id,
       ],
-    }),
+    }).onDelete('cascade'),
   }),
 );
 
 export const responsesTable = pgTable('responses', {
   inject_id: varchar()
     .notNull()
-    .references(() => injectsTable.inject_id),
+    .references(() => injectsTable.inject_id, { onDelete: 'cascade' }),
   response: text().notNull(),
   id: serial('id').unique().primaryKey(),
 });
@@ -193,7 +193,7 @@ export const rolesTable = pgTable(
     name: varchar().notNull(),
     entity_id: integer()
       .notNull()
-      .references(() => entitiesTable.id),
+      .references(() => entitiesTable.id, { onDelete: 'cascade' }),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.name, table.entity_id] }),
@@ -207,10 +207,10 @@ export const entitesToParticipantsTable = pgTable(
   {
     participant_email: varchar()
       .notNull()
-      .references(() => participantsTable.email),
+      .references(() => participantsTable.email, { onDelete: 'cascade' }),
     entity_id: integer()
       .notNull()
-      .references(() => entitiesTable.id),
+      .references(() => entitiesTable.id, { onDelete: 'cascade' }),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.participant_email, table.entity_id] }),
@@ -222,10 +222,12 @@ export const entitiesToThreatCubesTable = pgTable(
   {
     entity_id: integer()
       .notNull()
-      .references(() => entitiesTable.id),
+      .references(() => entitiesTable.id, { onDelete: 'cascade' }),
     threat_cube_id: integer()
       .notNull()
-      .references(() => masterThreatCubesTable.threat_cube_id),
+      .references(() => masterThreatCubesTable.threat_cube_id, {
+        onDelete: 'cascade',
+      }),
     score: integer().notNull(), // Associated score for entity-threat cube relationship
   },
   (table) => ({
@@ -241,7 +243,7 @@ export const participantsToRolesTable = pgTable(
     id: serial('id').unique().primaryKey(),
     participant_email: varchar()
       .notNull()
-      .references(() => participantsTable.email),
+      .references(() => participantsTable.email, { onDelete: 'cascade' }),
     role_name: varchar().notNull(),
     role_entity_id: integer().notNull(),
   },
@@ -249,7 +251,7 @@ export const participantsToRolesTable = pgTable(
     fk: foreignKey({
       columns: [table.role_name, table.role_entity_id],
       foreignColumns: [rolesTable.name, rolesTable.entity_id],
-    }),
+    }).onDelete('cascade'),
   }),
 );
 
@@ -258,10 +260,10 @@ export const projectsToEntitiesTable = pgTable(
   {
     project_id: integer()
       .notNull()
-      .references(() => projectsTable.id),
+      .references(() => projectsTable.id, { onDelete: 'cascade' }),
     entity_id: integer()
       .notNull()
-      .references(() => entitiesTable.id),
+      .references(() => entitiesTable.id, { onDelete: 'cascade' }),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.entity_id, table.project_id] }),
@@ -274,7 +276,7 @@ export const assetsToScenariosTable = pgTable(
     id: serial('id').unique().primaryKey(),
     asset_id: integer()
       .notNull()
-      .references(() => assetsTable.id),
+      .references(() => assetsTable.id, { onDelete: 'cascade' }),
     scenario_number: varchar().notNull(),
     scenario_project_id: integer().notNull(),
   },
@@ -285,7 +287,7 @@ export const assetsToScenariosTable = pgTable(
         scenariosTable.scenario_number,
         scenariosTable.project_id,
       ],
-    }),
+    }).onDelete('cascade'),
   }),
 );
 
@@ -297,13 +299,13 @@ export const rolesToInjectsTable = pgTable(
     role_entity_id: integer().notNull(),
     inject_id: varchar()
       .notNull()
-      .references(() => injectsTable.inject_id),
+      .references(() => injectsTable.inject_id, { onDelete: 'cascade' }),
   },
   (table) => ({
     fk: foreignKey({
       columns: [table.role_name, table.role_entity_id],
       foreignColumns: [rolesTable.name, rolesTable.entity_id],
-    }),
+    }).onDelete('cascade'),
   }),
 );
 
@@ -311,7 +313,7 @@ export const emailsTable = pgTable('emails', {
   id: serial('id').unique().primaryKey(),
   project_id: integer()
     .notNull()
-    .references(() => projectsTable.id),
+    .references(() => projectsTable.id, { onDelete: 'cascade' }),
   to: text().array().notNull(),
   cc: text().array(),
   bcc: text().array(),
