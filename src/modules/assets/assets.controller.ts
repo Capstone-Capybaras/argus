@@ -83,4 +83,24 @@ export class AssetsController {
     }
     return true;
   }
+
+  @Post('duplicate')
+  async duplicateAssets(
+    @Body() body: { originalEntityId: number; newEntityId: number },
+  ): Promise<{ message: string; duplicatedAssets: SelectAssetDto[] }> {
+    try {
+      const duplicatedAssets = await this.assetsService.duplicateAssets(
+        body.originalEntityId,
+        body.newEntityId,
+      );
+
+      return {
+        message: 'Assets duplicated successfully',
+        duplicatedAssets,
+      };
+    } catch (error) {
+      Logger.error(error);
+      throw new BadRequestException('Failed to duplicate assets');
+    }
+  }
 }

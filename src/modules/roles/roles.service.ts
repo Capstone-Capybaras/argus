@@ -47,12 +47,7 @@ export class RolesService {
   async deleteRole(name: string, entityId: number): Promise<boolean> {
     const result = await this.db
       .delete(rolesTable)
-      .where(
-        and(
-          eq(rolesTable.name, name),
-          eq(rolesTable.entity_id, entityId)
-        )  
-      )
+      .where(and(eq(rolesTable.name, name), eq(rolesTable.entity_id, entityId)))
       .returning();
     return result.length > 0;
   }
