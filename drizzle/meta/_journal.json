@@ -190,6 +190,13 @@
       "when": 1739856746081,
       "tag": "0026_clammy_unus",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1739865925348,
+      "tag": "0027_closed_pyro",
+      "breakpoints": true
     }
   ]
 }
