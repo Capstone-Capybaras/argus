@@ -29,7 +29,7 @@ export class MasterThreatCubesService {
     return masterThreatCubesList;
   }
 
-  async getMasterThreatCubeById(id: number) {
+  async getMasterThreatCubeById(id: string) {
     const masterThreatCube = await this.db
       .select()
       .from(masterThreatCubesTable)
@@ -37,7 +37,7 @@ export class MasterThreatCubesService {
     return masterThreatCube[0];
   }
 
-  async updateMasterThreatCube(id: number, data: UpdateMasterThreatCubeDto) {
+  async updateMasterThreatCube(id: string, data: UpdateMasterThreatCubeDto) {
     const result = await this.db
       .update(masterThreatCubesTable)
       .set(data)
@@ -46,7 +46,7 @@ export class MasterThreatCubesService {
     return result[0];
   }
 
-  async deleteMasterThreatCube(id: number): Promise<boolean> {
+  async deleteMasterThreatCube(id: string): Promise<boolean> {
     const result = await this.db
       .delete(masterThreatCubesTable)
       .where(eq(masterThreatCubesTable.threat_cube_id, id))

@@ -174,10 +174,10 @@ export const responsesTable = pgTable('responses', {
 });
 
 export const masterThreatCubesTable = pgTable('master_threat_cubes', {
-  threat_cube_id: serial('thread_cube_id').unique().primaryKey(), // Use only `id` as primary key
-  tactic: text()
-    .notNull()
-    .references(() => tacticsTable.id),
+  threat_cube_id: text().primaryKey(), // Use only `id` as primary key
+  // tactic: text()
+  //   .notNull()
+  //   .references(() => tacticsTable.id),
   name: text(),
 });
 
@@ -201,6 +201,15 @@ export const rolesTable = pgTable(
 );
 
 // ------- JOIN TABLES -------
+
+export const cubesToTacticsTable = pgTable('cubes_to_tactics', {
+  tactic_id: text().notNull().references(()=>tacticsTable.id),
+  technique_id: text().notNull().references(()=>masterThreatCubesTable.threat_cube_id)
+},
+(table)=>({
+  pk: primaryKey({columns: [table.tactic_id, table.technique_id]})
+})
+)
 
 export const entitesToParticipantsTable = pgTable(
   'entities_to_participants',

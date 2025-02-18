@@ -6,11 +6,11 @@ export class UpdateMasterThreatCubeDto
   implements InferUpdate<typeof masterThreatCubesTable>
 {
   @IsInt()
-  threat_cube_id: number;
+  threat_cube_id: string;
 
-  @IsString()
-  @IsOptional()
-  tactic?: string;
+  // @IsString()
+  // @IsOptional()
+  // tactic?: string;
 
   @IsString()
   @IsOptional()

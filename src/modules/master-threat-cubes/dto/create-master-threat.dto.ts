@@ -6,10 +6,10 @@ export class CreateMasterThreatCubeDto
   implements InferInsert<typeof masterThreatCubesTable>
 {
   @IsInt()
-  threat_cube_id: number;
+  threat_cube_id: string;
 
-  @IsString()
-  tactic: string;
+  // @IsString()
+  // tactic: string;
 
   @IsString()
   name: string;
