@@ -52,7 +52,7 @@ export class MasterThreatCubesController {
 
   @Get(':id')
   async getMasterThreatCubeById(
-    @Param('id') id: number,
+    @Param('id') id: string,
   ): Promise<SelectMasterThreatCubeDto> {
     try {
       const masterThreatCube =
@@ -94,7 +94,7 @@ export class MasterThreatCubesController {
   }
 
   @Delete(':id')
-  async deleteMasterThreatCube(@Param('id') id: number) {
+  async deleteMasterThreatCube(@Param('id') id: string) {
     const deleted =
       await this.masterThreatCubesService.deleteMasterThreatCube(id);
     if (!deleted) {
