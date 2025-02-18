@@ -232,7 +232,7 @@ export const entitiesToThreatCubesTable = pgTable(
     entity_id: integer()
       .notNull()
       .references(() => entitiesTable.id, { onDelete: 'cascade' }),
-    threat_cube_id: integer()
+    threat_cube_id: text()
       .notNull()
       .references(() => masterThreatCubesTable.threat_cube_id, {
         onDelete: 'cascade',
