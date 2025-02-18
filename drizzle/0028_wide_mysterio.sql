@@ -1,1 +1,0 @@
-ALTER TABLE "entities_to_threat_cubes" ALTER COLUMN "threat_cube_id" SET DATA TYPE text;
