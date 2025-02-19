@@ -1,5 +1,9 @@
 import { IsInt, IsString } from 'class-validator';
-import { masterThreatCubesTable, entitiesToThreatCubesTable, cubesToTacticsTable } from 'src/database/schema';
+import {
+  masterThreatCubesTable,
+  entitiesToThreatCubesTable,
+  cubesToTacticsTable,
+} from 'src/database/schema';
 import { InferInsert } from 'src/utils/modelToDtoTypes';
 
 export class CreateMasterThreatCubeDto
@@ -15,17 +19,19 @@ export class CreateMasterThreatCubeDto
   name: string;
 }
 
-export class CreateEntityToCubeJoinDto implements InferInsert<typeof entitiesToThreatCubesTable>
+export class CreateEntityToCubeJoinDto
+  implements InferInsert<typeof entitiesToThreatCubesTable>
 {
   @IsString()
   threat_cube_id: string;
   @IsInt()
   entity_id: number;
   @IsInt()
-  score: number
+  score: number;
 }
 
-export class CreateCubeToTacticJoinDto implements InferInsert<typeof cubesToTacticsTable>
+export class CreateCubeToTacticJoinDto
+  implements InferInsert<typeof cubesToTacticsTable>
 {
   @IsString()
   tactic_id: string;

@@ -13,7 +13,10 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { MasterThreatCubesService } from './master-threat-cubes.service';
-import { AddHeatMapDto, CreateMasterThreatCubeDto } from './dto/create-master-threat.dto';
+import {
+  AddHeatMapDto,
+  CreateMasterThreatCubeDto,
+} from './dto/create-master-threat.dto';
 import { UpdateMasterThreatCubeDto } from './dto/update-master-threat.dto';
 import { SelectMasterThreatCubeDto } from './dto/select-master-threat.dto';
 
@@ -51,11 +54,10 @@ export class MasterThreatCubesController {
     }
   }
 
-  @Get('heatMap')
-  async getHeatmap(){
-    const entityId = 0
-    const data = await this.masterThreatCubesService.getTTPsfromEntity(entityId);
-    return data
+  @Get('heatMap/:id')
+  async getHeatmap(@Param('id') id: number) {
+    const data = await this.masterThreatCubesService.getTTPsfromEntity(id);
+    return data;
   }
 
   @Get(':id')
@@ -115,12 +117,17 @@ export class MasterThreatCubesController {
   }
 
   @Post('addHeatMap')
-  async addHeatMap(@Body() addheatmapdto: AddHeatMapDto){
-    try{
-      await this.masterThreatCubesService.createHeatmap(addheatmapdto.entity_id, addheatmapdto.s3key);
-      const newTTPs = await this.masterThreatCubesService.getTTPsfromEntity(addheatmapdto.entity_id);
-      return newTTPs
-    } catch(err){
+  async addHeatMap(@Body() addheatmapdto: AddHeatMapDto) {
+    try {
+      await this.masterThreatCubesService.createHeatmap(
+        addheatmapdto.entity_id,
+        addheatmapdto.s3key,
+      );
+      const newTTPs = await this.masterThreatCubesService.getTTPsfromEntity(
+        addheatmapdto.entity_id,
+      );
+      return newTTPs;
+    } catch (err) {
       throw new InternalServerErrorException(err);
     }
   }

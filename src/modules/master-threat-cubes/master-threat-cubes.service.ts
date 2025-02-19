@@ -1,9 +1,18 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DATABASE_CONNECTION } from '../../config/providers';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { masterThreatCubesTable, entitiesToThreatCubesTable, cubesToTacticsTable, tacticsTable } from 'src/database/schema';
+import {
+  masterThreatCubesTable,
+  entitiesToThreatCubesTable,
+  cubesToTacticsTable,
+  tacticsTable,
+} from 'src/database/schema';
 import { eq } from 'drizzle-orm';
-import { CreateCubeToTacticJoinDto, CreateEntityToCubeJoinDto, CreateMasterThreatCubeDto } from './dto/create-master-threat.dto';
+import {
+  CreateCubeToTacticJoinDto,
+  CreateEntityToCubeJoinDto,
+  CreateMasterThreatCubeDto,
+} from './dto/create-master-threat.dto';
 import { UpdateMasterThreatCubeDto } from './dto/update-master-threat.dto';
 import { S3Service } from 'src/email/s3.service';
 
@@ -61,33 +70,52 @@ export class MasterThreatCubesService {
       .select({
         tactic: tacticsTable.name,
         technique: masterThreatCubesTable.name,
-        score: entitiesToThreatCubesTable.score
+        score: entitiesToThreatCubesTable.score,
       })
       .from(entitiesToThreatCubesTable)
-      .innerJoin(masterThreatCubesTable, eq(entitiesToThreatCubesTable.threat_cube_id, masterThreatCubesTable.threat_cube_id))
-      .innerJoin(cubesToTacticsTable, eq(masterThreatCubesTable.threat_cube_id, cubesToTacticsTable.technique_id))
-      .innerJoin(tacticsTable, eq(cubesToTacticsTable.tactic_id, tacticsTable.id))
+      .innerJoin(
+        masterThreatCubesTable,
+        eq(
+          entitiesToThreatCubesTable.threat_cube_id,
+          masterThreatCubesTable.threat_cube_id,
+        ),
+      )
+      .innerJoin(
+        cubesToTacticsTable,
+        eq(
+          masterThreatCubesTable.threat_cube_id,
+          cubesToTacticsTable.technique_id,
+        ),
+      )
+      .innerJoin(
+        tacticsTable,
+        eq(cubesToTacticsTable.tactic_id, tacticsTable.id),
+      )
       .where(eq(entitiesToThreatCubesTable.entity_id, entityId));
-      return results
+    return results;
   }
 
-  async getTTPsfromEntity(entityId: number){
+  async getTTPsfromEntity(entityId: number) {
     const ttps = await this.getCubesByEntity(entityId);
-    const groupedResults = ttps.reduce((acc, { tactic, technique, score }) => {
-      if (!acc[tactic]) {
-        acc[tactic] = [];
-      }
-      acc[tactic].push({technique: technique, score: score});
-      return acc;
-    }, {} as Record<string, {technique:string, score: number}[]>);
+    const groupedResults = ttps.reduce(
+      (acc, { tactic, technique, score }) => {
+        if (!acc[tactic]) {
+          acc[tactic] = [];
+        }
+        acc[tactic].push({ technique: technique, score: score });
+        return acc;
+      },
+      {} as Record<string, { technique: string; score: number }[]>,
+    );
 
     //sort
-    Object.entries(groupedResults).forEach(([tactic, techniques]) => {
-      techniques.sort((a, b) => b.score - a.score); // Sort descending by score
-    });
-    
-    return groupedResults
-  
+    Object.entries(groupedResults).forEach(([tactic, techniques]) => [
+      tactic,
+      techniques.sort((a, b) => b.score - a.score), // Sort descending by score
+    ]);
+
+    return groupedResults;
+
     // Convert to desired format
     // return Object.entries(groupedResults).map(([tactic, {techn}]) => ({
     //   tactic,
@@ -134,7 +162,7 @@ export class MasterThreatCubesService {
     return result;
   }
 
-  async createHeatmap(entityId: number, key: string) { 
+  async createHeatmap(entityId: number, key: string) {
     const bucketName = 'eep-argus-staging';
     const fileBuffer = await this.s3Service.downloadFile(bucketName, key);
     //const fileBuffer = fs.readFileSync('./src/modules/threat-landscape/test/layer_by_operation.json', "utf-8");
@@ -147,9 +175,11 @@ export class MasterThreatCubesService {
         score: tech.score,
       });
     });
-    const techniques: CreateEntityToCubeJoinDto[] = Array.from(uniqueTechniquesMap.values());
+    const techniques: CreateEntityToCubeJoinDto[] = Array.from(
+      uniqueTechniquesMap.values(),
+    );
     //const techniques: CreateEntityToCubeJoinDto[] = data.techniques.map((tech: {techniqueID: string; score: number; })=>({entity_id: entityId, threat_cube_id: tech.techniqueID, score:tech.score}))
-    const res = await this.createJoinThreatCubeToEntity(techniques)
-    return res
+    const res = await this.createJoinThreatCubeToEntity(techniques);
+    return res;
   }
 }
