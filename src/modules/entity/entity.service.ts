@@ -144,40 +144,39 @@ export class EntityService {
     }
 
     const entityToDuplicate = originalEntity[0];
-
-    const [newEntity] = await this.db
-      .insert(entitiesTable)
-      .values({
-        name: entityToDuplicate.name,
-        description: entityToDuplicate.description,
-        victim_sector: entityToDuplicate.victim_sector,
-        critical_function: entityToDuplicate.critical_function,
-        policy_documents: entityToDuplicate.policy_documents,
-        severity_levels: entityToDuplicate.severity_levels,
-      })
-      .returning();
-
-    if (!newEntity) {
-      return null;
-    }
-
-    // just add to join table
-    const result = await this.db
-      .insert(projectsToEntitiesTable)
-      .values({
-        project_id: data.project_id,
-        entity_id: newEntity.id,
-      })
-      .returning();
-
-    if (result.length === 0) return null;
-
-    //
-    await this.assetsService.duplicateAssets(
-      entityToDuplicate.id,
-      newEntity.id,
+    const assetsToDuplicate = await this.assetsService.duplicateAssets(
+      data.entity_id,
     );
 
-    return newEntity;
+    return this.db.transaction(async (tx) => {
+      // 1) insert the newly duped entity
+      const [newEntity] = await tx
+        .insert(entitiesTable)
+        .values({
+          name: entityToDuplicate.name,
+          description: entityToDuplicate.description,
+          victim_sector: entityToDuplicate.victim_sector,
+          critical_function: entityToDuplicate.critical_function,
+          policy_documents: entityToDuplicate.policy_documents,
+          severity_levels: entityToDuplicate.severity_levels,
+        })
+        .returning();
+
+      // 2) add to join table
+      await tx.insert(projectsToEntitiesTable).values({
+        project_id: data.project_id,
+        entity_id: newEntity.id,
+      });
+
+      // 3) create assets to duplicate
+      await tx.insert(assetsTable).values(
+        assetsToDuplicate.map((asset) => ({
+          ...asset,
+          entity_id: newEntity.id, // Associate with the new entity
+        })),
+      );
+
+      return newEntity;
+    });
   }
 }

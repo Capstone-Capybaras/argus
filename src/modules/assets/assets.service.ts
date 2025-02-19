@@ -47,28 +47,13 @@ export class AssetsService {
     return result.length > 0;
   }
 
-  async duplicateAssets(originalEntityId: number, newEntityId: number) {
+  async duplicateAssets(originalEntityId: number) {
     // fetch all assets linked to the original entity
     const assetsToDuplicate = await this.db
       .select()
       .from(assetsTable)
       .where(eq(assetsTable.entity_id, originalEntityId));
 
-    if (assetsToDuplicate.length === 0) {
-      return [];
-    }
-
-    // duplicate assets for the new entity
-    const insertedAssets = await this.db
-      .insert(assetsTable)
-      .values(
-        assetsToDuplicate.map((asset) => ({
-          ...asset,
-          entity_id: newEntityId, // Associate with the new entity
-        })),
-      )
-      .returning();
-
-    return insertedAssets;
+    return assetsToDuplicate;
   }
 }

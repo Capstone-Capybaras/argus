@@ -52,7 +52,7 @@ export class EntityController {
       return insertResult;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to create entity');
+      throw new BadRequestException('Failed to assign entity: ', String(error));
     }
   }
 
