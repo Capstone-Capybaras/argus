@@ -202,13 +202,13 @@ export const injectsTable = pgTable(
   }),
 );
 
-export const responsesTable = pgTable('responses', {
-  inject_id: varchar()
-    .notNull()
-    .references(() => injectsTable.inject_id, { onDelete: 'cascade' }),
-  response: text().notNull(),
-  id: serial('id').unique().primaryKey(),
-});
+// export const responsesTable = pgTable('responses', {
+//   inject_id: varchar()
+//     .notNull()
+//     .references(() => injectsTable.inject_id, { onDelete: 'cascade' }),
+//   response: text().notNull(),
+//   id: serial('id').unique().primaryKey(),
+// });
 
 export const masterThreatCubesTable = pgTable('master_threat_cubes', {
   threat_cube_id: text().primaryKey(), // Use only `id` as primary key
