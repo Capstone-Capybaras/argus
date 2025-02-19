@@ -1,0 +1,1 @@
+ALTER TABLE "entities" DROP CONSTRAINT "entities_name_unique";

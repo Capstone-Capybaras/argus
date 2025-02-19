@@ -42,7 +42,7 @@ export const projectsTable = pgTable('projects', {
 
 export const entitiesTable = pgTable('entities', {
   id: serial('id').unique().primaryKey(),
-  name: varchar().notNull().unique(),
+  name: varchar().notNull(),
   description: text().notNull(),
   victim_sector: text().notNull(),
   critical_function: text().notNull(),
