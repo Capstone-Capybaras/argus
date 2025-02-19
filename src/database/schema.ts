@@ -11,6 +11,7 @@ import {
   pgEnum,
   foreignKey,
   json,
+  time,
 } from 'drizzle-orm/pg-core';
 
 // Existing tables
@@ -173,13 +174,11 @@ export const injectsTable = pgTable(
     // schema draws 1-1, I believe it's many injects to 1 scenario
     scenario_number: varchar().notNull(),
     scenario_project_id: integer().notNull(),
-    date_time: timestamp().notNull(),
+    date: date().notNull(),
+    time: time().notNull(),
     inject_desc: text().notNull(),
     inject_type: text().notNull(),
-    artefact: text().notNull(),
-    entity_id: integer()
-      .notNull()
-      .references(() => entitiesTable.id, { onDelete: 'cascade' }),
+    artefact: text(),
     from: varchar().notNull(),
     to_recipient: varchar().notNull(),
     iteration: integer().notNull(),
@@ -350,9 +349,6 @@ export const rolesToInjectsTable = pgTable(
     id: serial('id').unique().primaryKey(),
     role_name: varchar().notNull(),
     role_entity_id: integer().notNull(),
-    inject_id: varchar()
-      .notNull()
-      .references(() => injectsTable.inject_id, { onDelete: 'cascade' }),
   },
   (table) => ({
     fk: foreignKey({

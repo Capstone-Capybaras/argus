@@ -5,11 +5,11 @@ export class SelectInjectDto implements InferSelect<typeof injectsTable> {
   inject_id: string;
   scenario_number: string;
   scenario_project_id: number;
-  date_time: Date;
+  date: string;
+  time: string;
   inject_desc: string;
   inject_type: string;
-  artefact: string;
-  entity_id: number;
+  artefact: string | null;
   from: string;
   to_recipient: string;
   iteration: number;

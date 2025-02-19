@@ -1,4 +1,10 @@
-import { IsString, IsInt, IsDate, IsOptional, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsInt,
+  IsOptional,
+  IsNumber,
+  IsDateString,
+} from 'class-validator';
 import { injectsTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
@@ -18,9 +24,13 @@ export class UpdateInjectDto implements InferUpdate<typeof injectsTable> {
   @IsOptional()
   scenario_project_id?: number;
 
-  @IsDate()
+  @IsDateString() // Ensures date is in "YYYY-MM-DD" format
   @IsOptional()
-  date_time?: Date;
+  date?: string;
+
+  @IsDateString() // Ensures time is in "HH:MM:SS" format
+  @IsOptional()
+  time?: string;
 
   @IsString()
   @IsOptional()
@@ -32,7 +42,7 @@ export class UpdateInjectDto implements InferUpdate<typeof injectsTable> {
 
   @IsString()
   @IsOptional()
-  artefact?: string;
+  artefact?: string | null;
 
   @IsString()
   @IsOptional()
