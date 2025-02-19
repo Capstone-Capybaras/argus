@@ -23,7 +23,6 @@ import { TacticsModule } from './modules/tactics/tactics.module';
 import { BatchScheduleModule } from './email/batch-schedule/batch-schedule.module';
 import { JobsModule } from './modules/jobs/jobs.module';
 import { AetherModule } from './modules/aether/aether.module';
-import { EventsGateway } from './events/events.gateway';
 import { EventsModule } from './events/events.module';
 
 @Module({

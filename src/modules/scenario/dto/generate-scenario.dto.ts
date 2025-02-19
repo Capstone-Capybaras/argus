@@ -2,7 +2,6 @@ import { IsNumber, IsOptional, IsString } from 'class-validator';
 import {
   assetsTable,
   entitiesTable,
-  jobsTable,
   projectsTable,
   scenariosTable,
 } from 'src/database/schema';

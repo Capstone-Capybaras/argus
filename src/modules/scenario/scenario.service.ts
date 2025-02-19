@@ -87,6 +87,7 @@ export class ScenarioService {
       throw new Error('Could not find asset by ID when generating scenario');
     }
 
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     const { participants, assets, ...entityInfo } = entity;
     const generationInputs = {
       entity: entityInfo,
@@ -95,8 +96,9 @@ export class ScenarioService {
 
     // create job and return it
     const job = await this.db.transaction(async (tx) => {
-      // insert record into generated table
-      await this.db.insert(scenariosGeneratedTable).values({
+      // insert base record into generated table, no content
+      // the main motivation is to store the generation inputs
+      await tx.insert(scenariosGeneratedTable).values({
         scenario_number: generateScenarioDto.scenario_number,
         project_id: generateScenarioDto.project_id,
         asset_id: generateScenarioDto.asset_id,
@@ -104,16 +106,19 @@ export class ScenarioService {
       });
 
       // create job
-      const createdJob = await this.jobsService.createJob({
-        type: 'scenario',
-        status: 'pending',
-        name: generateScenarioDto.scenario_number,
-      });
+      const [createdJob] = await tx
+        .insert(jobsTable)
+        .values({
+          type: 'scenario',
+          status: 'pending',
+          name: generateScenarioDto.scenario_number,
+        })
+        .returning();
 
       return createdJob;
     });
 
-    // TODO: if job is successfully inserted, send to ML
+    // TODO: if job is successfully inserted, send generation req to ML
     // should send scenario_number and project_id as well, as this is the PK
 
     return job;
