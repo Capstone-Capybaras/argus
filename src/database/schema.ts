@@ -116,6 +116,7 @@ export const scenariosTable = pgTable(
   {
     scenario_number: varchar().notNull(),
     additional_context: text().notNull(),
+    scenario_title: text().notNull(),
     threat_actor_motivation: text().notNull(),
     intended_system_impact: text().notNull(),
     intended_biz_impact: text().notNull(),

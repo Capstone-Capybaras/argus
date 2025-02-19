@@ -6,7 +6,7 @@ export class UpdateScenarioDto implements InferUpdate<typeof scenariosTable> {
   // primary keys
   scenario_number: string;
   project_id: number;
-
+  scenario_title?: string;
   additional_context?: string;
   threat_actor_motivation?: string;
   intended_system_impact?: string;

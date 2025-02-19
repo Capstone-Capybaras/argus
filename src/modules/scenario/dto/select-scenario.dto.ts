@@ -4,6 +4,7 @@ import { InferSelect } from 'src/utils/modelToDtoTypes';
 export class SelectScenarioDto implements InferSelect<typeof scenariosTable> {
   scenario_number: string;
   additional_context: string;
+  scenario_title: string;
   threat_actor_motivation: string;
   intended_system_impact: string;
   intended_biz_impact: string;
