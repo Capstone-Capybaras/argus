@@ -11,6 +11,7 @@ import {
   primaryKey,
   pgEnum,
   foreignKey,
+  json,
 } from 'drizzle-orm/pg-core';
 
 // Existing tables
@@ -135,6 +136,35 @@ export const scenariosTable = pgTable(
     pk: primaryKey({ columns: [table.scenario_number, table.project_id] }),
   }),
 );
+
+// this must always be kept in sync with scenarios
+export const scenariosGeneratedTable = pgTable(
+  'scenarios_generated',
+  {
+    scenario_number: varchar().notNull(),
+    additional_context: text().notNull(),
+    threat_actor_motivation: text().notNull(),
+    intended_system_impact: text().notNull(),
+    intended_biz_impact: text().notNull(),
+    attack_sophistication: text().notNull(),
+    severity_level: integer().notNull(),
+    initial_access: text().notNull(),
+    exploit: text().notNull(),
+    impact: text().notNull(),
+    project_id: integer()
+      .notNull()
+      .references(() => projectsTable.id, { onDelete: 'cascade' }),
+    asset_id: integer()
+      .notNull()
+      .references(() => assetsTable.id, { onDelete: 'cascade' }),
+    generation_inputs: json(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.scenario_number, table.project_id] }),
+  }),
+);
+
+// TODO: generated tables for msel and threats
 
 export const injectsTable = pgTable(
   'injects',
@@ -361,3 +391,17 @@ export const mselTable = pgTable(
     pk: primaryKey({ columns: [table.msel, table.project_id] }),
   }),
 );
+
+export const jobTypesEnum = pgEnum('job_types', ['scenario', 'msel', 'threat']);
+export const jobStatusEnum = pgEnum('job_status', [
+  'pending',
+  'failed',
+  'done',
+]);
+export const jobsTable = pgTable('jobs', {
+  id: serial('id').primaryKey(),
+  type: jobTypesEnum().notNull(),
+  status: jobStatusEnum().notNull(),
+  created_at: timestamp().notNull().defaultNow(),
+  name: text().notNull(),
+});
