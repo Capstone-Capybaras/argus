@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DATABASE_CONNECTION } from '../../config/providers';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { rolesTable } from 'src/database/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { CreateRoleDto } from './dto/create-roles.dto';
 import { UpdateRoleDto } from './dto/update-roles.dto';
 
@@ -44,10 +44,15 @@ export class RolesService {
     return result[0];
   }
 
-  async deleteRole(name: string): Promise<boolean> {
+  async deleteRole(name: string, entity_id: number): Promise<boolean> {
     const result = await this.db
       .delete(rolesTable)
-      .where(eq(rolesTable.name, name))
+      .where(
+        and(
+          eq(rolesTable.name, name),
+          eq(rolesTable.entity_id, entity_id),
+        )
+      )
       .returning();
     return result.length > 0;
   }
