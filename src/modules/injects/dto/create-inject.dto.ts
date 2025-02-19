@@ -1,5 +1,5 @@
 // create-inject.dto.ts
-import { IsString, IsBoolean, IsDate, IsNumber } from 'class-validator';
+import { IsString, IsDate, IsNumber, IsInt } from 'class-validator';
 import { injectsTable } from 'src/database/schema';
 import { InferInsert } from 'src/utils/modelToDtoTypes';
 
@@ -19,9 +19,6 @@ export class CreateInjectDto implements InferInsert<typeof injectsTable> {
   @IsDate()
   date_time: Date;
 
-  @IsBoolean()
-  inject_sent: boolean;
-
   @IsString()
   inject_desc: string;
 
@@ -36,4 +33,7 @@ export class CreateInjectDto implements InferInsert<typeof injectsTable> {
 
   @IsString()
   to_recipient: string;
+
+  @IsInt()
+  iteration: number;
 }
