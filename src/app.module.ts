@@ -12,7 +12,6 @@ import { InjectsModule } from './modules/injects/injects.module';
 import { AssetsModule } from './modules/assets/assets.module';
 import { MasterThreatCubesModule } from './modules/master-threat-cubes/master-threat-cubes.module';
 import { ParticipantsModule } from './modules/participants/participants.module';
-import { ResponsesModule } from './modules/responses/responses.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { EmailModule } from './email/email.module';
 import { BullQueueModule } from './email/bullqueue.module';
@@ -41,7 +40,6 @@ import { BatchScheduleModule } from './email/batch-schedule/batch-schedule.modul
     AssetsModule,
     MasterThreatCubesModule,
     ParticipantsModule,
-    ResponsesModule,
     RolesModule,
     BullQueueModule,
     EmailModule,
