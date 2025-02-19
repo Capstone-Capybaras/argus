@@ -178,7 +178,7 @@ export const masterThreatCubesTable = pgTable('master_threat_cubes', {
   // tactic: text()
   //   .notNull()
   //   .references(() => tacticsTable.id),
-  name: text(),
+  name: text().notNull(),
 });
 
 export const tacticsTable = pgTable('tactics', {
@@ -202,14 +202,20 @@ export const rolesTable = pgTable(
 
 // ------- JOIN TABLES -------
 
-export const cubesToTacticsTable = pgTable('cubes_to_tactics', {
-  tactic_id: text().notNull().references(()=>tacticsTable.id),
-  technique_id: text().notNull().references(()=>masterThreatCubesTable.threat_cube_id)
-},
-(table)=>({
-  pk: primaryKey({columns: [table.tactic_id, table.technique_id]})
-})
-)
+export const cubesToTacticsTable = pgTable(
+  'cubes_to_tactics',
+  {
+    tactic_id: text()
+      .notNull()
+      .references(() => tacticsTable.id),
+    technique_id: text()
+      .notNull()
+      .references(() => masterThreatCubesTable.threat_cube_id),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.tactic_id, table.technique_id] }),
+  }),
+);
 
 export const entitesToParticipantsTable = pgTable(
   'entities_to_participants',
