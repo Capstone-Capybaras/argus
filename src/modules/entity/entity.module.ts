@@ -9,5 +9,6 @@ import { AssetsModule } from '../assets/assets.module';
   imports: [DatabaseModule, ParticipantsModule, AssetsModule],
   providers: [EntityService],
   controllers: [EntityController],
+  exports: [EntityService],
 })
 export class EntityModule {}

@@ -19,9 +19,6 @@ export class GenerateScenarioDto {
   asset_id: typeof assetsTable.$inferSelect.id;
 
   @IsString()
-  job_name: typeof jobsTable.$inferInsert.name;
-
-  @IsString()
   scenario_number: typeof scenariosTable.$inferInsert.scenario_number;
 
   @IsNumber()

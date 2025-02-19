@@ -48,13 +48,15 @@ export class ScenarioController {
 
   @Post('/generate/callback')
   async generateScenarioCallback(
-    @Body() generateScenarioCompletedDto: GenerateScenarioCallbackDto,
+    @Body() generateScenarioCallbackDto: GenerateScenarioCallbackDto,
   ) {
-    // try {
-    //   return await this.scenarioService.generateScenario(generateScenarioDto);
-    // } catch (e) {
-    //   throw new BadRequestException('Failed to generate scenario: ', String(e));
-    // }
+    try {
+      return await this.scenarioService.generateScenarioCallback(
+        generateScenarioCallbackDto,
+      );
+    } catch (e) {
+      throw new BadRequestException('Failed to generate scenario: ', String(e));
+    }
   }
 
   // Retrieve all scenarios

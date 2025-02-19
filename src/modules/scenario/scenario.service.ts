@@ -14,6 +14,7 @@ import { EntityService } from '../entity/entity.service';
 import { AssetsService } from '../assets/assets.service';
 import { JobsService } from '../jobs/jobs.service';
 import { GenerateScenarioCallbackDto } from './dto/generate-scenario-callback.dto';
+import { EventsGateway } from 'src/events/events.gateway';
 
 @Injectable()
 export class ScenarioService {
@@ -23,6 +24,7 @@ export class ScenarioService {
     private readonly entityService: EntityService,
     private readonly assetService: AssetsService,
     private readonly jobsService: JobsService,
+    private readonly eventsGateway: EventsGateway,
   ) {}
 
   // Create a new scenario
@@ -105,7 +107,7 @@ export class ScenarioService {
       const createdJob = await this.jobsService.createJob({
         type: 'scenario',
         status: 'pending',
-        name: generateScenarioDto.job_name,
+        name: generateScenarioDto.scenario_number,
       });
 
       return createdJob;
@@ -118,7 +120,7 @@ export class ScenarioService {
   }
 
   async generateScenarioCallback(data: GenerateScenarioCallbackDto) {
-    const { job_status, job_id, ...scenarioData } = data;
+    const { job_status, job_id, scenario: scenarioData } = data;
 
     if (job_status === 'pending') return;
 
@@ -128,7 +130,16 @@ export class ScenarioService {
         status: job_status,
       });
 
+      // send websocket that job failed
+      this.eventsGateway.onScenarioJobFailed({
+        jobId: job_id,
+      });
+
       return;
+    }
+
+    if (!scenarioData) {
+      throw new Error('no scenario data provided');
     }
 
     // if job succeeds
@@ -145,5 +156,9 @@ export class ScenarioService {
     });
 
     // after this is done, send websocket message
+    this.eventsGateway.onScenarioJobSuccess({
+      jobId: job_id,
+      scenarioData,
+    });
   }
 }

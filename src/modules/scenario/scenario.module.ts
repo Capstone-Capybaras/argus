@@ -5,9 +5,16 @@ import { DatabaseModule } from 'src/database/database.module';
 import { EntityModule } from '../entity/entity.module';
 import { AssetsModule } from '../assets/assets.module';
 import { JobsModule } from '../jobs/jobs.module';
+import { EventsModule } from 'src/events/events.module';
 
 @Module({
-  imports: [DatabaseModule, EntityModule, AssetsModule, JobsModule],
+  imports: [
+    DatabaseModule,
+    EntityModule,
+    AssetsModule,
+    JobsModule,
+    EventsModule,
+  ],
   providers: [ScenarioService],
   controllers: [ScenarioController],
 })

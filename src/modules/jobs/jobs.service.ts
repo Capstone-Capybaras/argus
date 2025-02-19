@@ -4,7 +4,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { CreateJobDto } from './dto/create-job.dto';
 import { jobsTable } from 'src/database/schema';
 import { SelectJobDto } from './dto/select-job.dto';
-import { ne } from 'drizzle-orm';
+import { eq, ne } from 'drizzle-orm';
 import { UpdateJobDto } from './dto/update-job.dto';
 
 @Injectable()
@@ -26,5 +26,14 @@ export class JobsService {
   async updateJob(data: UpdateJobDto): Promise<SelectJobDto> {
     const [result] = await this.db.update(jobsTable).set(data).returning();
     return result;
+  }
+
+  async deleteJob(id: number) {
+    const results = await this.db
+      .delete(jobsTable)
+      .where(eq(jobsTable.id, id))
+      .returning();
+
+    return results.length > 0;
   }
 }
