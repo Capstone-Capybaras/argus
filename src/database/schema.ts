@@ -6,7 +6,6 @@ import {
   char,
   varchar,
   integer,
-  boolean,
   timestamp,
   primaryKey,
   pgEnum,
@@ -170,12 +169,11 @@ export const scenariosGeneratedTable = pgTable(
 export const injectsTable = pgTable(
   'injects',
   {
-    inject_id: varchar().unique().primaryKey(),
+    inject_id: varchar().notNull(),
     // schema draws 1-1, I believe it's many injects to 1 scenario
     scenario_number: varchar().notNull(),
     scenario_project_id: integer().notNull(),
     date_time: timestamp().notNull(),
-    inject_sent: boolean().notNull(),
     inject_desc: text().notNull(),
     inject_type: text().notNull(),
     artefact: text().notNull(),
@@ -184,6 +182,7 @@ export const injectsTable = pgTable(
       .references(() => entitiesTable.id, { onDelete: 'cascade' }),
     from: varchar().notNull(),
     to_recipient: varchar().notNull(),
+    iteration: integer().notNull(),
   },
   (table) => ({
     fk: foreignKey({
@@ -193,6 +192,14 @@ export const injectsTable = pgTable(
         scenariosTable.project_id,
       ],
     }).onDelete('cascade'),
+    pk: primaryKey({
+      columns: [
+        table.scenario_project_id,
+        table.scenario_number,
+        table.inject_id,
+        table.iteration,
+      ],
+    }),
   }),
 );
 
