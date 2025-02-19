@@ -50,7 +50,6 @@ export class RolesController {
     }
   }
 
-
   // Get a role by name
   @Get(':name')
   async getRoleById(@Param('name') name: string): Promise<SelectRoleDto> {
@@ -87,8 +86,11 @@ export class RolesController {
   }
 
   // Delete a role by name
-  @Delete(':email/:entity_id')
-  async deleteRole(@Param('email') email: string, @Param('entity_id') entity_id: number) {
+  @Delete()
+  async deleteRole(
+    @Query('email') email: string,
+    @Query('entity_id') entity_id: number,
+  ) {
     const deleted = await this.rolesService.deleteRole(email, entity_id);
     if (!deleted) {
       throw new HttpException('Role not found', HttpStatus.NOT_FOUND);

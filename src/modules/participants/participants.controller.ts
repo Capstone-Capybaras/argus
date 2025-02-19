@@ -56,10 +56,10 @@ export class ParticipantsController {
     return this.participantsService.updateParticipant(data.email, data);
   }
 
-  @Delete(':entity_id/:email')
+  @Delete()
   async deleteParticipant(
-    @Param('entity_id', ParseIntPipe) entityId: number,
-    @Param('email') email: string,
+    @Query('entity_id', ParseIntPipe) entityId: number,
+    @Query('email') email: string,
   ) {
     if (!Number.isInteger(entityId) || !email) {
       // need both fields to be supplied
