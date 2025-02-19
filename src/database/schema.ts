@@ -178,7 +178,7 @@ export const masterThreatCubesTable = pgTable('master_threat_cubes', {
   // tactic: text()
   //   .notNull()
   //   .references(() => tacticsTable.id),
-  name: text(),
+  name: text().notNull(),
 });
 
 export const tacticsTable = pgTable('tactics', {
