@@ -15,6 +15,7 @@ import { SelectEntityDto, SelectEntityOnlyDto } from './dto/select-entity.dto';
 import { DeepSet } from 'src/utils/DeepSet';
 import { ParticipantsService } from '../participants/participants.service';
 import { SelectAssetDto } from '../assets/dto/select-asset.dto';
+import { AssetsService } from '../assets/assets.service';
 
 class ISelectEntity extends SelectEntityOnlyDto {
   assets: DeepSet<SelectAssetDto>;
@@ -26,6 +27,7 @@ export class EntityService {
     @Inject(DATABASE_CONNECTION)
     private readonly db: ReturnType<typeof drizzle>,
     private readonly participantsService: ParticipantsService,
+    private readonly assetsService: AssetsService,
   ) {}
 
   // Create a new entity
@@ -131,13 +133,50 @@ export class EntityService {
   }
 
   async assignEntityToProject(data: AssignEntityDto) {
-    // just add to join table
-    const result = await this.db
-      .insert(projectsToEntitiesTable)
-      .values(data)
-      .returning();
+    const originalEntity = await this.db
+      .select()
+      .from(entitiesTable)
+      .where(eq(entitiesTable.id, data.entity_id))
+      .limit(1);
 
-    if (result.length === 0) return null;
-    return result[0];
+    if (originalEntity.length === 0) {
+      return null;
+    }
+
+    const entityToDuplicate = originalEntity[0];
+    const assetsToDuplicate = await this.assetsService.duplicateAssets(
+      data.entity_id,
+    );
+
+    return this.db.transaction(async (tx) => {
+      // 1) insert the newly duped entity
+      const [newEntity] = await tx
+        .insert(entitiesTable)
+        .values({
+          name: entityToDuplicate.name,
+          description: entityToDuplicate.description,
+          victim_sector: entityToDuplicate.victim_sector,
+          critical_function: entityToDuplicate.critical_function,
+          policy_documents: entityToDuplicate.policy_documents,
+          severity_levels: entityToDuplicate.severity_levels,
+        })
+        .returning();
+
+      // 2) add to join table
+      await tx.insert(projectsToEntitiesTable).values({
+        project_id: data.project_id,
+        entity_id: newEntity.id,
+      });
+
+      // 3) create assets to duplicate
+      await tx.insert(assetsTable).values(
+        assetsToDuplicate.map((asset) => ({
+          ...asset,
+          entity_id: newEntity.id, // Associate with the new entity
+        })),
+      );
+
+      return newEntity;
+    });
   }
 }

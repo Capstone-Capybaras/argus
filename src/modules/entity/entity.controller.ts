@@ -42,14 +42,17 @@ export class EntityController {
   @Post('assign')
   async assignEntity(
     @Body() assignEntityDto: AssignEntityDto,
-  ): Promise<boolean> {
+  ): Promise<SelectEntityDto> {
     try {
       const insertResult =
         await this.entityService.assignEntityToProject(assignEntityDto);
-      return !!insertResult;
+      if (!insertResult) {
+        throw new BadRequestException('Failed to assign entity');
+      }
+      return insertResult;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to create entity');
+      throw new BadRequestException('Failed to assign entity: ', String(error));
     }
   }
 

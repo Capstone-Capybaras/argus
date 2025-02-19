@@ -46,4 +46,14 @@ export class AssetsService {
       .returning();
     return result.length > 0;
   }
+
+  async duplicateAssets(originalEntityId: number) {
+    // fetch all assets linked to the original entity
+    const assetsToDuplicate = await this.db
+      .select()
+      .from(assetsTable)
+      .where(eq(assetsTable.entity_id, originalEntityId));
+
+    return assetsToDuplicate;
+  }
 }
