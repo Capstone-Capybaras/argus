@@ -23,11 +23,12 @@ export class AssetsService {
   }
 
   async getAssetById(id: number) {
-    const assets = await this.db
+    const [asset] = await this.db
       .select()
       .from(assetsTable)
-      .where(eq(assetsTable.id, id));
-    return assets[0];
+      .where(eq(assetsTable.id, id))
+      .limit(1);
+    return asset;
   }
 
   async updateAsset(id: number, data: UpdateAssetDto) {
