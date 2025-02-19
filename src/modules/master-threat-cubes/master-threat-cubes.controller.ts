@@ -116,7 +116,7 @@ export class MasterThreatCubesController {
     return true;
   }
 
-  @Post('addHeatMap')
+  @Post('heatMap')
   async addHeatMap(@Body() addheatmapdto: AddHeatMapDto) {
     try {
       await this.masterThreatCubesService.createHeatmap(

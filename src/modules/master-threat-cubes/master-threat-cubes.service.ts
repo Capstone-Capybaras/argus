@@ -15,6 +15,7 @@ import {
 } from './dto/create-master-threat.dto';
 import { UpdateMasterThreatCubeDto } from './dto/update-master-threat.dto';
 import { S3Service } from 'src/email/s3.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MasterThreatCubesService {
@@ -22,6 +23,7 @@ export class MasterThreatCubesService {
     @Inject(DATABASE_CONNECTION)
     private readonly db: ReturnType<typeof drizzle>,
     private readonly s3Service: S3Service,
+    private readonly configService: ConfigService,
   ) {}
 
   // Create new master threat cube
@@ -163,7 +165,7 @@ export class MasterThreatCubesService {
   }
 
   async createHeatmap(entityId: number, key: string) {
-    const bucketName = 'eep-argus-staging';
+    const bucketName = this.configService.getOrThrow('S3_BUCKET_NAME');
     const fileBuffer = await this.s3Service.downloadFile(bucketName, key);
     //const fileBuffer = fs.readFileSync('./src/modules/threat-landscape/test/layer_by_operation.json', "utf-8");
     const data = JSON.parse(fileBuffer.toString('utf-8'));
