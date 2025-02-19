@@ -218,6 +218,13 @@
       "when": 1739955693578,
       "tag": "0030_married_hawkeye",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1739958556013,
+      "tag": "0031_flippant_magus",
+      "breakpoints": true
     }
   ]
 }

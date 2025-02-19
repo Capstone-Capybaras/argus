@@ -3,6 +3,9 @@ import { DATABASE_CONNECTION } from 'src/config/providers';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { CreateJobDto } from './dto/create-job.dto';
 import { jobsTable } from 'src/database/schema';
+import { SelectJobDto } from './dto/select-job.dto';
+import { ne } from 'drizzle-orm';
+import { UpdateJobDto } from './dto/update-job.dto';
 
 @Injectable()
 export class JobsService {
@@ -13,6 +16,15 @@ export class JobsService {
 
   async createJob(data: CreateJobDto) {
     const [result] = await this.db.insert(jobsTable).values(data).returning();
+    return result;
+  }
+
+  async getPendingAndFailedJobs(): Promise<SelectJobDto[]> {
+    return this.db.select().from(jobsTable).where(ne(jobsTable.status, 'done'));
+  }
+
+  async updateJob(data: UpdateJobDto): Promise<SelectJobDto> {
+    const [result] = await this.db.update(jobsTable).set(data).returning();
     return result;
   }
 }

@@ -3,6 +3,7 @@ import {
   assetsTable,
   entitiesTable,
   jobsTable,
+  projectsTable,
   scenariosTable,
 } from 'src/database/schema';
 
@@ -19,4 +20,10 @@ export class GenerateScenarioDto {
 
   @IsString()
   job_name: typeof jobsTable.$inferInsert.name;
+
+  @IsString()
+  scenario_number: typeof scenariosTable.$inferInsert.scenario_number;
+
+  @IsNumber()
+  project_id: typeof projectsTable.$inferSelect.id;
 }

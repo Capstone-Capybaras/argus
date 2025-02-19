@@ -142,22 +142,22 @@ export const scenariosGeneratedTable = pgTable(
   'scenarios_generated',
   {
     scenario_number: varchar().notNull(),
-    additional_context: text().notNull(),
-    threat_actor_motivation: text().notNull(),
-    intended_system_impact: text().notNull(),
-    intended_biz_impact: text().notNull(),
-    attack_sophistication: text().notNull(),
-    severity_level: integer().notNull(),
-    initial_access: text().notNull(),
-    exploit: text().notNull(),
-    impact: text().notNull(),
+    additional_context: text(),
+    threat_actor_motivation: text(),
+    intended_system_impact: text(),
+    intended_biz_impact: text(),
+    attack_sophistication: text(),
+    severity_level: integer(),
+    initial_access: text(),
+    exploit: text(),
+    impact: text(),
     project_id: integer()
       .notNull()
       .references(() => projectsTable.id, { onDelete: 'cascade' }),
     asset_id: integer()
       .notNull()
       .references(() => assetsTable.id, { onDelete: 'cascade' }),
-    generation_inputs: json(),
+    generation_inputs: json().notNull(),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.scenario_number, table.project_id] }),

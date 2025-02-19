@@ -1,7 +1,11 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { DATABASE_CONNECTION } from '../../config/providers';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { scenariosTable } from '../../database/schema';
+import {
+  jobsTable,
+  scenariosGeneratedTable,
+  scenariosTable,
+} from '../../database/schema';
 import { CreateScenarioDto } from './dto/create-scenario.dto';
 import { UpdateScenarioDto } from './dto/update-scenario.dto';
 import { eq } from 'drizzle-orm';
@@ -81,19 +85,65 @@ export class ScenarioService {
       throw new Error('Could not find asset by ID when generating scenario');
     }
 
+    const { participants, assets, ...entityInfo } = entity;
+    const generationInputs = {
+      entity: entityInfo,
+      asset,
+    };
+
     // create job and return it
-    const job = await this.jobsService.createJob({
-      type: 'scenario',
-      status: 'pending',
-      name: generateScenarioDto.job_name,
+    const job = await this.db.transaction(async (tx) => {
+      // insert record into generated table
+      await this.db.insert(scenariosGeneratedTable).values({
+        scenario_number: generateScenarioDto.scenario_number,
+        project_id: generateScenarioDto.project_id,
+        asset_id: generateScenarioDto.asset_id,
+        generation_inputs: generationInputs,
+      });
+
+      // create job
+      const createdJob = await this.jobsService.createJob({
+        type: 'scenario',
+        status: 'pending',
+        name: generateScenarioDto.job_name,
+      });
+
+      return createdJob;
     });
 
     // TODO: if job is successfully inserted, send to ML
+    // should send scenario_number and project_id as well, as this is the PK
 
     return job;
   }
 
-  async generateScenarioCallback(
-    generateScenarioCompleted: GenerateScenarioCallbackDto,
-  ) {}
+  async generateScenarioCallback(data: GenerateScenarioCallbackDto) {
+    const { job_status, job_id, ...scenarioData } = data;
+
+    if (job_status === 'pending') return;
+
+    if (job_status === 'failed') {
+      await this.jobsService.updateJob({
+        id: job_id,
+        status: job_status,
+      });
+
+      return;
+    }
+
+    // if job succeeds
+    await this.db.transaction(async (tx) => {
+      // update the 2 tables (master table + generated)
+      await tx.update(scenariosGeneratedTable).set(scenarioData);
+      await tx.insert(scenariosTable).values(scenarioData);
+
+      // update job
+      await tx.update(jobsTable).set({
+        id: job_id,
+        status: job_status,
+      });
+    });
+
+    // after this is done, send websocket message
+  }
 }
