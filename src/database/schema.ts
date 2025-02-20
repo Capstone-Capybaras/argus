@@ -343,21 +343,6 @@ export const assetsToScenariosTable = pgTable(
   }),
 );
 
-export const rolesToInjectsTable = pgTable(
-  'roles_to_injects',
-  {
-    id: serial('id').unique().primaryKey(),
-    role_name: varchar().notNull(),
-    role_entity_id: integer().notNull(),
-  },
-  (table) => ({
-    fk: foreignKey({
-      columns: [table.role_name, table.role_entity_id],
-      foreignColumns: [rolesTable.name, rolesTable.entity_id],
-    }).onDelete('cascade'),
-  }),
-);
-
 export const emailsTable = pgTable('emails', {
   id: serial('id').unique().primaryKey(),
   project_id: integer()
