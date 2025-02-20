@@ -59,13 +59,11 @@ export class ScenarioController {
     }
   }
 
-  // Retrieve all scenarios
   @Get()
   async getScenarios(): Promise<SelectScenarioDto[]> {
     return await this.scenarioService.getScenarios();
   }
 
-  // Retrieve a specific scenario by scenario_number
   @Get(':scenario_number')
   async getScenarioByNumber(
     @Param('scenario_number') scenario_number: string,
@@ -76,6 +74,21 @@ export class ScenarioController {
       throw new HttpException('Scenario not found', HttpStatus.NOT_FOUND);
     }
     return scenario;
+  }
+
+  @Get('project/:project_id')
+  async getScenariosByProject(
+    @Param('project_id') project_id: number,
+  ): Promise<SelectScenarioDto[]> {
+    const scenarios =
+      await this.scenarioService.getScenariosByProject(project_id);
+    if (!scenarios.length) {
+      throw new HttpException(
+        'No scenarios found for this project',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return scenarios;
   }
 
   // Update a scenario by scenario_number
