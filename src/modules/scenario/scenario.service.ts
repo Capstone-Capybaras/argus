@@ -52,6 +52,15 @@ export class ScenarioService {
     return scenario[0] || null;
   }
 
+  // Retrieve scenarios by project_id
+  async getScenariosByProject(project_id: number) {
+    const scenarios = await this.db
+      .select()
+      .from(scenariosTable)
+      .where(eq(scenariosTable.project_id, project_id));
+    return scenarios;
+  }
+
   // Update a scenario by scenario_number
   async updateScenario(scenario_number: string, data: UpdateScenarioDto) {
     const result = await this.db
