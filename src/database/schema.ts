@@ -11,6 +11,7 @@ import {
   pgEnum,
   foreignKey,
   json,
+  time,
 } from 'drizzle-orm/pg-core';
 
 // Existing tables
@@ -174,13 +175,11 @@ export const injectsTable = pgTable(
     // schema draws 1-1, I believe it's many injects to 1 scenario
     scenario_number: varchar().notNull(),
     scenario_project_id: integer().notNull(),
-    date_time: timestamp().notNull(),
+    date: date().notNull(),
+    time: time().notNull(),
     inject_desc: text().notNull(),
     inject_type: text().notNull(),
-    artefact: text().notNull(),
-    entity_id: integer()
-      .notNull()
-      .references(() => entitiesTable.id, { onDelete: 'cascade' }),
+    artefact: text(),
     from: varchar().notNull(),
     to_recipient: varchar().notNull(),
     iteration: integer().notNull(),
@@ -204,13 +203,13 @@ export const injectsTable = pgTable(
   }),
 );
 
-export const responsesTable = pgTable('responses', {
-  inject_id: varchar()
-    .notNull()
-    .references(() => injectsTable.inject_id, { onDelete: 'cascade' }),
-  response: text().notNull(),
-  id: serial('id').unique().primaryKey(),
-});
+// export const responsesTable = pgTable('responses', {
+//   inject_id: varchar()
+//     .notNull()
+//     .references(() => injectsTable.inject_id, { onDelete: 'cascade' }),
+//   response: text().notNull(),
+//   id: serial('id').unique().primaryKey(),
+// });
 
 export const masterThreatCubesTable = pgTable('master_threat_cubes', {
   threat_cube_id: text().primaryKey(), // Use only `id` as primary key
@@ -341,24 +340,6 @@ export const assetsToScenariosTable = pgTable(
         scenariosTable.scenario_number,
         scenariosTable.project_id,
       ],
-    }).onDelete('cascade'),
-  }),
-);
-
-export const rolesToInjectsTable = pgTable(
-  'roles_to_injects',
-  {
-    id: serial('id').unique().primaryKey(),
-    role_name: varchar().notNull(),
-    role_entity_id: integer().notNull(),
-    inject_id: varchar()
-      .notNull()
-      .references(() => injectsTable.inject_id, { onDelete: 'cascade' }),
-  },
-  (table) => ({
-    fk: foreignKey({
-      columns: [table.role_name, table.role_entity_id],
-      foreignColumns: [rolesTable.name, rolesTable.entity_id],
     }).onDelete('cascade'),
   }),
 );

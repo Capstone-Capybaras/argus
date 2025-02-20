@@ -1,5 +1,11 @@
 // create-inject.dto.ts
-import { IsString, IsDate, IsNumber, IsInt } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsInt,
+  IsDateString,
+  IsOptional,
+} from 'class-validator';
 import { injectsTable } from 'src/database/schema';
 import { InferInsert } from 'src/utils/modelToDtoTypes';
 
@@ -11,13 +17,13 @@ export class CreateInjectDto implements InferInsert<typeof injectsTable> {
   scenario_number: string;
 
   @IsNumber()
-  entity_id: number;
-
-  @IsNumber()
   scenario_project_id: number;
 
-  @IsDate()
-  date_time: Date;
+  @IsDateString() // Ensures date is in "YYYY-MM-DD" format
+  date: string;
+
+  @IsDateString() // Ensures time is in "HH:MM:SS" format
+  time: string;
 
   @IsString()
   inject_desc: string;
@@ -25,8 +31,9 @@ export class CreateInjectDto implements InferInsert<typeof injectsTable> {
   @IsString()
   inject_type: string;
 
+  @IsOptional() // Makes artefact nullable
   @IsString()
-  artefact: string;
+  artefact?: string | null;
 
   @IsString()
   from: string;
