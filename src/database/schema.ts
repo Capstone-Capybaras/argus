@@ -143,6 +143,7 @@ export const scenariosGeneratedTable = pgTable(
   {
     scenario_number: varchar().notNull(),
     additional_context: text(),
+    scenario_title: text(),
     threat_actor_motivation: text(),
     intended_system_impact: text(),
     intended_biz_impact: text(),
