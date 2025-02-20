@@ -15,6 +15,8 @@ import { ScenarioService } from './scenario.service';
 import { CreateScenarioDto } from './dto/create-scenario.dto';
 import { UpdateScenarioDto } from './dto/update-scenario.dto';
 import { SelectScenarioDto } from './dto/select-scenario.dto';
+import { GenerateScenarioDto } from './dto/generate-scenario.dto';
+import { GenerateScenarioCallbackDto } from './dto/generate-scenario-callback.dto';
 
 @Controller('scenarios')
 export class ScenarioController {
@@ -32,6 +34,28 @@ export class ScenarioController {
     } catch (error) {
       Logger.error(error);
       throw new BadRequestException('Failed to create scenario');
+    }
+  }
+
+  @Post('/generate')
+  async generateScenario(@Body() generateScenarioDto: GenerateScenarioDto) {
+    try {
+      return await this.scenarioService.generateScenario(generateScenarioDto);
+    } catch (e) {
+      throw new BadRequestException('Failed to generate scenario: ', String(e));
+    }
+  }
+
+  @Post('/generate/callback')
+  async generateScenarioCallback(
+    @Body() generateScenarioCallbackDto: GenerateScenarioCallbackDto,
+  ) {
+    try {
+      return await this.scenarioService.generateScenarioCallback(
+        generateScenarioCallbackDto,
+      );
+    } catch (e) {
+      throw new BadRequestException('Failed to generate scenario: ', String(e));
     }
   }
 

@@ -1,0 +1,1 @@
+ALTER TABLE "scenarios" ADD COLUMN "scenario_title" text NOT NULL;

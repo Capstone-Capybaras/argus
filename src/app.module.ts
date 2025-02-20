@@ -21,6 +21,9 @@ import { TtpUsedModule } from './modules/ttp-used/ttp-used.module';
 import { ThreatLandscapeModule } from './modules/threat-landscape/threat-landscape.module';
 import { TacticsModule } from './modules/tactics/tactics.module';
 import { BatchScheduleModule } from './email/batch-schedule/batch-schedule.module';
+import { JobsModule } from './modules/jobs/jobs.module';
+import { AetherModule } from './modules/aether/aether.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -50,8 +53,10 @@ import { BatchScheduleModule } from './email/batch-schedule/batch-schedule.modul
     ThreatLandscapeModule,
     TacticsModule,
     BatchScheduleModule,
+    JobsModule,
+    AetherModule,
+    EventsModule,
   ],
   controllers: [],
-  providers: [],
 })
 export class AppModule {}
