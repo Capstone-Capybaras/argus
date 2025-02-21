@@ -5,6 +5,7 @@ import {
   jobsTable,
   scenariosGeneratedTable,
   scenariosTable,
+  ttpUsedTable,
 } from '../../database/schema';
 import { CreateScenarioDto } from './dto/create-scenario.dto';
 import { UpdateScenarioDto } from './dto/update-scenario.dto';
@@ -134,7 +135,7 @@ export class ScenarioService {
   }
 
   async generateScenarioCallback(data: GenerateScenarioCallbackDto) {
-    const { job_status, job_id, scenario: scenarioData } = data;
+    const { job_status, job_id, scenario: scenarioData, ttpUsed } = data;
 
     if (job_status === 'pending') return;
 
@@ -155,12 +156,18 @@ export class ScenarioService {
     if (!scenarioData) {
       throw new Error('no scenario data provided');
     }
+    if (!ttpUsed) {
+      throw new Error('no ttp used data provided');
+    }
 
     // if job succeeds
     await this.db.transaction(async (tx) => {
-      // update the 2 tables (master table + generated)
+      // update the 2 secnario tables (master table + generated)
       await tx.update(scenariosGeneratedTable).set(scenarioData);
       await tx.insert(scenariosTable).values(scenarioData);
+
+      // update ttp used table
+      await tx.insert(ttpUsedTable).values(ttpUsed);
 
       // update job
       await tx.update(jobsTable).set({

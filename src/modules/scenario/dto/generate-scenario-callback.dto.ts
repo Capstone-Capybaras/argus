@@ -8,6 +8,7 @@ import {
 import { jobsTable } from 'src/database/schema';
 import { CreateScenarioDto } from './create-scenario.dto';
 import { Type } from 'class-transformer';
+import { CreateTtpUsedDto } from 'src/modules/ttp-used/dto/create-ttp-used.dto';
 
 export class GenerateScenarioCallbackDto {
   @IsNumber()
@@ -21,4 +22,10 @@ export class GenerateScenarioCallbackDto {
   @ValidateNested()
   @Type(() => CreateScenarioDto)
   scenario?: CreateScenarioDto;
+
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => CreateTtpUsedDto)
+  ttpUsed?: CreateTtpUsedDto;
 }
