@@ -16,6 +16,7 @@ import { CreateScenarioDto } from './dto/create-scenario.dto';
 import { UpdateScenarioDto } from './dto/update-scenario.dto';
 import {
   SelectScenarioDto,
+  SelectScenarioWithAssetDto,
   SelectScenarioWithTtpDto,
 } from './dto/select-scenario.dto';
 import { GenerateScenarioDto } from './dto/generate-scenario.dto';
@@ -82,10 +83,10 @@ export class ScenarioController {
   @Get('project/:project_id')
   async getScenariosByProject(
     @Param('project_id') project_id: number,
-  ): Promise<SelectScenarioDto[]> {
+  ): Promise<SelectScenarioWithAssetDto[]> {
     const scenarios =
       await this.scenarioService.getScenariosByProject(project_id);
-    if (!scenarios.length) {
+    if (!scenarios) {
       throw new HttpException(
         'No scenarios found for this project',
         HttpStatus.NOT_FOUND,

@@ -323,27 +323,6 @@ export const projectsToEntitiesTable = pgTable(
   }),
 );
 
-export const assetsToScenariosTable = pgTable(
-  'assets_to_scenarios',
-  {
-    id: serial('id').unique().primaryKey(),
-    asset_id: integer()
-      .notNull()
-      .references(() => assetsTable.id, { onDelete: 'cascade' }),
-    scenario_number: varchar().notNull(),
-    scenario_project_id: integer().notNull(),
-  },
-  (table) => ({
-    fk: foreignKey({
-      columns: [table.scenario_number, table.scenario_project_id],
-      foreignColumns: [
-        scenariosTable.scenario_number,
-        scenariosTable.project_id,
-      ],
-    }).onDelete('cascade'),
-  }),
-);
-
 export const emailsTable = pgTable('emails', {
   id: serial('id').unique().primaryKey(),
   project_id: integer()

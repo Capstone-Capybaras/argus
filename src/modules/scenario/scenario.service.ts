@@ -2,6 +2,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { DATABASE_CONNECTION } from '../../config/providers';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import {
+  assetsTable,
   jobsTable,
   scenariosGeneratedTable,
   scenariosTable,
@@ -16,7 +17,10 @@ import { AssetsService } from '../assets/assets.service';
 import { JobsService } from '../jobs/jobs.service';
 import { GenerateScenarioCallbackDto } from './dto/generate-scenario-callback.dto';
 import { EventsGateway } from 'src/events/events.gateway';
-import { SelectScenarioWithTtpDto } from './dto/select-scenario.dto';
+import {
+  SelectScenarioWithAssetDto,
+  SelectScenarioWithTtpDto,
+} from './dto/select-scenario.dto';
 
 @Injectable()
 export class ScenarioService {
@@ -81,12 +85,37 @@ export class ScenarioService {
   }
 
   // Retrieve scenarios by project_id
-  async getScenariosByProject(project_id: number) {
-    const scenarios = await this.db
+  async getScenariosByProject(
+    project_id: number,
+  ): Promise<SelectScenarioWithAssetDto[] | void> {
+    const rows = await this.db
       .select()
       .from(scenariosTable)
+      .leftJoin(assetsTable, eq(scenariosTable.asset_id, assetsTable.id))
       .where(eq(scenariosTable.project_id, project_id));
-    return scenarios;
+
+    if (rows.length === 0) return;
+
+    const visitedScenarioNumbers = new Set<string>();
+    return rows.reduce<SelectScenarioWithAssetDto[]>((acc, row) => {
+      const { scenarios, assets } = row;
+
+      if (!assets) return acc;
+
+      if (!visitedScenarioNumbers.has(scenarios.scenario_number)) {
+        acc.push({
+          ...scenarios,
+          assets: [],
+        });
+        visitedScenarioNumbers.add(scenarios.scenario_number);
+      }
+
+      acc
+        .find((s) => s.scenario_number === scenarios.scenario_number)
+        ?.assets.push(assets);
+
+      return acc;
+    }, [] as SelectScenarioWithAssetDto[]);
   }
 
   // Update a scenario by scenario_number
