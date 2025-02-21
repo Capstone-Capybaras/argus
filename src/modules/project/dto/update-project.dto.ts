@@ -5,6 +5,8 @@ import {
   IsNumber,
   IsOptional,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
+import * as sanitizeHtml from 'sanitize-html';
 import { projectsTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
@@ -30,9 +32,11 @@ export class UpdateProjectDto implements InferUpdate<typeof projectsTable> {
 
   @IsString()
   @IsOptional()
+  @Transform(({ value }) => sanitizeHtml(value))
   email_header?: string;
 
   @IsString()
   @IsOptional()
+  @Transform(({ value }) => sanitizeHtml(value))
   email_footer?: string;
 }
