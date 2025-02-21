@@ -1,6 +1,9 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { catchError, firstValueFrom } from 'rxjs';
+import { AetherGenerateScenarioDto } from './dto/aether-generate-scenario.dto';
+import { AxiosError } from 'axios';
 
 interface AetherJwtPayload {
   username: string;
@@ -18,5 +21,24 @@ export class AetherService {
     return this.jwtService.signAsync(payload);
   }
 
-  async generateScenario() {}
+  async generateScenario(body: AetherGenerateScenarioDto) {
+    const token = await this.createToken();
+
+    const { data } = await firstValueFrom(
+      this.httpService
+        .post('/generate_scenario', body, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .pipe(
+          catchError((error: AxiosError) => {
+            Logger.error(error?.response?.data);
+            throw 'An error happened sending scenario generation request to AI service';
+          }),
+        ),
+    );
+
+    return data;
+  }
 }

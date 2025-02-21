@@ -6,6 +6,7 @@ import { EntityModule } from '../entity/entity.module';
 import { AssetsModule } from '../assets/assets.module';
 import { JobsModule } from '../jobs/jobs.module';
 import { EventsModule } from 'src/events/events.module';
+import { AetherModule } from '../aether/aether.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { EventsModule } from 'src/events/events.module';
     AssetsModule,
     JobsModule,
     EventsModule,
+    AetherModule,
   ],
   providers: [ScenarioService],
   controllers: [ScenarioController],

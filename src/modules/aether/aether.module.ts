@@ -31,9 +31,13 @@ function formatPrivateKey(keyString: string) {
   imports: [
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => ({
-        privateKey: formatPrivateKey(
-          configService.getOrThrow('AETHER_JWT_PRIVATE_KEY'),
+        privateKey: Buffer.from(
+          formatPrivateKey(configService.getOrThrow('AETHER_JWT_PRIVATE_KEY')),
+          'utf8',
         ),
+        signOptions: {
+          algorithm: 'RS256',
+        },
       }),
       inject: [ConfigService],
     }),
@@ -45,5 +49,6 @@ function formatPrivateKey(keyString: string) {
     }),
   ],
   providers: [AetherService],
+  exports: [AetherService],
 })
 export class AetherModule {}
