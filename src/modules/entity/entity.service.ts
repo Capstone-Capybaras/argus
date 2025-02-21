@@ -169,12 +169,14 @@ export class EntityService {
       });
 
       // 3) create assets to duplicate
-      await tx.insert(assetsTable).values(
-        assetsToDuplicate.map((asset) => ({
-          ...asset,
-          entity_id: newEntity.id, // Associate with the new entity
-        })),
-      );
+      if (assetsToDuplicate.length > 0) {
+        await tx.insert(assetsTable).values(
+          assetsToDuplicate.map((asset) => ({
+            ...asset,
+            entity_id: newEntity.id, // Associate with the new entity
+          })),
+        );
+      }
 
       return newEntity;
     });
