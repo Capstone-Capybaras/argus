@@ -21,7 +21,9 @@ import {
 } from './dto/select-scenario.dto';
 import { GenerateScenarioDto } from './dto/generate-scenario.dto';
 import { GenerateScenarioCallbackDto } from './dto/generate-scenario-callback.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('scenarios')
 export class ScenarioController {
   constructor(private readonly scenarioService: ScenarioService) {}

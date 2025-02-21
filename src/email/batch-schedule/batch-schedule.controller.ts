@@ -1,7 +1,9 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { BatchScheduleService } from './batch-schedule.service';
 import { BatchUploadDto } from './batch-schedule.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('batch-schedule')
 export class BatchScheduleController {
   constructor(private readonly batchScheduleService: BatchScheduleService) {}

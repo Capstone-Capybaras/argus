@@ -15,6 +15,7 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('EEP Argus')
     .setDescription('The backend API documentation for EEP')
+    .addBearerAuth()
     .build();
   const documentFactory = () =>
     SwaggerModule.createDocument(app, swaggerConfig);

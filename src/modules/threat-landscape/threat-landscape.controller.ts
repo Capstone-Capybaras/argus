@@ -15,7 +15,9 @@ import { ThreatLandscapeService } from './threat-landscape.service';
 import { CreateThreatLandscapeDto } from './dto/create-threat-landscape.dto';
 import { UpdateThreatLandscapeDto } from './dto/update-threat-landscape.dto';
 import { SelectThreatLandscapeDto } from './dto/select-threat-landscape.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('threat-landscape')
 export class ThreatLandscapeController {
   constructor(

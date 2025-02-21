@@ -14,7 +14,9 @@ import {
 import { TacticsService } from './tactics.service';
 import { CreateTacticsDto } from './dto/create-tactics.dto';
 import { UpdateTacticsDto } from './dto/update-tactics.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('tactics')
 export class TacticsController {
   constructor(private readonly tacticsService: TacticsService) {}

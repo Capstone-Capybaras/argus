@@ -18,7 +18,9 @@ import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
 import { SelectEntityDto, SelectEntityOnlyDto } from './dto/select-entity.dto';
 import { AssignEntityDto } from './dto/assign-entity.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('entities')
 export class EntityController {
   constructor(private readonly entityService: EntityService) {}

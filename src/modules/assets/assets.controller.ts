@@ -15,7 +15,9 @@ import { AssetsService } from './assets.service';
 import { CreateAssetDto } from './dto/create-asset.dto';
 import { UpdateAssetDto } from './dto/update-asset.dto';
 import { SelectAssetDto } from './dto/select-asset.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('assets')
 export class AssetsController {
   constructor(private readonly assetsService: AssetsService) {}

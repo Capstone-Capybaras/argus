@@ -19,7 +19,9 @@ import {
 } from './dto/create-master-threat.dto';
 import { UpdateMasterThreatCubeDto } from './dto/update-master-threat.dto';
 import { SelectMasterThreatCubeDto } from './dto/select-master-threat.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('master-threat-cubes')
 export class MasterThreatCubesController {
   constructor(

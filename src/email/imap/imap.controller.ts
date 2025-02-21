@@ -1,7 +1,9 @@
 import { Controller, Get, Post, Body } from '@nestjs/common';
 import { InboxDto } from './imap.dto';
 import { ImapService } from './email.imap.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('imap')
 export class ImapController {
   constructor(private readonly imapService: ImapService) {}

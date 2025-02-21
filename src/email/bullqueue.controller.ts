@@ -12,7 +12,9 @@ import {
   UpdateMailClient,
   UpdateScheduleDto,
 } from './email.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('emailSchedule')
 export class BullQueueController {
   constructor(private readonly bullService: BullQueueService) {}

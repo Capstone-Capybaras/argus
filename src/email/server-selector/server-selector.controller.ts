@@ -1,6 +1,8 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ServerSelectorService } from './server-selector.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('server-selector')
 export class ServerSelectorController {
   constructor(private readonly selectorService: ServerSelectorService) {}

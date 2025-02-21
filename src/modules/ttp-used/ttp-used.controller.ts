@@ -17,7 +17,9 @@ import { TtpUsedService } from './ttp-used.service';
 import { CreateTtpUsedDto } from './dto/create-ttp-used.dto';
 import { UpdateTtpUsedDto } from './dto/update-ttp-used.dto';
 import { SelectTtpUsedDto } from './dto/select-ttp-used.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('ttp-used')
 export class TtpUsedController {
   constructor(private readonly ttpUsedService: TtpUsedService) {}

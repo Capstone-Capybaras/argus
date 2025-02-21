@@ -15,7 +15,9 @@ import { InjectsService } from './injects.service';
 import { CreateInjectDto } from './dto/create-inject.dto';
 import { UpdateInjectDto } from './dto/update-inject.dto';
 import { SelectInjectDto } from './dto/select-inject.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('injects')
 export class InjectsController {
   constructor(private readonly injectsService: InjectsService) {}

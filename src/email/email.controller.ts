@@ -6,7 +6,9 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { EmailService } from './email.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('emails')
 export class EmailController {
   constructor(private readonly emailService: EmailService) {}

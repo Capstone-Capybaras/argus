@@ -17,7 +17,9 @@ import {
   SelectParticipantDto,
   ParticipantWithRoles,
 } from './dto/select-participant.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('participants')
 export class ParticipantsController {
   constructor(private readonly participantsService: ParticipantsService) {}
