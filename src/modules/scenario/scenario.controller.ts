@@ -14,7 +14,11 @@ import {
 import { ScenarioService } from './scenario.service';
 import { CreateScenarioDto } from './dto/create-scenario.dto';
 import { UpdateScenarioDto } from './dto/update-scenario.dto';
-import { SelectScenarioDto } from './dto/select-scenario.dto';
+import {
+  SelectScenarioDto,
+  SelectScenarioWithAssetDto,
+  SelectScenarioWithTtpDto,
+} from './dto/select-scenario.dto';
 import { GenerateScenarioDto } from './dto/generate-scenario.dto';
 import { GenerateScenarioCallbackDto } from './dto/generate-scenario-callback.dto';
 
@@ -67,7 +71,7 @@ export class ScenarioController {
   @Get(':scenario_number')
   async getScenarioByNumber(
     @Param('scenario_number') scenario_number: string,
-  ): Promise<SelectScenarioDto> {
+  ): Promise<SelectScenarioWithTtpDto> {
     const scenario =
       await this.scenarioService.getScenarioByNumber(scenario_number);
     if (!scenario) {
@@ -79,10 +83,10 @@ export class ScenarioController {
   @Get('project/:project_id')
   async getScenariosByProject(
     @Param('project_id') project_id: number,
-  ): Promise<SelectScenarioDto[]> {
+  ): Promise<SelectScenarioWithAssetDto[]> {
     const scenarios =
       await this.scenarioService.getScenariosByProject(project_id);
-    if (!scenarios.length) {
+    if (!scenarios) {
       throw new HttpException(
         'No scenarios found for this project',
         HttpStatus.NOT_FOUND,

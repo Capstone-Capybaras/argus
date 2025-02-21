@@ -1,4 +1,6 @@
 import { scenariosTable } from 'src/database/schema';
+import { SelectAssetDto } from 'src/modules/assets/dto/select-asset.dto';
+import { SelectTtpUsedDto } from 'src/modules/ttp-used/dto/select-ttp-used.dto';
 import { InferSelect } from 'src/utils/modelToDtoTypes';
 
 export class SelectScenarioDto implements InferSelect<typeof scenariosTable> {
@@ -15,4 +17,12 @@ export class SelectScenarioDto implements InferSelect<typeof scenariosTable> {
   impact: string;
   project_id: number;
   asset_id: number;
+}
+
+export class SelectScenarioWithTtpDto extends SelectScenarioDto {
+  ttp_used: SelectTtpUsedDto[];
+}
+
+export class SelectScenarioWithAssetDto extends SelectScenarioDto {
+  assets: SelectAssetDto[];
 }

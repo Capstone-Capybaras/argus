@@ -2,6 +2,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { DATABASE_CONNECTION } from '../../config/providers';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import {
+  assetsTable,
   jobsTable,
   scenariosGeneratedTable,
   scenariosTable,
@@ -9,13 +10,17 @@ import {
 } from '../../database/schema';
 import { CreateScenarioDto } from './dto/create-scenario.dto';
 import { UpdateScenarioDto } from './dto/update-scenario.dto';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { GenerateScenarioDto } from './dto/generate-scenario.dto';
 import { EntityService } from '../entity/entity.service';
 import { AssetsService } from '../assets/assets.service';
 import { JobsService } from '../jobs/jobs.service';
 import { GenerateScenarioCallbackDto } from './dto/generate-scenario-callback.dto';
 import { EventsGateway } from 'src/events/events.gateway';
+import {
+  SelectScenarioWithAssetDto,
+  SelectScenarioWithTtpDto,
+} from './dto/select-scenario.dto';
 
 @Injectable()
 export class ScenarioService {
@@ -44,22 +49,73 @@ export class ScenarioService {
   }
 
   // Retrieve a specific scenario by scenario_number
-  async getScenarioByNumber(scenario_number: string) {
-    const scenario = await this.db
+  async getScenarioByNumber(
+    scenario_number: string,
+  ): Promise<SelectScenarioWithTtpDto | void> {
+    const rows = await this.db
       .select()
       .from(scenariosTable)
-      .where(eq(scenariosTable.scenario_number, scenario_number))
-      .limit(1);
-    return scenario[0] || null;
+      .leftJoin(
+        ttpUsedTable,
+        and(
+          eq(scenariosTable.project_id, ttpUsedTable.scenario_project_id),
+          eq(scenariosTable.scenario_number, ttpUsedTable.scenario_number),
+        ),
+      )
+      .where(eq(scenariosTable.scenario_number, scenario_number));
+
+    if (rows.length === 0) return;
+
+    return rows.reduce<SelectScenarioWithTtpDto>((acc, row) => {
+      const { scenarios, ttp_used } = row;
+
+      if (!ttp_used) return acc;
+
+      if (!acc.scenario_number) {
+        acc = {
+          ttp_used: [],
+          ...scenarios,
+        };
+      }
+
+      acc.ttp_used.push(ttp_used);
+
+      return acc;
+    }, {} as SelectScenarioWithTtpDto);
   }
 
   // Retrieve scenarios by project_id
-  async getScenariosByProject(project_id: number) {
-    const scenarios = await this.db
+  async getScenariosByProject(
+    project_id: number,
+  ): Promise<SelectScenarioWithAssetDto[] | void> {
+    const rows = await this.db
       .select()
       .from(scenariosTable)
+      .leftJoin(assetsTable, eq(scenariosTable.asset_id, assetsTable.id))
       .where(eq(scenariosTable.project_id, project_id));
-    return scenarios;
+
+    if (rows.length === 0) return;
+
+    const visitedScenarioNumbers = new Set<string>();
+    return rows.reduce<SelectScenarioWithAssetDto[]>((acc, row) => {
+      const { scenarios, assets } = row;
+
+      if (!assets) return acc;
+
+      if (!visitedScenarioNumbers.has(scenarios.scenario_number)) {
+        acc.push({
+          ...scenarios,
+          assets: [],
+        });
+        visitedScenarioNumbers.add(scenarios.scenario_number);
+      }
+
+      acc
+        .find((s) => s.scenario_number === scenarios.scenario_number)
+        ?.assets.push(assets);
+
+      return acc;
+    }, [] as SelectScenarioWithAssetDto[]);
   }
 
   // Update a scenario by scenario_number
