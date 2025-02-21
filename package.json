@@ -55,6 +55,7 @@
     "pg": "^8.13.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
+    "sanitize-html": "^2.14.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
@@ -73,6 +74,7 @@
     "@types/node-imap": "^0.9.3",
     "@types/nodemailer": "^6.4.16",
     "@types/pg": "^8.11.10",
+    "@types/sanitize-html": "^2.13.0",
     "@types/supertest": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
