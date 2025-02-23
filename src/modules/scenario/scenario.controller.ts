@@ -17,7 +17,7 @@ import { UpdateScenarioDto } from './dto/update-scenario.dto';
 import {
   SelectScenarioDto,
   SelectScenarioWithAssetDto,
-  SelectScenarioWithTtpDto,
+  SelectScenarioByNumberDto,
 } from './dto/select-scenario.dto';
 import { GenerateScenarioDto } from './dto/generate-scenario.dto';
 import { GenerateScenarioCallbackDto } from './dto/generate-scenario-callback.dto';
@@ -73,7 +73,7 @@ export class ScenarioController {
   @Get(':scenario_number')
   async getScenarioByNumber(
     @Param('scenario_number') scenario_number: string,
-  ): Promise<SelectScenarioWithTtpDto> {
+  ): Promise<SelectScenarioByNumberDto> {
     const scenario =
       await this.scenarioService.getScenarioByNumber(scenario_number);
     if (!scenario) {

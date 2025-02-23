@@ -19,8 +19,10 @@ export class SelectScenarioDto implements InferSelect<typeof scenariosTable> {
   asset_id: number;
 }
 
-export class SelectScenarioWithTtpDto extends SelectScenarioDto {
+export class SelectScenarioByNumberDto extends SelectScenarioDto {
   ttp_used: SelectTtpUsedDto[];
+  asset_name: string;
+  entity_name: string;
 }
 
 export class SelectScenarioWithAssetDto extends SelectScenarioDto {
