@@ -334,7 +334,7 @@ export const emailsTable = pgTable('emails', {
   subject: text().notNull(),
   html: text().notNull(),
   attachments: text().array(),
-  job_id: integer(),
+  job_id: varchar(),
   schedule_date_time: timestamp(),
   error_message: text(),
   status: text().default('notScheduled'), // status: notScheduled, scheduled, sent, failed

@@ -3,35 +3,50 @@ import {
   Controller,
   Get,
   InternalServerErrorException,
+  Logger,
   Post,
 } from '@nestjs/common';
-import { BullQueueService } from './bullqueue.service';
+import { RedisService } from './redis.service';
 import {
   CreateMailDto,
   ScheduleMailDto,
   UpdateMailClient,
   UpdateScheduleDto,
-} from './email.dto';
+} from '../email.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiBearerAuth()
-@Controller('emailSchedule')
-export class BullQueueController {
-  constructor(private readonly bullService: BullQueueService) {}
+@Controller('redis')
+export class RedisController {
+  constructor(private readonly redisService: RedisService) {}
 
-  @Get('scheduleJob')
+  @Get('status')
+  async getStatus() {
+    try {
+      const status = this.redisService.checkConnection();
+      return status;
+    } catch (err) {
+      Logger.log('test err: ', err);
+    }
+  }
+
+  @Get('reconnect')
+  async reconnect() {
+    try {
+      const connection = await this.redisService.reconnect();
+      return connection;
+    } catch (err) {
+      Logger.log('Connection err: ', err);
+    }
+  }
+
+  @Post('scheduleJob')
   async scheduleJob(@Body() scheduleDto: ScheduleMailDto) {
-    // const dummydata = {
-    //   from: 'Exercise Control <athenachua27@gmail.com>',
-    //   to: ['athenachua27@gmail.com'],
-    //   subject: 'Test bull',
-    //   html: 'Test Bull Queue Message - scheduled at 12.55am',
-    // };
     const sendAt: Date = new Date(scheduleDto.scheduleDateTime);
-    const emailId: number = scheduleDto.emailId; //1;
+    const emailId: number = scheduleDto.emailId;
     try {
       // add to emails and schedule database
-      const mail = await this.bullService.scheduleEmail(emailId, sendAt);
+      const mail = await this.redisService.scheduleEmail(emailId, sendAt);
       return {
         message: 'success',
         mail,
@@ -44,7 +59,7 @@ export class BullQueueController {
   @Post('updateJob')
   async updateJob(@Body() updateDto: UpdateScheduleDto) {
     try {
-      await this.bullService.updateJob(
+      await this.redisService.updateJob(
         updateDto.jobId,
         updateDto.emailId,
         updateDto.scheduleDateTime,
@@ -57,10 +72,10 @@ export class BullQueueController {
   @Post('createEmail')
   async createEmail(@Body() createEmailDto: CreateMailDto) {
     try {
-      const resp = await this.bullService.createEmailSchedule(createEmailDto);
+      const resp = await this.redisService.createEmailSchedule(createEmailDto);
       return resp;
     } catch (err) {
-      console.log('error controller in createEmail: ', err);
+      Logger.log('Error in createEmail: ', err);
       throw new InternalServerErrorException(err);
     }
   }
@@ -68,10 +83,10 @@ export class BullQueueController {
   @Post('editEmail')
   async UpdateMail(@Body() updateMailDto: UpdateMailClient) {
     try {
-      const resp = await this.bullService.updateEmailSchedule(updateMailDto);
+      const resp = await this.redisService.updateEmailSchedule(updateMailDto);
       return resp;
     } catch (err) {
-      console.log('editEmail error controller: ', err);
+      Logger.log('editEmail error controller: ', err);
     }
   }
 }

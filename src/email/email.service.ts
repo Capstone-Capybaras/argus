@@ -145,7 +145,7 @@ export class EmailService {
   async getAttachment(key: string) {
     //download from S3 and put in the form of attachment
     try {
-      const bucketName = 'eep-argus-staging';
+      const bucketName = this.configService.getOrThrow('S3_BUCKET_NAME');
       const fileBuffer = await this.s3Service.downloadFile(bucketName, key);
       const filename = key.split('/').pop() ?? key;
       const attachment: AttachmentDto = {

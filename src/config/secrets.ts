@@ -19,6 +19,8 @@ export interface Secrets {
   AETHER_PUBLIC_KEY: string;
   AETHER_JWT_PRIVATE_KEY: string;
   AETHER_URL: string;
+  S3_BUCKET_NAME: string;
+  VALKEY_ENDPOINT: string;
 }
 
 const fetchSecrets = async (secretName: string): Promise<Secrets> => {

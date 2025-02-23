@@ -21,7 +21,7 @@ export class CreateMailDto implements InferInsert<typeof emailsTable> {
   // @Transform(({ value }) => value === "" ? null : value)
   @IsDateString()
   scheduleDateTime?: string | null;
-  jobId?: number | null;
+  jobId?: string | null;
   status?: string;
   errorMessage?: string | null;
 }
@@ -40,7 +40,7 @@ export class UpdateMailDBDto implements InferUpdate<typeof emailsTable> {
   html?: string;
   attachments?: string[];
   schedule_date_time?: Date | null;
-  job_id?: number | null;
+  job_id?: string | null;
   @IsNotEmpty()
   status?: string;
   error_message?: string | null;
@@ -65,7 +65,7 @@ export class UpdateMailClient {
   // @Transform(({ value }) => value === "" ? null : value)
   // @IsDateString()
   scheduleDateTime?: string | null;
-  jobId?: number | null;
+  jobId?: string | null;
   status?: string;
   errorMessage?: string | null;
 }
@@ -86,7 +86,7 @@ export class ScheduleMailDto {
 
 export class UpdateScheduleDto {
   @IsNotEmpty()
-  jobId: number;
+  jobId: string;
   @IsNotEmpty()
   emailId: number;
   @IsNotEmpty()

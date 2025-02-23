@@ -14,7 +14,7 @@ import { MasterThreatCubesModule } from './modules/master-threat-cubes/master-th
 import { ParticipantsModule } from './modules/participants/participants.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { EmailModule } from './email/email.module';
-import { BullQueueModule } from './email/bullqueue.module';
+//import { BullQueueModule } from './email/bullqueue.module';
 import { ImapModule } from './email/imap/imap.module';
 import { TtpUsedModule } from './modules/ttp-used/ttp-used.module';
 import { ThreatLandscapeModule } from './modules/threat-landscape/threat-landscape.module';
@@ -23,6 +23,8 @@ import { BatchScheduleModule } from './email/batch-schedule/batch-schedule.modul
 import { JobsModule } from './modules/jobs/jobs.module';
 import { AetherModule } from './modules/aether/aether.module';
 import { EventsModule } from './events/events.module';
+import { RedisModule } from './email/redis/redis.module';
+//import { RedisConfigModule } from './email/redis-config/redis-config.module';
 
 @Module({
   imports: [
@@ -44,7 +46,7 @@ import { EventsModule } from './events/events.module';
     MasterThreatCubesModule,
     ParticipantsModule,
     RolesModule,
-    BullQueueModule,
+    //BullQueueModule,
     EmailModule,
     ImapModule,
     TtpUsedModule,
@@ -54,6 +56,7 @@ import { EventsModule } from './events/events.module';
     JobsModule,
     AetherModule,
     EventsModule,
+    RedisModule,
   ],
   controllers: [],
 })
