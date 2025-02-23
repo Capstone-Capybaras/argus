@@ -113,6 +113,14 @@ export class EntityService {
     };
   }
 
+  async getPlainEntityById(id: number): Promise<SelectEntityOnlyDto> {
+    const [entity] = await this.db
+      .select()
+      .from(entitiesTable)
+      .where(eq(entitiesTable.id, id));
+    return entity;
+  }
+
   // Update an entity by name
   async updateEntity(id: number, data: UpdateEntityDto) {
     const result = await this.db

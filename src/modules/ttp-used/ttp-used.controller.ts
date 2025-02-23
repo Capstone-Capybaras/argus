@@ -12,12 +12,18 @@ import {
   Logger,
   Query,
   ParseIntPipe,
+  Put,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { TtpUsedService } from './ttp-used.service';
 import { CreateTtpUsedDto } from './dto/create-ttp-used.dto';
 import { UpdateTtpUsedDto } from './dto/update-ttp-used.dto';
 import { SelectTtpUsedDto } from './dto/select-ttp-used.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import {
+  BatchUpdateTtpUsedDto,
+  BatchUpdateTtpUsedResponse,
+} from './dto/batch-update-ttp-used.dto';
 
 @ApiBearerAuth()
 @Controller('ttp-used')
@@ -71,6 +77,24 @@ export class TtpUsedController {
     } catch (error) {
       Logger.error(error);
       throw new BadRequestException('Failed to update TTP used');
+    }
+  }
+
+  @Put()
+  async batchUpdateTtpUsed(
+    @Body() batchUpdateTtpUsedDto: BatchUpdateTtpUsedDto,
+  ): Promise<BatchUpdateTtpUsedResponse> {
+    if (batchUpdateTtpUsedDto.ttps.length === 0) {
+      throw new BadRequestException('No entries provided');
+    }
+    try {
+      const result = await this.ttpUsedService.batchUpdateTtpUsed(
+        batchUpdateTtpUsedDto,
+      );
+      return result;
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
     }
   }
 

@@ -3,8 +3,13 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { ttpUsedTable } from '../../database/schema';
 import { CreateTtpUsedDto } from './dto/create-ttp-used.dto';
 import { UpdateTtpUsedDto } from './dto/update-ttp-used.dto';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { DATABASE_CONNECTION } from 'src/config/providers';
+import {
+  BatchUpdateTtpUsedDto,
+  SinglePutTtpUsedDto,
+} from './dto/batch-update-ttp-used.dto';
+import { SelectTtpUsedDto } from './dto/select-ttp-used.dto';
 
 @Injectable()
 export class TtpUsedService {
@@ -44,6 +49,43 @@ export class TtpUsedService {
       .where(eq(ttpUsedTable.id, data.id))
       .returning();
     return result[0] || null;
+  }
+
+  async batchUpdateTtpUsed(data: BatchUpdateTtpUsedDto) {
+    const { ttps } = data;
+
+    const failed: SinglePutTtpUsedDto[] = [];
+    const success: SelectTtpUsedDto[] = [];
+    const failedMessages: string[] = [];
+
+    // upsert statements
+    await Promise.all(
+      ttps.map(async (ttp) => {
+        try {
+          const [result] = await this.db
+            .insert(ttpUsedTable)
+            .values(ttp)
+            .onConflictDoUpdate({
+              target: ttpUsedTable.id,
+              set: {
+                ...ttp,
+                id: sql`${ttpUsedTable.id}`, // leave id as it was
+              },
+            })
+            .returning();
+          success.push(result);
+        } catch (err) {
+          failed.push(ttp);
+          failedMessages.push(String(err));
+        }
+      }),
+    );
+
+    return {
+      success,
+      failed,
+      failedMessages,
+    };
   }
 
   // Delete a TTP used by ttp id

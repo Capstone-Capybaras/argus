@@ -19,7 +19,7 @@ import { GenerateScenarioCallbackDto } from './dto/generate-scenario-callback.dt
 import { EventsGateway } from 'src/events/events.gateway';
 import {
   SelectScenarioWithAssetDto,
-  SelectScenarioWithTtpDto,
+  SelectScenarioByNumberDto,
 } from './dto/select-scenario.dto';
 import { AetherService } from '../aether/aether.service';
 
@@ -53,7 +53,7 @@ export class ScenarioService {
   // Retrieve a specific scenario by scenario_number
   async getScenarioByNumber(
     scenario_number: string,
-  ): Promise<SelectScenarioWithTtpDto | void> {
+  ): Promise<SelectScenarioByNumberDto | void> {
     const rows = await this.db
       .select()
       .from(scenariosTable)
@@ -68,7 +68,7 @@ export class ScenarioService {
 
     if (rows.length === 0) return;
 
-    return rows.reduce<SelectScenarioWithTtpDto>((acc, row) => {
+    const result = rows.reduce<SelectScenarioByNumberDto>((acc, row) => {
       const { scenarios, ttp_used } = row;
 
       if (!ttp_used) return acc;
@@ -77,13 +77,27 @@ export class ScenarioService {
         acc = {
           ttp_used: [],
           ...scenarios,
+          asset_name: '',
+          entity_name: '',
         };
       }
 
       acc.ttp_used.push(ttp_used);
 
       return acc;
-    }, {} as SelectScenarioWithTtpDto);
+    }, {} as SelectScenarioByNumberDto);
+
+    // get entity and asset names
+    const { entity_id, name } = await this.assetService.getAssetById(
+      result.asset_id,
+    );
+    const { name: entity_name } =
+      await this.entityService.getPlainEntityById(entity_id);
+
+    result.asset_name = name;
+    result.entity_name = entity_name;
+
+    return result;
   }
 
   // Retrieve scenarios by project_id
