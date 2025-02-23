@@ -8,7 +8,7 @@ import * as schemas from 'src/database/schema';
 import { ConfigService } from '@nestjs/config';
 import { DATABASE_CONNECTION } from 'src/config/providers';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { AttachmentDto, CreateMailDto, UpdateMailDBDto } from './email.dto';
 import { RawEmail } from './email.interface';
 import { S3Service } from './s3.service';
@@ -125,6 +125,23 @@ export class EmailService {
       .returning();
     return result || null;
   }
+
+  async removeAttachment(emailId: number, fileKey: string){
+    await this.database.update(schemas.emailsTable)
+      .set({
+        attachments: sql`array_remove(${schemas.emailsTable.attachments}, ${fileKey})`, // PostgreSQL function
+      })
+      .where(eq(schemas.emailsTable.id, emailId));
+  };
+
+  async addAttachment(emailId: number, fileKeys: string[]){
+    const keysArray = fileKeys.map(key => sql`${key}`);
+    await this.database.update(schemas.emailsTable)
+      .set({
+        attachments: sql`COALESCE(array_cat(attachments, ARRAY[${sql.join(keysArray)}]::text[]), ARRAY[]::text[])`
+      })
+      .where(eq(schemas.emailsTable.id, emailId));
+  };
 
   // async connectToInbox() {
   //   try {
