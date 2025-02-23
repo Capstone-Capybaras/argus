@@ -11,23 +11,6 @@ import {
 } from './dto/batch-update-ttp-used.dto';
 import { SelectTtpUsedDto } from './dto/select-ttp-used.dto';
 
-let test = async () => {
-  const failed = [];
-  const promise1 = Promise.resolve(3);
-  const promise2 = 42;
-  try {
-    const promise3 = await new Promise((resolve, reject) => {
-      setTimeout(reject, 100, 'foo');
-    });
-  } catch (err) {
-    failed.push(err);
-  }
-
-  // const values = await Promise.all([promise1, promise2, promise3]);
-  // console.log(values);
-  return failed;
-};
-
 @Injectable()
 export class TtpUsedService {
   constructor(
