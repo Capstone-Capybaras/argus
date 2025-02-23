@@ -485,6 +485,6 @@ export class BatchScheduleService {
       }
     }
 
-    return { message: 'Emails scheduled successfully' };
+    return { success: true, message: 'Emails scheduled successfully' };
   }
 }
