@@ -27,6 +27,7 @@
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.679.0",
     "@nestjs-modules/mailer": "^2.0.2",
+    "@nestjs/axios": "^4.0.0",
     "@nestjs/bull": "^10.2.2",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",
@@ -38,6 +39,7 @@
     "@nestjs/websockets": "^10.4.15",
     "@types/imap-simple": "^4.2.9",
     "aws-sdk": "^2.1692.0",
+    "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "bull": "^4.16.5",
     "class-transformer": "^0.5.1",

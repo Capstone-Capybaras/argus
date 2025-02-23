@@ -17,6 +17,8 @@ export interface Secrets {
   RESOURCE_ACCESS_SECRET: string;
   REGION: string;
   AETHER_PUBLIC_KEY: string;
+  AETHER_JWT_PRIVATE_KEY: string;
+  AETHER_URL: string;
 }
 
 const fetchSecrets = async (secretName: string): Promise<Secrets> => {
