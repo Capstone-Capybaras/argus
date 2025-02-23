@@ -13,7 +13,7 @@ export class BatchScheduleController {
     const resp = await this.batchScheduleService.processExcel(
       batchUploadDto.projectId,
       batchUploadDto.attachments,
-      batchUploadDto.filePath,
+      batchUploadDto.templateFile,
     );
     return resp;
   }

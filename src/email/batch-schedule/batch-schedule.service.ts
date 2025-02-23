@@ -1,16 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { BullQueueService } from 'src/email/bullqueue.service';
+//import { BullQueueService } from 'src/email/bullqueue.service';
 import * as XLSX from 'xlsx';
 import { CreateMailDto } from '../email.dto';
 import { EmailService } from '../email.service';
 import { S3Service } from '../s3.service';
+import { RedisService } from '../redis/redis.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class BatchScheduleService {
   constructor(
-    private readonly scheduleService: BullQueueService,
+    private readonly scheduleService: RedisService,
     private readonly emailService: EmailService,
     private readonly s3Service: S3Service,
+    private readonly configService: ConfigService,
   ) {}
 
   private getSheetHeaders(worksheet: XLSX.WorkSheet): string[] {
@@ -96,7 +99,7 @@ export class BatchScheduleService {
     //const attachments : string[] = ["Artefacts/Capstone Application CGH - Machine learning model.pdf"]
     //const filePath = 'src/email/batch-schedule/test/testinguploadtemplate.xlsx';
     //const fileBuffer = fs.readFileSync(filePath)
-    const bucketName = 'eep-argus-staging';
+    const bucketName = this.configService.getOrThrow('S3_BUCKET_NAME');
     const fileBuffer = await this.s3Service.downloadFile(bucketName, filePath);
     const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
     const errors: string[] = [];
@@ -151,7 +154,7 @@ export class BatchScheduleService {
         );
       }
       const missingValues = artefacts.filter(
-        (value) => !attachments.includes(`${projectId}/${value}`),
+        (value) => !attachments.includes(`${projectId}/Artefacts/${value}`),
       );
       if (missingValues.length > 0) {
         errors.push(
@@ -164,6 +167,7 @@ export class BatchScheduleService {
       const subjectColumn: string[] = rows.map(
         (row: Row) => row['subject'] || '',
       );
+      console.log(subjectColumn);
       let emptyFieldsWithRow = subjectColumn
         .map((value, index) => ({ value, row: index }))
         .filter((item) => !item.value || item.value.trim() === '');
@@ -353,7 +357,7 @@ export class BatchScheduleService {
     }
 
     //schedule emails
-    const scheduled: { jobId: number | null; emailId: number }[] = []; // array of successfully scheduled jobs
+    const scheduled: { jobId: string | null; emailId: number }[] = []; // array of successfully scheduled jobs
     const rows: Row[] = XLSX.utils.sheet_to_json(worksheet);
     for (const value of rows) {
       let tos: string[] =
@@ -417,7 +421,7 @@ export class BatchScheduleService {
         html: this.convertPlainTextToHTML(value.inject),
         attachments:
           value.artefact_name !== undefined && value.artefact_name !== ''
-            ? [`${projectId}/${value.artefact_name}`]
+            ? [`${projectId}/Artefacts/${value.artefact_name}`]
             : [],
         ...(datetimeString !== '' && { scheduleDateTime: datetimeString }),
         ...(ccs.length > 0 && { cc: ccs }),
@@ -427,7 +431,10 @@ export class BatchScheduleService {
       try {
         const resp = await this.scheduleService.createEmailSchedule(data);
         console.log('############### response ################\n', resp);
-        scheduled.push({ jobId: resp.resp.job_id, emailId: resp.resp.id });
+        scheduled.push({
+          jobId: resp.resp.redis_job_id,
+          emailId: resp.resp.id,
+        });
       } catch (err: unknown) {
         if (err instanceof Error) {
           errors.push(err.message); // Access the message property safely

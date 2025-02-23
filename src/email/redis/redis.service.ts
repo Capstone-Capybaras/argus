@@ -1,22 +1,85 @@
-import { InjectQueue } from '@nestjs/bull';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Queue } from 'bull';
-import { EmailService } from './email.service';
-import { CreateMailDto, UpdateMailClient, UpdateMailDBDto } from './email.dto';
+import {
+  Injectable,
+  Inject,
+  Logger,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import { Redis } from 'ioredis';
+import { Queue, Worker } from 'bullmq';
+import { EmailService } from '../email.service';
+import { CreateMailDto, UpdateMailClient, UpdateMailDBDto } from '../email.dto';
 
 @Injectable()
-export class BullQueueService {
+export class RedisService {
+  private jobQueue: Queue;
   constructor(
-    @InjectQueue('emailSending') private readonly emailQueue: Queue,
+    @Inject('REDIS_CLUSTER') private readonly redisCluster: Redis,
     private readonly emailService: EmailService,
-  ) {}
+  ) {
+    this.jobQueue = new Queue('{emailQueue}', {
+      connection: this.redisCluster, // Use the existing Redis connection
+    });
+    new Worker(
+      '{emailQueue}',
+      async (job) => {
+        console.log(`Processing job: ${job.id}`, job.data);
+        const emailId = job.data.email;
+        this.emailService.sendMail(emailId);
+      },
+      {
+        connection: this.redisCluster, // Ensure workers use the same connection
+      },
+    );
+  }
+
+  checkConnection() {
+    const status = this.redisCluster.status;
+    Logger.log('Valkey Status: ', status);
+    return status;
+  }
+
+  async reconnect() {
+    try {
+      await this.redisCluster.connect();
+      return 'connected';
+    } catch (err) {
+      Logger.log('Connection error', err);
+      throw new InternalServerErrorException(err);
+    }
+  }
+
+  async getJobs(
+    status: 'all' | 'waiting' | 'active' | 'completed' | 'failed' | 'delayed',
+  ) {
+    try {
+      if (status === 'all') {
+        const jobs = await this.jobQueue.getJobs([
+          'waiting', // Jobs waiting to be processed
+          'active', // Jobs currently being processed
+          'completed', // Successfully processed jobs
+          'failed', // Jobs that failed
+          'delayed', // Jobs that are scheduled for future execution
+        ]);
+        return jobs;
+      } else {
+        const jobs = await this.jobQueue.getJobs([status]);
+        return jobs;
+      }
+    } catch (err) {
+      Logger.log('Error getting jobs: ', err);
+    }
+  }
+
+  async addJob(data: any) {
+    await this.jobQueue.add('sendEmail', data);
+  }
 
   async scheduleEmail(emailId: number, scheduleDateTime: Date) {
     if (scheduleDateTime.getTime() - Date.now() < 0) {
       await this.emailService.deleteEmail(emailId);
       throw new Error('Schedule cannot be made in the past');
     } else {
-      const job = await this.emailQueue.add(
+      const job = await this.jobQueue.add(
         'sendEmail',
         { email: emailId },
         {
@@ -24,14 +87,14 @@ export class BullQueueService {
           removeOnComplete: true, // Remove the job after it completes
         },
       );
-      console.log('######### PRINT JOB #########');
-      console.log(job);
+      Logger.log('######### PRINT JOB #########');
+      Logger.log(job);
       return { jobId: job.id };
     }
   }
 
-  async removeJob(jobId: number) {
-    const job = await this.emailQueue.getJob(jobId);
+  async removeJob(jobId: string) {
+    const job = await this.jobQueue.getJob(jobId);
     if (job) {
       await job.remove();
       return { success: true };
@@ -40,8 +103,8 @@ export class BullQueueService {
     }
   }
 
-  async updateJob(jobId: number, newEmail: number, newDelay: Date) {
-    const job = await this.emailQueue.getJob(jobId);
+  async updateJob(jobId: string, newEmail: number, newDelay: Date) {
+    const job = await this.jobQueue.getJob(jobId);
     if (job) {
       await job.remove();
       const newJob = await this.scheduleEmail(newEmail, newDelay);
@@ -71,13 +134,12 @@ export class BullQueueService {
         const job = await this.scheduleEmail(entry[0].id, delay);
         console.log('job created', job);
         const scheduleData: UpdateMailDBDto = {
-          job_id: Number(job.jobId),
+          redis_job_id: job.jobId,
           schedule_date_time: delay,
           status: 'scheduled',
           error_message: null,
         };
         resp = await this.emailService.updateEmail(emailId, scheduleData);
-        console.log('resp:::', resp);
       } else {
         const scheduleData = {
           jobId: null,
@@ -89,7 +151,7 @@ export class BullQueueService {
       }
       return { success: true, resp: resp };
     } catch (err) {
-      console.log('Error creating email:', err);
+      Logger.log('Error creating email:', err);
       throw new InternalServerErrorException(err);
     }
   }
@@ -111,27 +173,30 @@ export class BullQueueService {
       console.log('new datetime', updateMailDto.scheduleDateTime);
       if (update.schedule_date_time != updateMailDto.scheduleDateTime) {
         let jobId;
-        if (update.job_id == null && updateMailDto.scheduleDateTime != null) {
+        if (
+          update.redis_job_id == null &&
+          updateMailDto.scheduleDateTime != null
+        ) {
           const delay = new Date(updateMailDto.scheduleDateTime);
           const job = await this.scheduleEmail(updateMailDto.emailId, delay);
           jobId = job.jobId;
         } else if (
-          update.job_id != null &&
+          update.redis_job_id != null &&
           updateMailDto.scheduleDateTime != null
         ) {
           const delay = new Date(updateMailDto.scheduleDateTime);
           const newJob = await this.updateJob(
-            update.job_id,
+            update.redis_job_id,
             updateMailDto.emailId,
             delay,
           );
           jobId = newJob.jobId;
-        } else if (update.job_id != null && updateMailDto.jobId == null) {
-          await this.removeJob(update.job_id);
+        } else if (update.redis_job_id != null && updateMailDto.jobId == null) {
+          await this.removeJob(update.redis_job_id);
           jobId = null;
         }
         const scheduleData: UpdateMailDBDto = {
-          job_id: isNaN(Number(jobId)) ? null : Number(jobId),
+          redis_job_id: jobId ?? null,
           schedule_date_time:
             updateMailDto.scheduleDateTime != null
               ? new Date(updateMailDto.scheduleDateTime)
@@ -147,7 +212,7 @@ export class BullQueueService {
       }
       return { success: true, resp: update };
     } catch (err) {
-      console.log('update email Error', err);
+      Logger.log('update email Error', err);
       throw new InternalServerErrorException(err);
     }
   }

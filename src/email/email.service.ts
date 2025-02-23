@@ -69,7 +69,7 @@ export class EmailService {
         subject: data.subject,
         html: data.html,
         attachments: data.attachments ?? null,
-        job_id: data.jobId ?? null,
+        redis_job_id: data.jobId ?? null,
         schedule_date_time: data.scheduleDateTime
           ? new Date(data.scheduleDateTime)
           : null,
@@ -145,7 +145,7 @@ export class EmailService {
   async getAttachment(key: string) {
     //download from S3 and put in the form of attachment
     try {
-      const bucketName = 'eep-argus-staging';
+      const bucketName = this.configService.getOrThrow('S3_BUCKET_NAME');
       const fileBuffer = await this.s3Service.downloadFile(bucketName, key);
       const filename = key.split('/').pop() ?? key;
       const attachment: AttachmentDto = {
