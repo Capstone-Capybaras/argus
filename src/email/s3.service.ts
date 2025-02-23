@@ -1,5 +1,10 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { S3Client, GetObjectCommand, ListObjectsV2Command, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  GetObjectCommand,
+  ListObjectsV2Command,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import { secretManagerConfig } from 'src/config/secrets';
 import { Readable } from 'stream';
 
@@ -32,9 +37,11 @@ export class S3Service implements OnModuleInit {
       const { Body } = await this.s3.send(command);
       if (Body instanceof Readable) {
         const buffer = await this.streamToBuffer(Body); // Convert stream to buffer
-        return buffer
+        return buffer;
       } else {
-        throw new Error(`Error fetching file from S3: File not readable. ${Body}`)
+        throw new Error(
+          `Error fetching file from S3: File not readable. ${Body}`,
+        );
       }
     } catch (err) {
       console.error('Error fetching file from S3:', err);
@@ -42,25 +49,27 @@ export class S3Service implements OnModuleInit {
     }
   }
 
-  async getObjectsByPrefix(bucketName: string, prefix: string){
-    try{
-      const command = new ListObjectsV2Command({ Bucket: "your-bucket" });
+  async getObjectsByPrefix(bucketName: string, prefix: string) {
+    try {
+      const command = new ListObjectsV2Command({
+        Bucket: bucketName,
+        Prefix: prefix,
+      });
       const response = await this.s3.send(command);
       const objects = response.Contents?.map((obj) => obj.Key);
-      return objects
-    } catch(err){
-      console.log("error getting prefix objects:", err);
+      return objects;
+    } catch (err) {
+      console.log('error getting prefix objects:', err);
     }
   }
 
-  async DeleteObject(bucketName: string, key: string){
-    try{
+  async DeleteObject(bucketName: string, key: string) {
+    try {
       const command = new DeleteObjectCommand({ Bucket: bucketName, Key: key });
       const result = await this.s3.send(command);
-      return result
-    } catch(err){
-      console.log("Error deleting object:", err);
+      return result;
+    } catch (err) {
+      console.log('Error deleting object:', err);
     }
-
   }
 }

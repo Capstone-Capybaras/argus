@@ -46,22 +46,28 @@ export class EmailController {
   }
 
   @Get('removeAttachment')
-  async removeAttachment(@Query('emailId') emailId: number, @Query('key') key: string){
-    try{
-      const result = await this.emailService.removeAttachment(emailId,key);
-      return result
-    } catch(err){
-      throw new InternalServerErrorException(String(err))
+  async removeAttachment(
+    @Query('emailId') emailId: number,
+    @Query('key') key: string,
+  ) {
+    try {
+      const result = await this.emailService.removeAttachment(emailId, key);
+      return result;
+    } catch (err) {
+      throw new InternalServerErrorException(String(err));
     }
   }
 
   @Get('addAttachment')
-  async addAttachment(@Query('emailId') emailId: number, @Query('keys') key: string[]){
-    try{
-      const result = await this.emailService.addAttachment(emailId,key);
-      return result
-    } catch(err){
-      throw new InternalServerErrorException(String(err))
+  async addAttachment(
+    @Query('emailId') emailId: number,
+    @Query('keys') key: string[],
+  ) {
+    try {
+      const result = await this.emailService.addAttachment(emailId, key);
+      return result;
+    } catch (err) {
+      throw new InternalServerErrorException(String(err));
     }
   }
 }
