@@ -431,7 +431,10 @@ export class BatchScheduleService {
       try {
         const resp = await this.scheduleService.createEmailSchedule(data);
         console.log('############### response ################\n', resp);
-        scheduled.push({ jobId: resp.resp.job_id, emailId: resp.resp.id });
+        scheduled.push({
+          jobId: resp.resp.redis_job_id,
+          emailId: resp.resp.id,
+        });
       } catch (err: unknown) {
         if (err instanceof Error) {
           errors.push(err.message); // Access the message property safely

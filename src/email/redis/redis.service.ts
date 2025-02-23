@@ -134,7 +134,7 @@ export class RedisService {
         const job = await this.scheduleEmail(entry[0].id, delay);
         console.log('job created', job);
         const scheduleData: UpdateMailDBDto = {
-          job_id: job.jobId,
+          redis_job_id: job.jobId,
           schedule_date_time: delay,
           status: 'scheduled',
           error_message: null,
@@ -173,27 +173,30 @@ export class RedisService {
       console.log('new datetime', updateMailDto.scheduleDateTime);
       if (update.schedule_date_time != updateMailDto.scheduleDateTime) {
         let jobId;
-        if (update.job_id == null && updateMailDto.scheduleDateTime != null) {
+        if (
+          update.redis_job_id == null &&
+          updateMailDto.scheduleDateTime != null
+        ) {
           const delay = new Date(updateMailDto.scheduleDateTime);
           const job = await this.scheduleEmail(updateMailDto.emailId, delay);
           jobId = job.jobId;
         } else if (
-          update.job_id != null &&
+          update.redis_job_id != null &&
           updateMailDto.scheduleDateTime != null
         ) {
           const delay = new Date(updateMailDto.scheduleDateTime);
           const newJob = await this.updateJob(
-            update.job_id,
+            update.redis_job_id,
             updateMailDto.emailId,
             delay,
           );
           jobId = newJob.jobId;
-        } else if (update.job_id != null && updateMailDto.jobId == null) {
-          await this.removeJob(update.job_id);
+        } else if (update.redis_job_id != null && updateMailDto.jobId == null) {
+          await this.removeJob(update.redis_job_id);
           jobId = null;
         }
         const scheduleData: UpdateMailDBDto = {
-          job_id: jobId ?? null,
+          redis_job_id: jobId ?? null,
           schedule_date_time:
             updateMailDto.scheduleDateTime != null
               ? new Date(updateMailDto.scheduleDateTime)

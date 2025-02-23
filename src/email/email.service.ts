@@ -69,7 +69,7 @@ export class EmailService {
         subject: data.subject,
         html: data.html,
         attachments: data.attachments ?? null,
-        job_id: data.jobId ?? null,
+        redis_job_id: data.jobId ?? null,
         schedule_date_time: data.scheduleDateTime
           ? new Date(data.scheduleDateTime)
           : null,

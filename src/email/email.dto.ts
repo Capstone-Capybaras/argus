@@ -40,7 +40,7 @@ export class UpdateMailDBDto implements InferUpdate<typeof emailsTable> {
   html?: string;
   attachments?: string[];
   schedule_date_time?: Date | null;
-  job_id?: string | null;
+  redis_job_id?: string | null;
   @IsNotEmpty()
   status?: string;
   error_message?: string | null;
