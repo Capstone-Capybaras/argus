@@ -1,6 +1,6 @@
 import { Module, Logger } from '@nestjs/common';
 import { RedisController } from './redis.controller';
-import * as Redis from 'ioredis';
+import Redis from 'ioredis';
 import { RedisService } from './redis.service';
 import { EmailModule } from '../email.module';
 import { ConfigService } from '@nestjs/config';
@@ -17,7 +17,7 @@ import { ConfigService } from '@nestjs/config';
           process.env.NODE_ENV === 'local'
             ? '127.0.0.1:6379'
             : (redisURL ?? '127.0.0.1:6379');
-        const cluster = new Redis.Redis(endpoint, {
+        const cluster = new Redis(endpoint, {
           tls: {
             rejectUnauthorized: false,
             checkServerIdentity: () => undefined,
