@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 //import { BullQueueService } from 'src/email/bullqueue.service';
 import * as XLSX from 'xlsx';
 import { CreateMailDto } from '../email.dto';
@@ -15,6 +19,32 @@ export class BatchScheduleService {
     private readonly s3Service: S3Service,
     private readonly configService: ConfigService,
   ) {}
+
+  async getUploaded(project_id: number) {
+    try {
+      const bucket = this.configService.getOrThrow('S3_BUCKET_NAME');
+      const uploadedFiles = this.s3Service.getObjectsByPrefix(
+        bucket,
+        `${project_id}/Artefacts`,
+      );
+      return uploadedFiles;
+    } catch (err) {
+      Logger.log(`Error getting uploaded files: ${err}`);
+      throw new InternalServerErrorException(err);
+    }
+  }
+
+  async removeFile(project_id: number, fileName: string) {
+    try {
+      const bucket = this.configService.getOrThrow('S3_BUCKET_NAME');
+      const key = `${project_id}/Artefacts/${fileName}`;
+      const result = await this.s3Service.DeleteObject(bucket, key);
+      return result;
+    } catch (err) {
+      Logger.log('Error deleting object: ', err);
+      throw new InternalServerErrorException(err);
+    }
+  }
 
   private getSheetHeaders(worksheet: XLSX.WorkSheet): string[] {
     const headers: string[] = [];
@@ -455,6 +485,6 @@ export class BatchScheduleService {
       }
     }
 
-    return { message: 'Emails scheduled successfully' };
+    return { success: true, message: 'Emails scheduled successfully' };
   }
 }
