@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DATABASE_CONNECTION } from 'src/config/providers';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { serverTable } from '../../database/schema';
+import { ConfigService } from '@nestjs/config';
 //import { EmailService } from '../email.service';
 
 @Injectable()
@@ -9,6 +10,7 @@ export class ServerSelectorService {
   constructor(
     @Inject(DATABASE_CONNECTION)
     private readonly db: ReturnType<typeof drizzle>,
+    private readonly configService: ConfigService,
   ) {}
 
   async createSelectedServer(server: 'simx1' | 'simx2') {
@@ -39,21 +41,21 @@ export class ServerSelectorService {
     const selectedServer = 'simx1';
     const servers = {
       simx1: {
-        host: process.env.EMAIL_HOST,
+        host: this.configService.getOrThrow('EMAIL_HOST'),
         port: 465, //587 not secure
         secure: true,
         auth: {
-          user: process.env.EMAIL_USERNAME,
-          pass: process.env.EMAIL_PASSWORD,
+          user: this.configService.getOrThrow('EMAIL_USERNAME'),
+          pass: this.configService.getOrThrow('EMAIL_PASSWORD'),
         },
       },
       simx2: {
-        host: process.env.EMAIL_HOST,
+        host: this.configService.getOrThrow('EMAIL_HOST'),
         port: 465, //587 not secure
         secure: true,
         auth: {
-          user: process.env.EMAIL_BACKUP_USERNAME,
-          pass: process.env.EMAIL_BACKUP_PASSWORD,
+          user: this.configService.getOrThrow('EMAIL_BACKUP_USERNAME'),
+          pass: this.configService.getOrThrow('EMAIL_BACKUP_PASSWORD'),
         },
       },
     };

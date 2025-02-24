@@ -40,6 +40,16 @@ export class RedisController {
     }
   }
 
+  @Get('jobs')
+  async getJobs() {
+    try {
+      const status = this.redisService.getJobs("all");
+      return status;
+    } catch (err) {
+      Logger.log('test err: ', err);
+    }
+  }
+
   @Post('scheduleJob')
   async scheduleJob(@Body() scheduleDto: ScheduleMailDto) {
     const sendAt: Date = new Date(scheduleDto.scheduleDateTime);
