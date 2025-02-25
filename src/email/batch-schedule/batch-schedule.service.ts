@@ -204,12 +204,15 @@ export class BatchScheduleService {
         );
         //throw new Error(`Invalid values found in column "${columnName}": ${missingValues.join(', ')}`);
       }
-      const additionalValues = attachments.filter(
-          (attachment) => !artefacts.some((artefact) => attachment.endsWith(artefact))
-        ).map(attachment => {
-            const parts = attachment.split('/');
-            return parts[parts.length - 1]; // Get the last part (filename)
-      });
+      const additionalValues = attachments
+        .filter(
+          (attachment) =>
+            !artefacts.some((artefact) => attachment.endsWith(artefact)),
+        )
+        .map((attachment) => {
+          const parts = attachment.split('/');
+          return parts[parts.length - 1]; // Get the last part (filename)
+        });
       if (additionalValues.length > 0) {
         errors.push(
           `Additional files not found in column 'artefact_name': ${additionalValues.join(', ')}`,
