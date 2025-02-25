@@ -19,14 +19,8 @@ export class BatchScheduleController {
   }
 
   @Get('removeFile')
-  async removeUploadedFile(
-    @Query('project_id') project_id: number,
-    @Query('fileName') fileName: string,
-  ) {
-    const res = await this.batchScheduleService.removeFile(
-      project_id,
-      fileName,
-    );
+  async removeUploadedFile(@Query('fileKey') fileKey: string) {
+    const res = await this.batchScheduleService.removeFile(fileKey);
     return res;
   }
 

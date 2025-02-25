@@ -38,10 +38,10 @@ export class BatchScheduleService {
     }
   }
 
-  async removeFile(project_id: number, fileName: string) {
+  async removeFile(fileKey: string) {
     try {
       const bucket = this.configService.getOrThrow('S3_BUCKET_NAME');
-      const key = `${project_id}/Artefacts/Batch/${fileName}`;
+      const key = fileKey;
       const result = await this.s3Service.DeleteObject(bucket, key);
       return result;
     } catch (err) {
