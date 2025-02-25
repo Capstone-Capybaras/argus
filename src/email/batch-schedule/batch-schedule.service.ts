@@ -23,11 +23,15 @@ export class BatchScheduleService {
   async getUploaded(project_id: number) {
     try {
       const bucket = this.configService.getOrThrow('S3_BUCKET_NAME');
-      const uploadedFiles = this.s3Service.getObjectsByPrefix(
+      const uploadedFiles = await this.s3Service.getObjectsByPrefix(
         bucket,
-        `${project_id}/Artefacts`,
+        `${project_id}/Artefacts/Batch`,
       );
-      return uploadedFiles;
+      if (uploadedFiles) {
+        return uploadedFiles;
+      } else {
+        return [];
+      }
     } catch (err) {
       Logger.log(`Error getting uploaded files: ${err}`);
       throw new InternalServerErrorException(err);
@@ -37,7 +41,7 @@ export class BatchScheduleService {
   async removeFile(project_id: number, fileName: string) {
     try {
       const bucket = this.configService.getOrThrow('S3_BUCKET_NAME');
-      const key = `${project_id}/Artefacts/${fileName}`;
+      const key = `${project_id}/Artefacts/Batch${fileName}`;
       const result = await this.s3Service.DeleteObject(bucket, key);
       return result;
     } catch (err) {
@@ -184,7 +188,8 @@ export class BatchScheduleService {
         );
       }
       const missingValues = artefacts.filter(
-        (value) => !attachments.includes(`${projectId}/Artefacts/${value}`),
+        (value) =>
+          !attachments.includes(`${projectId}/Artefacts/Batch${value}`),
       );
       if (missingValues.length > 0) {
         errors.push(
@@ -451,7 +456,7 @@ export class BatchScheduleService {
         html: this.convertPlainTextToHTML(value.inject),
         attachments:
           value.artefact_name !== undefined && value.artefact_name !== ''
-            ? [`${projectId}/Artefacts/${value.artefact_name}`]
+            ? [`${projectId}/Artefacts/Batch${value.artefact_name}`]
             : [],
         ...(datetimeString !== '' && { scheduleDateTime: datetimeString }),
         ...(ccs.length > 0 && { cc: ccs }),

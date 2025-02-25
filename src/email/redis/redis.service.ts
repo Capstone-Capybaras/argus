@@ -19,7 +19,7 @@ export class RedisService {
     this.jobQueue = new Queue('{emailQueue}', {
       connection: this.redisCluster, // Use the existing Redis connection
     });
-    const worker  = new Worker(
+    const worker = new Worker(
       '{emailQueue}',
       async (job) => {
         console.log(`Processing job: ${job.id}`, job.data);
@@ -31,13 +31,13 @@ export class RedisService {
       },
     );
 
-    worker.on('completed', (job)=>{
-      console.log("worker completed: ", job)
-    })
+    worker.on('completed', (job) => {
+      console.log('worker completed: ', job);
+    });
 
-    worker.on('failed', (job)=>{
-      console.log("worker failed: ", job)
-    })
+    worker.on('failed', (job) => {
+      console.log('worker failed: ', job);
+    });
   }
 
   checkConnection() {
