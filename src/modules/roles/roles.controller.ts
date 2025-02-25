@@ -34,7 +34,7 @@ export class RolesController {
       return role;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to create role');
+      throw new BadRequestException(`Failed to create role ${error}`);
     }
   }
 
@@ -48,7 +48,7 @@ export class RolesController {
       return roles;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to fetch roles');
+      throw new BadRequestException(`Failed to fetch roles ${error}`);
     }
   }
 
@@ -63,7 +63,7 @@ export class RolesController {
       return role;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to fetch role');
+      throw new BadRequestException(`Failed to fetch role ${error}`);
     }
   }
 
@@ -83,7 +83,7 @@ export class RolesController {
       return updatedRole;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to update role');
+      throw new BadRequestException(`Failed to update role ${error}`);
     }
   }
 

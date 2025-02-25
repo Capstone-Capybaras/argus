@@ -40,7 +40,9 @@ export class MasterThreatCubesController {
       return masterThreatCube;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to create master threat cube');
+      throw new BadRequestException(
+        `Failed to create master threat cube ${error}`,
+      );
     }
   }
 
@@ -52,7 +54,9 @@ export class MasterThreatCubesController {
       return masterThreatCubes;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to fetch master threat cubes');
+      throw new BadRequestException(
+        `Failed to fetch master threat cubes ${error}`,
+      );
     }
   }
 
@@ -78,7 +82,9 @@ export class MasterThreatCubesController {
       return masterThreatCube;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to fetch master threat cube');
+      throw new BadRequestException(
+        `Failed to fetch master threat cube ${error}`,
+      );
     }
   }
 
@@ -101,7 +107,9 @@ export class MasterThreatCubesController {
       return updatedMasterThreatCube;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to update master threat cube');
+      throw new BadRequestException(
+        `Failed to update master threat cube ${error}`,
+      );
     }
   }
 

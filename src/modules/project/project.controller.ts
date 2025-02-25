@@ -10,6 +10,7 @@ import {
   HttpStatus,
   Logger,
   BadRequestException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from '../project/dto/create-project.dto';
@@ -31,14 +32,19 @@ export class ProjectController {
       return await this.projectService.createProject(createProjectDto);
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to create project');
+      throw new BadRequestException(`Failed to create project ${error}`);
     }
   }
 
   // Retrieve all projects
   @Get()
   async getProjects(): Promise<SelectProjectDto[]> {
-    return await this.projectService.getProjects();
+    try {
+      return await this.projectService.getProjects();
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
+    }
   }
 
   // Retrieve a specific project by name
@@ -46,11 +52,16 @@ export class ProjectController {
   async getProjectByName(
     @Param('name') name: string,
   ): Promise<SelectProjectDto> {
-    const project = await this.projectService.getProjectByName(name);
-    if (!project) {
-      throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
+    try {
+      const project = await this.projectService.getProjectByName(name);
+      if (!project) {
+        throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
+      }
+      return project;
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
     }
-    return project;
   }
 
   @Patch()
@@ -68,7 +79,7 @@ export class ProjectController {
       return updatedProject;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to update project');
+      throw new BadRequestException(`Failed to update project ${error}`);
     }
   }
 

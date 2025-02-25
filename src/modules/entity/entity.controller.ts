@@ -12,6 +12,7 @@ import {
   Logger,
   Query,
   ParseIntPipe,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { EntityService } from './entity.service';
 import { CreateEntityDto } from './dto/create-entity.dto';
@@ -34,7 +35,7 @@ export class EntityController {
       return await this.entityService.createEntity(createEntityDto);
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to create entity');
+      throw new BadRequestException(`Failed to create entity ${error}`);
     }
   }
 
@@ -54,7 +55,7 @@ export class EntityController {
       return insertResult;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to assign entity: ', String(error));
+      throw new BadRequestException(`Failed to assign entity: ${error}`);
     }
   }
 
@@ -63,10 +64,15 @@ export class EntityController {
   async getEntities(
     @Query('project_id', ParseIntPipe) projectId: number,
   ): Promise<SelectEntityOnlyDto[]> {
-    if (projectId) {
-      return await this.entityService.getEntitiesByProjectId(projectId);
+    try {
+      if (projectId) {
+        return await this.entityService.getEntitiesByProjectId(projectId);
+      }
+      return await this.entityService.getEntities();
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
     }
-    return await this.entityService.getEntities();
   }
 
   // Retrieve entities that are NOT linked to a specific project ID
@@ -74,17 +80,29 @@ export class EntityController {
   async getUnassignedEntities(
     @Query('project_id', ParseIntPipe) projectId: number,
   ): Promise<SelectEntityOnlyDto[]> {
-    return await this.entityService.getUnassignedEntitiesByProjectId(projectId);
+    try {
+      return await this.entityService.getUnassignedEntitiesByProjectId(
+        projectId,
+      );
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
+    }
   }
 
   // Retrieve a specific entity by id
   @Get(':id')
   async getEntityById(@Param('id') id: number): Promise<SelectEntityDto> {
-    const entity = await this.entityService.getEntityById(id);
-    if (!entity) {
-      throw new HttpException('Entity not found', HttpStatus.NOT_FOUND);
+    try {
+      const entity = await this.entityService.getEntityById(id);
+      if (!entity) {
+        throw new HttpException('Entity not found', HttpStatus.NOT_FOUND);
+      }
+      return entity;
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
     }
-    return entity;
   }
 
   // Update an entity by name
@@ -102,8 +120,7 @@ export class EntityController {
       }
       return updatedEntity;
     } catch (error) {
-      Logger.error(error);
-      throw new BadRequestException('Failed to update entity');
+      throw new BadRequestException(`Failed to update entity ${error}`);
     }
   }
 

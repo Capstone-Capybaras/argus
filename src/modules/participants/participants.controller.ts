@@ -9,6 +9,8 @@ import {
   BadRequestException,
   ParseIntPipe,
   Param,
+  InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { ParticipantsService } from './participants.service';
 import { CreateParticipantDto } from './dto/create-participant.dto';
@@ -38,9 +40,14 @@ export class ParticipantsController {
   async getAllParticipants(
     @Query('entity_id', ParseIntPipe) entityId: number,
   ): Promise<ParticipantWithRoles[]> {
-    const p =
-      await this.participantsService.getAllParticipantsByEntity(entityId);
-    return p;
+    try {
+      const p =
+        await this.participantsService.getAllParticipantsByEntity(entityId);
+      return p;
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
+    }
   }
 
   @Get('getAllParticipantsInProject')
@@ -53,12 +60,17 @@ export class ParticipantsController {
         'Invalid project_id. It must be a numeric string.',
       );
     }
-    const participants =
-      await this.participantsService.getParticipantsByProject(project_id);
-    if (participants) {
-      return participants;
-    } else {
-      return [];
+    try {
+      const participants =
+        await this.participantsService.getParticipantsByProject(project_id);
+      if (participants) {
+        return participants;
+      } else {
+        return [];
+      }
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
     }
   }
 
@@ -67,17 +79,27 @@ export class ParticipantsController {
     @Query('entity_id', ParseIntPipe) entityId: number,
     @Param('email') email: string,
   ): Promise<ParticipantWithRoles | undefined> {
-    return this.participantsService.getParticipantByEmailAndEntity(
-      email,
-      entityId,
-    );
+    try {
+      return await this.participantsService.getParticipantByEmailAndEntity(
+        email,
+        entityId,
+      );
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
+    }
   }
 
   @Patch()
   async updateParticipant(
     @Body() data: UpdateParticipantDto,
   ): Promise<SelectParticipantDto> {
-    return this.participantsService.updateParticipant(data.email, data);
+    try {
+      return await this.participantsService.updateParticipant(data.email, data);
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
+    }
   }
 
   @Delete()

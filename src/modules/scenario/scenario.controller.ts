@@ -68,7 +68,12 @@ export class ScenarioController {
 
   @Get()
   async getScenarios(): Promise<SelectScenarioDto[]> {
-    return await this.scenarioService.getScenarios();
+    try {
+      return await this.scenarioService.getScenarios();
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
+    }
   }
 
   @Get(':scenario_number')
@@ -91,15 +96,20 @@ export class ScenarioController {
   async getScenariosByProject(
     @Param('project_id') project_id: number,
   ): Promise<SelectScenarioWithAssetDto[]> {
-    const scenarios =
-      await this.scenarioService.getScenariosByProject(project_id);
-    if (!scenarios) {
-      throw new HttpException(
-        'No scenarios found for this project',
-        HttpStatus.NOT_FOUND,
-      );
+    try {
+      const scenarios =
+        await this.scenarioService.getScenariosByProject(project_id);
+      if (!scenarios) {
+        throw new HttpException(
+          'No scenarios found for this project',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return scenarios;
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
     }
-    return scenarios;
   }
 
   // Update a scenario by scenario_number
@@ -118,7 +128,7 @@ export class ScenarioController {
       return updatedScenario;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to update scenario');
+      throw new BadRequestException(`Failed to update scenario ${error}`);
     }
   }
 

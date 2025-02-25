@@ -28,7 +28,7 @@ export class TacticsController {
       return tactic;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to create tactic');
+      throw new BadRequestException(`Failed to create tactic ${error}`);
     }
   }
 
@@ -39,7 +39,7 @@ export class TacticsController {
       return tactics;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to fetch tactics');
+      throw new BadRequestException(`Failed to fetch tactics ${error}`);
     }
   }
 
@@ -53,7 +53,7 @@ export class TacticsController {
       return tactic;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to fetch tactic');
+      throw new BadRequestException(`Failed to fetch tactic ${error}`);
     }
   }
 
@@ -73,7 +73,7 @@ export class TacticsController {
       return updatedTactic;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to update tactic');
+      throw new BadRequestException(`Failed to update tactic ${error}`);
     }
   }
 

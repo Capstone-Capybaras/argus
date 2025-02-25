@@ -30,7 +30,7 @@ export class AssetsController {
       return await this.assetsService.createAsset(createAssetDto);
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to create asset');
+      throw new BadRequestException(`Failed to create asset: ${error}`);
     }
   }
 
@@ -40,7 +40,7 @@ export class AssetsController {
       return await this.assetsService.getAllAssets();
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to fetch asset');
+      throw new BadRequestException(`Failed to fetch asset ${error}`);
     }
   }
 
@@ -54,7 +54,7 @@ export class AssetsController {
       return asset;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to fetch asset');
+      throw new BadRequestException(`Failed to fetch asset ${error}`);
     }
   }
 
@@ -73,7 +73,7 @@ export class AssetsController {
       return updatedAsset;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to update Asset');
+      throw new BadRequestException(`Failed to update asset ${error}`);
     }
   }
 

@@ -10,6 +10,7 @@ import {
   HttpStatus,
   BadRequestException,
   Logger,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectsService } from './injects.service';
 import { CreateInjectDto } from './dto/create-inject.dto';
@@ -32,24 +33,34 @@ export class InjectsController {
       return newInject;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to create inject');
+      throw new BadRequestException(`Failed to create inject: ${error}`);
     }
   }
 
   // Retrieve all injects
   @Get()
   async getInjects(): Promise<SelectInjectDto[]> {
-    return await this.injectsService.getInjects();
+    try {
+      return await this.injectsService.getInjects();
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
+    }
   }
 
   // Retrieve a specific inject by ID
   @Get(':id')
   async getInjectById(@Param('id') id: string): Promise<SelectInjectDto> {
-    const inject = await this.injectsService.getInjectByName(id);
-    if (!inject) {
-      throw new HttpException('Inject not found', HttpStatus.NOT_FOUND);
+    try {
+      const inject = await this.injectsService.getInjectByName(id);
+      if (!inject) {
+        throw new HttpException('Inject not found', HttpStatus.NOT_FOUND);
+      }
+      return inject;
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
     }
-    return inject;
   }
 
   // Update a specific inject by ID
@@ -68,7 +79,7 @@ export class InjectsController {
       return updatedInject;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to update inject');
+      throw new BadRequestException(`Failed to update inject ${error}`);
     }
   }
 
