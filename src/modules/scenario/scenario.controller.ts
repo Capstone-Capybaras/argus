@@ -10,6 +10,7 @@ import {
   HttpStatus,
   BadRequestException,
   Logger,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { ScenarioService } from './scenario.service';
 import { CreateScenarioDto } from './dto/create-scenario.dto';
@@ -39,7 +40,7 @@ export class ScenarioController {
       return newScenario;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to create scenario');
+      throw new BadRequestException(`Failed to create scenario: ${error}`);
     }
   }
 
@@ -67,34 +68,48 @@ export class ScenarioController {
 
   @Get()
   async getScenarios(): Promise<SelectScenarioDto[]> {
-    return await this.scenarioService.getScenarios();
+    try {
+      return await this.scenarioService.getScenarios();
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
+    }
   }
 
   @Get(':scenario_number')
   async getScenarioByNumber(
     @Param('scenario_number') scenario_number: string,
   ): Promise<SelectScenarioByNumberDto> {
-    const scenario =
-      await this.scenarioService.getScenarioByNumber(scenario_number);
-    if (!scenario) {
-      throw new HttpException('Scenario not found', HttpStatus.NOT_FOUND);
+    try {
+      const scenario =
+        await this.scenarioService.getScenarioByNumber(scenario_number);
+      if (!scenario) {
+        throw new HttpException('Scenario not found', HttpStatus.NOT_FOUND);
+      }
+      return scenario;
+    } catch (err) {
+      throw new InternalServerErrorException(err);
     }
-    return scenario;
   }
 
   @Get('project/:project_id')
   async getScenariosByProject(
     @Param('project_id') project_id: number,
   ): Promise<SelectScenarioWithAssetDto[]> {
-    const scenarios =
-      await this.scenarioService.getScenariosByProject(project_id);
-    if (!scenarios) {
-      throw new HttpException(
-        'No scenarios found for this project',
-        HttpStatus.NOT_FOUND,
-      );
+    try {
+      const scenarios =
+        await this.scenarioService.getScenariosByProject(project_id);
+      if (!scenarios) {
+        throw new HttpException(
+          'No scenarios found for this project',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return scenarios;
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
     }
-    return scenarios;
   }
 
   // Update a scenario by scenario_number
@@ -113,7 +128,7 @@ export class ScenarioController {
       return updatedScenario;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to update scenario');
+      throw new BadRequestException(`Failed to update scenario ${error}`);
     }
   }
 

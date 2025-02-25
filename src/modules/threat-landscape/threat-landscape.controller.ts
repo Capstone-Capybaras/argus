@@ -36,7 +36,9 @@ export class ThreatLandscapeController {
       return threatLandscape;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to create threat landscape');
+      throw new BadRequestException(
+        `Failed to create threat landscape ${error}`,
+      );
     }
   }
 
@@ -53,7 +55,9 @@ export class ThreatLandscapeController {
       return threatLandscapes;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to fetch threat landscapes');
+      throw new BadRequestException(
+        `Failed to fetch threat landscapes ${error}`,
+      );
     }
   }
 
@@ -75,7 +79,9 @@ export class ThreatLandscapeController {
       return updatedThreatLandscape;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to update threat landscape');
+      throw new BadRequestException(
+        `Failed to update threat landscape ${error}`,
+      );
     }
   }
 }

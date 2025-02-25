@@ -40,7 +40,7 @@ export class TtpUsedController {
       return createdTtpUsed;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to create TTP used');
+      throw new BadRequestException(`Failed to create TTP used ${error}`);
     }
   }
 
@@ -58,7 +58,7 @@ export class TtpUsedController {
     } catch (error) {
       Logger.error(error);
       throw new BadRequestException(
-        'Failed to fetch TTP used list for scenario',
+        `Failed to fetch TTP used list for scenario: ${error}`,
       );
     }
   }
@@ -76,7 +76,7 @@ export class TtpUsedController {
       return updatedTtpUsed;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to update TTP used');
+      throw new BadRequestException(`Failed to update TTP used ${error}`);
     }
   }
 
