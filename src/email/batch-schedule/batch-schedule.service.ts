@@ -41,7 +41,7 @@ export class BatchScheduleService {
   async removeFile(project_id: number, fileName: string) {
     try {
       const bucket = this.configService.getOrThrow('S3_BUCKET_NAME');
-      const key = `${project_id}/Artefacts/Batch${fileName}`;
+      const key = `${project_id}/Artefacts/Batch/${fileName}`;
       const result = await this.s3Service.DeleteObject(bucket, key);
       return result;
     } catch (err) {
@@ -187,9 +187,14 @@ export class BatchScheduleService {
           `number of artefacts uploaded does not match the number of artefacts in file.${artefacts.length} artefacts expected. ${attachments.length} artefacts uploaded.`,
         );
       }
+      
+      // const missingValues = artefacts.filter(
+      //   (value) =>
+      //     !attachments.includes(`${projectId}/Artefacts/Batch/${value}`),
+      // );
+
       const missingValues = artefacts.filter(
-        (value) =>
-          !attachments.includes(`${projectId}/Artefacts/Batch${value}`),
+        (value) => !attachments.some(attachment => attachment.endsWith(value))
       );
       if (missingValues.length > 0) {
         errors.push(
@@ -456,7 +461,7 @@ export class BatchScheduleService {
         html: this.convertPlainTextToHTML(value.inject),
         attachments:
           value.artefact_name !== undefined && value.artefact_name !== ''
-            ? [`${projectId}/Artefacts/Batch${value.artefact_name}`]
+            ? [`${projectId}/Artefacts/Batch/${value.artefact_name}`]
             : [],
         ...(datetimeString !== '' && { scheduleDateTime: datetimeString }),
         ...(ccs.length > 0 && { cc: ccs }),
@@ -471,6 +476,7 @@ export class BatchScheduleService {
           emailId: resp.resp.id,
         });
       } catch (err: unknown) {
+        console.log(err)
         if (err instanceof Error) {
           errors.push(err.message); // Access the message property safely
         } else {
@@ -483,8 +489,12 @@ export class BatchScheduleService {
           }
           await this.emailService.deleteEmail(mail.emailId);
         }
-        const emailsInDb = await this.emailService.getEmailsByProject(1);
-        console.log('emails in DB: ', emailsInDb.emails.length);
+        // try{
+        //   const emailsInDb = await this.emailService.getEmailsByProject(projectId);
+        //   console.log('emails in DB: ', emailsInDb.emails.length);
+        // } catch(err){
+        //   console.log(err)
+        // }
 
         return { success: false, errors: errors };
       }

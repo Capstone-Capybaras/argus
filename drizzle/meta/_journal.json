@@ -253,6 +253,20 @@
       "when": 1740331563755,
       "tag": "0035_yummy_storm",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1740453715960,
+      "tag": "0036_careless_rockslide",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1740453731168,
+      "tag": "0037_low_ultron",
+      "breakpoints": true
     }
   ]
 }
