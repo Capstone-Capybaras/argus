@@ -1,5 +1,5 @@
 //import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsArray, IsDateString } from 'class-validator';
+import { IsNotEmpty, IsArray, IsDateString, IsOptional } from 'class-validator';
 import { emailsTable } from 'src/database/schema';
 import { InferInsert, InferUpdate } from 'src/utils/modelToDtoTypes';
 
@@ -20,6 +20,7 @@ export class CreateMailDto implements InferInsert<typeof emailsTable> {
   attachments?: string[];
   // @Transform(({ value }) => value === "" ? null : value)
   @IsDateString()
+  @IsOptional()
   scheduleDateTime?: string | null;
   jobId?: string | null;
   status?: string;
