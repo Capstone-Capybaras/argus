@@ -1,11 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DATABASE_CONNECTION } from '../../config/providers';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import {
   entitesToParticipantsTable,
+  entitiesTable,
   participantsTable,
   participantsToRolesTable,
+  projectsToEntitiesTable,
+  rolesTable,
 } from 'src/database/schema';
 import { CreateParticipantDto } from './dto/create-participant.dto';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
@@ -158,6 +161,41 @@ export class ParticipantsService {
 
       return acc;
     }, {} as ParticipantWithRoles);
+  }
+
+  async getParticipantsByProject(project_id: number) {
+    const results = await this.db
+      .select({
+        email: participantsTable.email,
+        entity: entitiesTable.name,
+        roles: sql<string>`string_agg(${rolesTable.name},',')`.mapWith(
+          (value) => (value ? value.split(',') : []),
+        ),
+      })
+      .from(participantsTable)
+      .innerJoin(
+        participantsToRolesTable,
+        eq(participantsTable.email, participantsToRolesTable.participant_email),
+      )
+      .innerJoin(
+        rolesTable,
+        and(
+          eq(participantsToRolesTable.role_name, rolesTable.name),
+          eq(participantsToRolesTable.role_entity_id, rolesTable.entity_id),
+        ),
+      )
+      .innerJoin(entitiesTable, eq(rolesTable.entity_id, entitiesTable.id))
+      .innerJoin(
+        projectsToEntitiesTable,
+        and(
+          eq(entitiesTable.id, projectsToEntitiesTable.entity_id),
+          eq(projectsToEntitiesTable.project_id, project_id),
+        ),
+      ) // Join with projectsToEntities
+      .groupBy(participantsTable.email, entitiesTable.name)
+      .execute();
+
+    return results;
   }
 
   async updateParticipant(email: string, data: UpdateParticipantDto) {

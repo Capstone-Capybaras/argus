@@ -59,7 +59,7 @@ export class EmailService {
   }
 
   async addEmail(data: CreateMailDto) {
-    const result = this.database
+    const result = await this.database
       .insert(schemas.emailsTable)
       .values({
         project_id: data.project_id,
@@ -119,11 +119,20 @@ export class EmailService {
   }
 
   async deleteEmailByProj(projId: number) {
-    const result = await this.database
-      .delete(schemas.emailsTable)
-      .where(eq(schemas.emailsTable.project_id, projId))
-      .returning();
-    return result || null;
+    try {
+      await this.database.transaction(async (tx) => {
+        // Start transaction
+        const result = await tx // Use tx (transaction object) instead of this.database
+          .delete(schemas.emailsTable)
+          .where(eq(schemas.emailsTable.project_id, projId))
+          .returning();
+
+        return result; // Return the result if the transaction is successful
+      });
+    } catch (error) {
+      console.error('Error deleting emails:', error);
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async removeAttachment(emailId: number, fileKey: string) {
