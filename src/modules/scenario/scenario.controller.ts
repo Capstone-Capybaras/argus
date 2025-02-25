@@ -10,6 +10,7 @@ import {
   HttpStatus,
   BadRequestException,
   Logger,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { ScenarioService } from './scenario.service';
 import { CreateScenarioDto } from './dto/create-scenario.dto';
@@ -39,7 +40,7 @@ export class ScenarioController {
       return newScenario;
     } catch (error) {
       Logger.error(error);
-      throw new BadRequestException('Failed to create scenario');
+      throw new BadRequestException(`Failed to create scenario: ${error}`);
     }
   }
 
@@ -74,12 +75,16 @@ export class ScenarioController {
   async getScenarioByNumber(
     @Param('scenario_number') scenario_number: string,
   ): Promise<SelectScenarioByNumberDto> {
-    const scenario =
-      await this.scenarioService.getScenarioByNumber(scenario_number);
-    if (!scenario) {
-      throw new HttpException('Scenario not found', HttpStatus.NOT_FOUND);
+    try {
+      const scenario =
+        await this.scenarioService.getScenarioByNumber(scenario_number);
+      if (!scenario) {
+        throw new HttpException('Scenario not found', HttpStatus.NOT_FOUND);
+      }
+      return scenario;
+    } catch (err) {
+      throw new InternalServerErrorException(err);
     }
-    return scenario;
   }
 
   @Get('project/:project_id')

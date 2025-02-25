@@ -71,8 +71,6 @@ export class ScenarioService {
     const result = rows.reduce<SelectScenarioByNumberDto>((acc, row) => {
       const { scenarios, ttp_used } = row;
 
-      if (!ttp_used) return acc;
-
       if (!acc.scenario_number) {
         acc = {
           ttp_used: [],
@@ -81,6 +79,8 @@ export class ScenarioService {
           entity_name: '',
         };
       }
+
+      if (!ttp_used) return acc;
 
       acc.ttp_used.push(ttp_used);
 
