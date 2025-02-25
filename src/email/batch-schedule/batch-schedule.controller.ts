@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { BatchScheduleService } from './batch-schedule.service';
 import { BatchUploadDto } from './batch-schedule.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -16,5 +16,23 @@ export class BatchScheduleController {
       batchUploadDto.templateFile,
     );
     return resp;
+  }
+
+  @Get('removeFile')
+  async removeUploadedFile(
+    @Query('project_id') project_id: number,
+    @Query('fileName') fileName: string,
+  ) {
+    const res = await this.batchScheduleService.removeFile(
+      project_id,
+      fileName,
+    );
+    return res;
+  }
+
+  @Get('getFiles')
+  async getFiles(@Query('project_id') project_id: number) {
+    const files = await this.batchScheduleService.getUploaded(project_id);
+    return files;
   }
 }

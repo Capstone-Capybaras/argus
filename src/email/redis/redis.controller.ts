@@ -43,7 +43,7 @@ export class RedisController {
   @Get('jobs')
   async getJobs() {
     try {
-      const status = this.redisService.getJobs("all");
+      const status = this.redisService.getJobs('all');
       return status;
     } catch (err) {
       Logger.log('test err: ', err);
