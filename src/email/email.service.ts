@@ -136,12 +136,15 @@ export class EmailService {
   }
 
   async removeAttachment(emailId: number, fileKey: string) {
-    await this.database
+    const removed = await this.database
       .update(schemas.emailsTable)
       .set({
         attachments: sql`array_remove(${schemas.emailsTable.attachments}, ${fileKey})`, // PostgreSQL function
       })
-      .where(eq(schemas.emailsTable.id, emailId));
+      .where(eq(schemas.emailsTable.id, emailId))
+      .returning();
+
+    return removed;
   }
 
   async addAttachment(emailId: number, fileKeys: string[]) {

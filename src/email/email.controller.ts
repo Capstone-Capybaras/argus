@@ -14,10 +14,36 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 export class EmailController {
   constructor(private readonly emailService: EmailService) {}
 
+  @Get('removeAttachment')
+  async removeAttachment(
+    @Query('emailId', ParseIntPipe) emailId: number,
+    @Query('key') key: string,
+  ) {
+    try {
+      const result = await this.emailService.removeAttachment(emailId, key);
+      return result;
+    } catch (err) {
+      throw new InternalServerErrorException(String(err));
+    }
+  }
+
   @Get(':projectId')
   async getAllEmails(@Param('projectId', ParseIntPipe) projectId: number) {
     const emails = await this.emailService.getEmailsByProject(projectId);
     return { emails: emails };
+  }
+
+  @Get('getOne/:emailId')
+  async getMail(@Param('emailId', ParseIntPipe) emailId: number) {
+    try {
+      const mail = await this.emailService.getEmailsById(emailId);
+      return {
+        message: 'success',
+        mail: mail,
+      };
+    } catch (err) {
+      throw new InternalServerErrorException(String(err));
+    }
   }
 
   @Get('sendOne/:emailId')
@@ -28,19 +54,6 @@ export class EmailController {
         message: 'success',
         mail,
       };
-    } catch (err) {
-      throw new InternalServerErrorException(String(err));
-    }
-  }
-
-  @Get('removeAttachment')
-  async removeAttachment(
-    @Query('emailId') emailId: number,
-    @Query('key') key: string,
-  ) {
-    try {
-      const result = await this.emailService.removeAttachment(emailId, key);
-      return result;
     } catch (err) {
       throw new InternalServerErrorException(String(err));
     }
