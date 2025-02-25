@@ -187,14 +187,15 @@ export class BatchScheduleService {
           `number of artefacts uploaded does not match the number of artefacts in file.${artefacts.length} artefacts expected. ${attachments.length} artefacts uploaded.`,
         );
       }
-      
+
       // const missingValues = artefacts.filter(
       //   (value) =>
       //     !attachments.includes(`${projectId}/Artefacts/Batch/${value}`),
       // );
 
       const missingValues = artefacts.filter(
-        (value) => !attachments.some(attachment => attachment.endsWith(value))
+        (value) =>
+          !attachments.some((attachment) => attachment.endsWith(value)),
       );
       if (missingValues.length > 0) {
         errors.push(
@@ -476,7 +477,7 @@ export class BatchScheduleService {
           emailId: resp.resp.id,
         });
       } catch (err: unknown) {
-        console.log(err)
+        console.log(err);
         if (err instanceof Error) {
           errors.push(err.message); // Access the message property safely
         } else {

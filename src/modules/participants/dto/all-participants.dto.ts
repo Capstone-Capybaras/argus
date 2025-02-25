@@ -1,5 +1,5 @@
-export class ParticipantsWithEntityAndRoles{
-    email: string;
-    entity: string;
-    roles: string[];
+export class ParticipantsWithEntityAndRoles {
+  email: string;
+  entity: string;
+  roles: string[];
 }

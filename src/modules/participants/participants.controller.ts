@@ -38,19 +38,28 @@ export class ParticipantsController {
   async getAllParticipants(
     @Query('entity_id', ParseIntPipe) entityId: number,
   ): Promise<ParticipantWithRoles[]> {
-    const p =  await this.participantsService.getAllParticipantsByEntity(entityId);
-    return p
+    const p =
+      await this.participantsService.getAllParticipantsByEntity(entityId);
+    return p;
   }
 
   @Get('getAllParticipantsInProject')
-  async getParticipantsByProject(@Query('project_id', ParseIntPipe) project_id: number,): Promise<ParticipantsWithEntityAndRoles[]>{
+  async getParticipantsByProject(
+    @Query('project_id', ParseIntPipe) project_id: number,
+  ): Promise<ParticipantsWithEntityAndRoles[]> {
     console.log('Received project_id:', project_id);
     if (isNaN(project_id)) {
-      throw new BadRequestException('Invalid project_id. It must be a numeric string.');
+      throw new BadRequestException(
+        'Invalid project_id. It must be a numeric string.',
+      );
     }
-    const participants = await this.participantsService.getParticipantsByProject(project_id);
-    if (participants){return participants}
-    else {return []}
+    const participants =
+      await this.participantsService.getParticipantsByProject(project_id);
+    if (participants) {
+      return participants;
+    } else {
+      return [];
+    }
   }
 
   @Get(':email')
