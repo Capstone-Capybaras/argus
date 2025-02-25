@@ -84,7 +84,7 @@ export class BatchScheduleService {
     return headers;
   }
 
-  private getTodaySeria() {
+  private getTodaySerial() {
     const excelEpoch = new Date(1899, 11, 30);
     const today = new Date();
     const diffInMilliseconds = today.getTime() - excelEpoch.getTime();
@@ -115,7 +115,8 @@ export class BatchScheduleService {
     const hours = parseInt(timeString.substring(0, 2), 10);
     const minutes = parseInt(timeString.substring(2, 4), 10);
     date.setHours(hours, minutes, 0, 0); // Set hours, minutes, seconds, and milliseconds
-    return date.toISOString(); // Return the combined date-time in ISO format
+    const utcDate = new Date(date.getTime() - 8 * 60 * 60 * 1000);
+    return utcDate.toISOString(); // Return the combined date-time in ISO format
   }
 
   private convertPlainTextToHTML(text: string) {
@@ -254,7 +255,7 @@ export class BatchScheduleService {
         );
       }
       //check date string correct
-      const today = this.getTodaySeria();
+      const today = this.getTodaySerial();
       const dateRows = rows
         .map((row: Row, index) => ({ value: row['real_day'], index: index }))
         .filter((date) => date.value !== undefined);
@@ -280,7 +281,7 @@ export class BatchScheduleService {
       if (nonTimes.length > 0) {
         const errorRows = nonTimes.map((values) => values.index).join(', ');
         errors.push(
-          `All values in 'real_time' column has to be either empty or a time string (eg. '0930' or '1000'). Errors on rows: ${errorRows}`,
+          `All values in 'real_time' column has to be either empty or a 24h time string (eg. '0930' or '1000'). Errors on rows: ${errorRows}`,
         );
       }
       //check email groups same as other tab
