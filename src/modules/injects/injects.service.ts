@@ -36,7 +36,6 @@ export class InjectsService {
     private readonly rolesService: RolesService,
     private readonly jobsService: JobsService,
     private readonly redisService: RedisService,
-    private readonly eventsGateway: EventsGateway,
   ) {}
 
   async createInject(data: CreateInjectDto) {
