@@ -2,6 +2,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import * as schemas from 'src/database/schema';
@@ -17,8 +18,6 @@ import { ServerSelectorService } from './server-selector/server-selector.service
 @Injectable()
 export class EmailService {
   constructor(
-    //@Inject(forwardRef(() => BullQueueService))
-    //private readonly bullQueueService: BullQueueService,
     private readonly mailService: MailerService,
     private readonly configService: ConfigService,
     private readonly s3Service: S3Service,
@@ -32,11 +31,14 @@ export class EmailService {
     return emails;
   }
   async getEmailsByProject(projectId: number) {
-    //return this.database.select().from(schemas.emailsTable);
     const emails = await this.database
       .select()
       .from(schemas.emailsTable)
-      .where(eq(schemas.emailsTable.project_id, projectId));
+      .where(eq(schemas.emailsTable.project_id, projectId))
+      .orderBy(
+        sql`${schemas.emailsTable.schedule_date_time} NULLS FIRST, ${schemas.emailsTable.schedule_date_time} ASC`,
+      );
+
     const headerFooter = await this.database
       .select({
         email_header: schemas.projectsTable.email_header,
@@ -49,7 +51,6 @@ export class EmailService {
   }
 
   async getEmailsById(emailId: number) {
-    //return this.database.select().from(schemas.emailsTable);
     const email = await this.database
       .select()
       .from(schemas.emailsTable)
@@ -157,22 +158,6 @@ export class EmailService {
       .where(eq(schemas.emailsTable.id, emailId));
   }
 
-  // async connectToInbox() {
-  //   try {
-  //     const imapConfig = await getImapConfig(this.configService);
-  //     const connection = await imapSimple.connect(imapConfig);
-
-  //     // Open the inbox
-  //     await connection.openBox('INBOX');
-  //     console.log('Connected to INBOX');
-
-  //     return connection;
-  //   } catch (error) {
-  //     console.error('Error connecting to inbox:', error);
-  //     throw error;
-  //   }
-  // }
-
   async getAttachment(key: string) {
     //download from S3 and put in the form of attachment
     try {
@@ -186,10 +171,9 @@ export class EmailService {
         contentDisposition: 'attachment',
       };
       attachment['content'] = fileBuffer.toString('base64');
-      console.log('attachment');
       return attachment;
     } catch (err) {
-      console.error('Error fetching file from S3:', err);
+      Logger.error('Error fetching file from S3:', err);
       throw new Error('File fetching failed');
     }
   }
@@ -263,29 +247,4 @@ export class EmailService {
     }
     await this.updateStatus(emailId, 'sent');
   }
-
-  // async readMail(){
-  //     const connection = await this.connectToInbox();
-  //     console.log(connection);
-  //     // Define search criteria (e.g., all unseen emails)
-  //     const searchCriteria = ['UNSEEN'];
-
-  //     // Define the fetch options
-  //     const fetchOptions = {
-  //     bodies: ['HEADER', 'TEXT'],
-  //     markSeen: true,
-  //     };
-
-  //     const results = await connection.search(searchCriteria, fetchOptions);
-  //     const emails = results.map(res => ({
-  //     subject: res.parts.filter(part => part.which === 'HEADER')[0].body.subject[0],
-  //     from: res.parts.filter(part => part.which === 'HEADER')[0].body.from[0],
-  //     text: res.parts.filter(part => part.which === 'TEXT')[0].body,
-  //     }));
-
-  //     // Close the connection after reading
-  //     connection.end();
-
-  //     return emails;
-  // }
 }
