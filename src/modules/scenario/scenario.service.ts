@@ -200,48 +200,13 @@ export class ScenarioService {
       return createdJob;
     });
 
-    const {
-      id: entity_id,
-      name: entity_name,
-      description: entity_description,
-      victim_sector: entity_victim_sector,
-      critical_function: entity_critical_function,
-      severity_levels: entity_severity_levels,
-      policy_documents: entity_policy_documents,
-    } = entity;
-    const {
-      id: asset_id,
-      name: asset_name,
-      function: asset_function,
-      users: asset_users,
-      sensitive_info: asset_sensitive_info,
-      category: asset_category,
-      entity_id: asset_entity_id,
-    } = asset;
-
     await this.aetherService.generateScenario({
       scenario_number: generateScenarioDto.scenario_number,
       project_id: generateScenarioDto.project_id,
       additional_context: generateScenarioDto.additional_context,
       job_id: job.id,
-      entity: {
-        entity_id,
-        entity_name,
-        entity_description,
-        entity_victim_sector,
-        entity_critical_function,
-        entity_policy_documents,
-        ...(entity_severity_levels ? { entity_severity_levels } : {}),
-      },
-      asset: {
-        asset_id,
-        asset_name,
-        asset_function,
-        asset_users,
-        asset_sensitive_info,
-        asset_category,
-        asset_entity_id,
-      },
+      entity: entityInfo,
+      asset,
     });
 
     return job;
