@@ -352,19 +352,13 @@ export const serverTable = pgTable('server', {
   server: serverTypeEnum().default('simx1'),
 });
 
-export const mselTable = pgTable(
-  'msel',
-  {
-    project_id: integer()
-      .notNull()
-      .references(() => projectsTable.id),
-    msel: text().notNull(),
-    date_uploaded: timestamp().notNull(),
-  },
-  (table) => ({
-    pk: primaryKey({ columns: [table.msel, table.project_id] }),
-  }),
-);
+export const mselTable = pgTable('msel', {
+  project_id: integer()
+    .notNull()
+    .references(() => projectsTable.id),
+  msel: text().notNull().primaryKey(),
+  date_uploaded: timestamp().notNull(),
+});
 
 export const jobTypesEnum = pgEnum('job_types', ['scenario', 'msel', 'threat']);
 export const jobStatusEnum = pgEnum('job_status', [
