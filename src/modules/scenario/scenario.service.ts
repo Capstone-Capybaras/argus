@@ -194,6 +194,7 @@ export class ScenarioService {
           type: 'scenario',
           status: 'pending',
           name: generateScenarioDto.scenario_number,
+          project_id: generateScenarioDto.project_id,
         })
         .returning();
 

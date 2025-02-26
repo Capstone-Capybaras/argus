@@ -7,4 +7,5 @@ export class SelectJobDto implements InferSelect<typeof jobsTable> {
   status: 'pending' | 'failed' | 'done';
   created_at: Date;
   name: string;
+  project_id: number;
 }

@@ -373,5 +373,7 @@ export const jobsTable = pgTable('jobs', {
   status: jobStatusEnum().notNull(),
   created_at: timestamp().notNull().defaultNow(),
   name: text().notNull(),
-  // TODO: project_id
+  project_id: integer()
+    .notNull()
+    .references(() => projectsTable.id, { onDelete: 'cascade' }),
 });
