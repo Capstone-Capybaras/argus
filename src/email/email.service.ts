@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import * as schemas from 'src/database/schema';
@@ -100,6 +101,15 @@ export class EmailService {
     return result || null;
   }
 
+  async updateErrorMessage(emailId: number, error: string) {
+    const result = await this.database
+      .update(schemas.emailsTable)
+      .set({ error_message: error })
+      .where(eq(schemas.emailsTable.id, emailId))
+      .returning();
+    return result || null;
+  }
+
   async getEmailHeaderFooter(projId: number) {
     const result = await this.database
       .select({
@@ -162,16 +172,23 @@ export class EmailService {
     //download from S3 and put in the form of attachment
     try {
       const bucketName = this.configService.getOrThrow('S3_BUCKET_NAME');
-      const fileBuffer = await this.s3Service.downloadFile(bucketName, key);
-      const filename = key.split('/').pop() ?? key;
-      const attachment: AttachmentDto = {
-        filename: filename,
-        content: '',
-        encoding: 'base64',
-        contentDisposition: 'attachment',
-      };
-      attachment['content'] = fileBuffer.toString('base64');
-      return attachment;
+      const fileExists = await this.s3Service.checkFileExists(bucketName, key);
+      if (fileExists) {
+        const fileBuffer = await this.s3Service.downloadFile(bucketName, key);
+        const filename = key.split('/').pop() ?? key;
+        const attachment: AttachmentDto = {
+          filename: filename,
+          content: '',
+          encoding: 'base64',
+          contentDisposition: 'attachment',
+        };
+        attachment['content'] = fileBuffer.toString('base64');
+        return attachment;
+      } else {
+        throw new NotFoundException(
+          `File with key '${key}' not found in bucket '${bucketName}'.`,
+        );
+      }
     } catch (err) {
       Logger.error('Error fetching file from S3:', err);
       throw new Error('File fetching failed');
@@ -195,6 +212,9 @@ export class EmailService {
   }
 
   async sendMail(emailId: number) {
+    if (emailId === null) {
+      throw new Error('Email ID is null');
+    }
     try {
       const transport = await this.selectorService.getEmailConfig();
       const email: RawEmail = {
@@ -208,10 +228,11 @@ export class EmailService {
         transport: transport,
       };
       const emailContent = await this.getEmailsById(emailId);
-      console.log('email Content:', emailContent);
+      if (emailContent === null) {
+        throw new Error('Email does not exist');
+      }
       const projId = emailContent.project_id;
       const emailHeaderFooter = await this.getEmailHeaderFooter(projId);
-      console.log('email from db:', emailContent);
       email['to'] = emailContent.to;
       email['subject'] = emailContent.subject;
       if (emailContent.cc !== null) {
@@ -229,11 +250,16 @@ export class EmailService {
         '<br>' +
         (emailHeaderFooter?.email_footer ?? '');
       if (emailContent.attachments != null) {
-        console.log('inside content attachment loop');
         email.attachments = [];
         for (const attachment of emailContent.attachments) {
-          const a = await this.getAttachment(attachment);
-          email.attachments.push(a);
+          try {
+            const a = await this.getAttachment(attachment);
+            email.attachments.push(a);
+          } catch (error) {
+            await this.updateStatus(emailId, 'failed');
+            await this.updateErrorMessage(emailId, String(error));
+            throw new InternalServerErrorException(error);
+          }
         }
       }
       const resp = await this.mailService.sendMail(email);
@@ -243,8 +269,8 @@ export class EmailService {
     } catch (err) {
       console.log('email job sending error: ', err);
       await this.updateStatus(emailId, 'failed');
+      await this.updateErrorMessage(emailId, String(err));
       throw new InternalServerErrorException(err);
     }
-    await this.updateStatus(emailId, 'sent');
   }
 }

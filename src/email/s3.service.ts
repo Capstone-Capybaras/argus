@@ -4,6 +4,7 @@ import {
   GetObjectCommand,
   ListObjectsV2Command,
   DeleteObjectCommand,
+  HeadObjectCommand,
 } from '@aws-sdk/client-s3';
 import { secretManagerConfig } from 'src/config/secrets';
 import { Readable } from 'stream';
@@ -18,8 +19,6 @@ export class S3Service implements OnModuleInit {
     this.s3 = new S3Client({
       region: secrets.REGION,
     });
-
-    console.log('S3 Client Initialized with Secrets Manager credentials');
   }
 
   private streamToBuffer = async (stream: Readable): Promise<Buffer> => {
@@ -29,6 +28,23 @@ export class S3Service implements OnModuleInit {
     }
     return Buffer.concat(chunks);
   };
+
+  async checkFileExists(bucketName: string, key: string): Promise<boolean> {
+    const command = new HeadObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+    });
+
+    try {
+      await this.s3.send(command);
+      return true; // HeadObject succeeded, file exists
+    } catch (error: any) {
+      if (error.name === 'NotFound') {
+        return false; // File does not exist
+      }
+      throw error; // Other errors, rethrow
+    }
+  }
 
   async downloadFile(bucketName: string, key: string): Promise<Buffer> {
     try {

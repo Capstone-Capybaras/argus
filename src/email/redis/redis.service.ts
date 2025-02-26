@@ -31,12 +31,10 @@ export class RedisService {
       },
     );
 
-    worker.on('completed', (job) => {
-      console.log('worker completed: ', job);
-    });
-
     worker.on('failed', (job) => {
-      console.log('worker failed: ', job);
+      console.log(
+        `Worker failed on job ID: ${job?.id}\n Job data: ${job?.data}`,
+      );
     });
   }
 
@@ -134,13 +132,11 @@ export class RedisService {
         attachments: data.attachments,
       };
       const entry = await this.emailService.addEmail(emailData);
-      console.log('entry', entry);
       const emailId = entry[0].id;
       let resp;
       if (data.scheduleDateTime != null) {
         const delay = new Date(data.scheduleDateTime);
         const job = await this.scheduleEmail(entry[0].id, delay);
-        console.log('job created', job);
         const scheduleData: UpdateMailDBDto = {
           redis_job_id: job.jobId,
           schedule_date_time: delay,
@@ -177,8 +173,6 @@ export class RedisService {
         data,
       );
       //check if schedule is the same
-      console.log('original date time: ', update.schedule_date_time);
-      console.log('new datetime', updateMailDto.scheduleDateTime);
       if (update.schedule_date_time != updateMailDto.scheduleDateTime) {
         let jobId;
         if (
@@ -211,7 +205,6 @@ export class RedisService {
               : null,
           status: 'scheduled',
         };
-        console.log('scheduleData: ', scheduleData);
         const newEmail = await this.emailService.updateEmail(
           updateMailDto.emailId,
           scheduleData,
@@ -219,6 +212,24 @@ export class RedisService {
         update = newEmail;
       }
       return { success: true, resp: update };
+    } catch (err) {
+      Logger.log('update email Error', err);
+      throw new InternalServerErrorException(err);
+    }
+  }
+
+  async deleteScheduleAndEmail(emailId: number) {
+    try {
+      const email = await this.emailService.getEmailsById(emailId);
+      if (email === null) {
+        throw new Error('Email does not exist');
+      }
+      //check schedule
+      if (email.redis_job_id !== null) {
+        await this.removeJob(email.redis_job_id);
+      }
+      const result = this.emailService.deleteEmail(emailId);
+      return result;
     } catch (err) {
       Logger.log('update email Error', err);
       throw new InternalServerErrorException(err);
