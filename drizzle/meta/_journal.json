@@ -267,6 +267,13 @@
       "when": 1740554853089,
       "tag": "0037_chief_colleen_wing",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1740555182770,
+      "tag": "0038_foamy_harrier",
+      "breakpoints": true
     }
   ]
 }

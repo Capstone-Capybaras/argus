@@ -183,11 +183,11 @@ export const injectsTable = pgTable(
     from: varchar().notNull(),
     to_recipient: varchar().notNull(),
     iteration: integer().notNull(),
-    uploade_key: varchar(),
+    upload_key: varchar(),
   },
   (table) => ({
     fk: foreignKey({
-      columns: [table.scenario_number, table.scenario_project_id, table.uploade_key],
+      columns: [table.scenario_number, table.scenario_project_id, table.upload_key],
       foreignColumns: [
         scenariosTable.scenario_number,
         scenariosTable.project_id,
