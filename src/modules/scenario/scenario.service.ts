@@ -241,17 +241,31 @@ export class ScenarioService {
     // if job succeeds
     await this.db.transaction(async (tx) => {
       // update the 2 secnario tables (master table + generated)
-      await tx.update(scenariosGeneratedTable).set(scenarioData);
+      await tx
+        .update(scenariosGeneratedTable)
+        .set(scenarioData)
+        .where(
+          and(
+            eq(
+              scenariosGeneratedTable.scenario_number,
+              scenarioData.scenario_number,
+            ),
+            eq(scenariosGeneratedTable.project_id, scenarioData.project_id),
+          ),
+        );
       await tx.insert(scenariosTable).values(scenarioData);
 
       // update ttp used table
       await tx.insert(ttpUsedTable).values(ttpUsed);
 
       // update job
-      await tx.update(jobsTable).set({
-        id: job_id,
-        status: job_status,
-      });
+      await tx
+        .update(jobsTable)
+        .set({
+          id: job_id,
+          status: job_status,
+        })
+        .where(eq(jobsTable.id, job_id));
     });
 
     // after this is done, send websocket message
