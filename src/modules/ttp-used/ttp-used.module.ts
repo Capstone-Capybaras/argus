@@ -7,5 +7,6 @@ import { DatabaseModule } from 'src/database/database.module';
   imports: [DatabaseModule],
   providers: [TtpUsedService],
   controllers: [TtpUsedController],
+  exports: [TtpUsedService],
 })
 export class TtpUsedModule {}

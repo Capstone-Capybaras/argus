@@ -51,6 +51,7 @@ export class ScenarioService {
   }
 
   // Retrieve a specific scenario by scenario_number
+  // TODO: query by project ID too??
   async getScenarioByNumber(
     scenario_number: string,
   ): Promise<SelectScenarioByNumberDto | void> {
@@ -219,15 +220,7 @@ export class ScenarioService {
     if (job_status === 'pending') return;
 
     if (job_status === 'failed') {
-      await this.jobsService.updateJob({
-        id: job_id,
-        status: job_status,
-      });
-
-      // send websocket that job failed
-      this.eventsGateway.onScenarioJobFailed({
-        jobId: job_id,
-      });
+      await this.jobsService.onJobFailed(job_id);
 
       return;
     }

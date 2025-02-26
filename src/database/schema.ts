@@ -203,6 +203,47 @@ export const injectsTable = pgTable(
   }),
 );
 
+// needs to be in sync with injects base table
+export const injectsGeneratedTable = pgTable(
+  'injects_generated',
+  {
+    inject_id: varchar(),
+    scenario_number: varchar().notNull(),
+    scenario_project_id: integer().notNull(),
+    date: date(),
+    time: time(),
+    inject_desc: text(),
+    inject_type: text(),
+    artefact: text(),
+    from: varchar(),
+    to_recipient: varchar(),
+    iteration: integer().notNull(),
+    upload_key: varchar(),
+    generation_inputs: json().notNull(),
+  },
+  (table) => ({
+    fk: foreignKey({
+      columns: [table.scenario_number, table.scenario_project_id],
+      foreignColumns: [
+        scenariosTable.scenario_number,
+        scenariosTable.project_id,
+      ],
+    }).onDelete('cascade'),
+    mselFk: foreignKey({
+      columns: [table.scenario_project_id, table.upload_key],
+      foreignColumns: [mselTable.project_id, mselTable.msel],
+    }).onDelete('cascade'),
+    pk: primaryKey({
+      columns: [
+        table.scenario_project_id,
+        table.scenario_number,
+        table.inject_id,
+        table.iteration,
+      ],
+    }),
+  }),
+);
+
 // export const responsesTable = pgTable('responses', {
 //   inject_id: varchar()
 //     .notNull()

@@ -14,7 +14,7 @@ export interface BroadcastEvents {
     jobId: number;
     scenarioData: SelectScenarioDto;
   };
-  'scenario-job-failed': {
+  'job-failed': {
     jobId: number;
   };
 }
@@ -44,7 +44,7 @@ export class EventsGateway
     this.broadcast('scenario-job-success', data);
   }
 
-  public onScenarioJobFailed(data: BroadcastEvents['scenario-job-failed']) {
-    this.broadcast('scenario-job-failed', data);
+  public onJobFailed(data: BroadcastEvents['job-failed']) {
+    this.broadcast('job-failed', data);
   }
 }
