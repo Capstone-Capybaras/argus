@@ -183,13 +183,15 @@ export const injectsTable = pgTable(
     from: varchar().notNull(),
     to_recipient: varchar().notNull(),
     iteration: integer().notNull(),
+    uploade_key: varchar(),
   },
   (table) => ({
     fk: foreignKey({
-      columns: [table.scenario_number, table.scenario_project_id],
+      columns: [table.scenario_number, table.scenario_project_id, table.uploade_key],
       foreignColumns: [
         scenariosTable.scenario_number,
         scenariosTable.project_id,
+        mselTable.msel,
       ],
     }).onDelete('cascade'),
     pk: primaryKey({
