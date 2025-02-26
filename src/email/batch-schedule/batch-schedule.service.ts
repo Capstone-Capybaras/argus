@@ -185,7 +185,7 @@ export class BatchScheduleService {
         .filter((artefact) => artefact && artefact !== '');
       if (artefacts.length != attachments.length) {
         errors.push(
-          `number of artefacts uploaded does not match the number of artefacts in file.${artefacts.length} artefacts expected. ${attachments.length} artefacts uploaded.`,
+          `Number of artefacts uploaded does not match the number of artefacts in file.${artefacts.length} artefacts expected. ${attachments.length} artefacts uploaded.`,
         );
       }
 
@@ -200,7 +200,22 @@ export class BatchScheduleService {
       );
       if (missingValues.length > 0) {
         errors.push(
-          `Invalid values found in column 'artefact_name': ${missingValues.join(', ')}`,
+          `Missing files found in column 'artefact_name': ${missingValues.join(', ')}`,
+        );
+        //throw new Error(`Invalid values found in column "${columnName}": ${missingValues.join(', ')}`);
+      }
+      const additionalValues = attachments
+        .filter(
+          (attachment) =>
+            !artefacts.some((artefact) => attachment.endsWith(artefact)),
+        )
+        .map((attachment) => {
+          const parts = attachment.split('/');
+          return parts[parts.length - 1]; // Get the last part (filename)
+        });
+      if (additionalValues.length > 0) {
+        errors.push(
+          `Additional files not found in column 'artefact_name': ${additionalValues.join(', ')}`,
         );
         //throw new Error(`Invalid values found in column "${columnName}": ${missingValues.join(', ')}`);
       }
