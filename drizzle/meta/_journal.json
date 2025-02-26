@@ -267,6 +267,13 @@
       "when": 1740563240255,
       "tag": "0037_silky_mauler",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1740583002442,
+      "tag": "0038_clean_thunderbolt",
+      "breakpoints": true
     }
   ]
 }
