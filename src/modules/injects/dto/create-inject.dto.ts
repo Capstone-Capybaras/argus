@@ -43,4 +43,7 @@ export class CreateInjectDto implements InferInsert<typeof injectsTable> {
 
   @IsInt()
   iteration: number;
+
+  @IsString()
+  upload_key: string | null;
 }
