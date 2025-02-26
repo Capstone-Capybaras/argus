@@ -4,6 +4,8 @@ import {
   Get,
   InternalServerErrorException,
   Logger,
+  Param,
+  ParseIntPipe,
   Post,
 } from '@nestjs/common';
 import { RedisService } from './redis.service';
@@ -97,6 +99,16 @@ export class RedisController {
       return resp;
     } catch (err) {
       Logger.log('editEmail error controller: ', err);
+    }
+  }
+
+  @Get('deleteEmail/:emailId')
+  async deleteEmail(@Param('emailId', ParseIntPipe) emailId: number) {
+    try {
+      const mail = await this.redisService.deleteScheduleAndEmail(emailId);
+      return mail;
+    } catch (err) {
+      throw new InternalServerErrorException(String(err));
     }
   }
 }

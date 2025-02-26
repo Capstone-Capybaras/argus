@@ -59,16 +59,6 @@ export class EmailController {
     }
   }
 
-  @Get('deleteEmail/:emailId')
-  async deleteEmail(@Param('emailId', ParseIntPipe) emailId: number) {
-    try {
-      const mail = await this.emailService.deleteEmail(emailId);
-      return mail;
-    } catch (err) {
-      throw new InternalServerErrorException(String(err));
-    }
-  }
-
   @Get('addAttachment')
   async addAttachment(
     @Query('emailId') emailId: number,
