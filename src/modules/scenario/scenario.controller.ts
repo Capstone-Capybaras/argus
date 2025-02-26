@@ -62,7 +62,7 @@ export class ScenarioController {
         generateScenarioCallbackDto,
       );
     } catch (e) {
-      throw new BadRequestException('Failed to generate scenario: ', String(e));
+      throw new BadRequestException('Failed to callback scenario: ', String(e));
     }
   }
 

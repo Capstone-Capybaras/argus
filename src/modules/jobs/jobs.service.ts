@@ -24,7 +24,11 @@ export class JobsService {
   }
 
   async updateJob(data: UpdateJobDto): Promise<SelectJobDto> {
-    const [result] = await this.db.update(jobsTable).set(data).returning();
+    const [result] = await this.db
+      .update(jobsTable)
+      .set(data)
+      .where(eq(jobsTable.id, data.id))
+      .returning();
     return result;
   }
 
