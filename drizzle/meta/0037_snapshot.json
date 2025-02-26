@@ -1,5 +1,5 @@
 {
-  "id": "22651bc6-ebc7-46ff-a029-ddd7ca2b2ee4",
+  "id": "672df956-f061-4f06-bc8f-6fe7f9038d26",
   "prevId": "107278f4-21d2-46a0-b502-a97d0bea18bb",
   "version": "7",
   "dialect": "postgresql",
@@ -502,8 +502,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "uploade_key": {
-          "name": "uploade_key",
+        "upload_key": {
+          "name": "upload_key",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
@@ -511,17 +511,30 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "injects_scenario_number_scenario_project_id_uploade_key_scenarios_scenario_number_project_id_msel_fk": {
-          "name": "injects_scenario_number_scenario_project_id_uploade_key_scenarios_scenario_number_project_id_msel_fk",
+        "injects_scenario_number_scenario_project_id_scenarios_scenario_number_project_id_fk": {
+          "name": "injects_scenario_number_scenario_project_id_scenarios_scenario_number_project_id_fk",
           "tableFrom": "injects",
           "tableTo": "scenarios",
           "columnsFrom": [
             "scenario_number",
-            "scenario_project_id",
-            "uploade_key"
+            "scenario_project_id"
           ],
           "columnsTo": [
             "scenario_number",
+            "project_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "injects_scenario_project_id_upload_key_msel_project_id_msel_fk": {
+          "name": "injects_scenario_project_id_upload_key_msel_project_id_msel_fk",
+          "tableFrom": "injects",
+          "tableTo": "msel",
+          "columnsFrom": [
+            "scenario_project_id",
+            "upload_key"
+          ],
+          "columnsTo": [
             "project_id",
             "msel"
           ],
