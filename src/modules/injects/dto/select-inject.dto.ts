@@ -13,4 +13,5 @@ export class SelectInjectDto implements InferSelect<typeof injectsTable> {
   from: string;
   to_recipient: string;
   iteration: number;
+  upload_key: string | null;
 }

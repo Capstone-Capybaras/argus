@@ -55,4 +55,8 @@ export class UpdateInjectDto implements InferUpdate<typeof injectsTable> {
   @IsInt()
   @IsOptional()
   iteration?: number;
+
+  @IsString()
+  @IsOptional()
+  upload_key?: string | null;
 }
