@@ -240,17 +240,27 @@ export const rolesTable = pgTable(
 
 // ------- JOIN TABLES -------
 
-export const injectsToScenariosTable = pgTable('injects_to_scenarios', {
-  project_id: integer()
-    .notNull()
-    .references(() => projectsTable.id),
-  inject_id: integer()
-    .notNull()
-    .references(() => injectsTable.id),
-  scenario_number: varchar()
-    .notNull()
-    .references(() => scenariosTable.scenario_number),
-});
+export const injectsToScenariosTable = pgTable(
+  'injects_to_scenarios',
+  {
+    project_id: integer()
+      .notNull()
+      .references(() => projectsTable.id),
+    inject_id: integer()
+      .notNull()
+      .references(() => injectsTable.id),
+    scenario_number: varchar()
+      .notNull()
+      .references(() => scenariosTable.scenario_number),
+  },
+  (table) => ({
+    uniqueComposite: unique().on(
+      table.inject_id,
+      table.project_id,
+      table.scenario_number,
+    ),
+  }),
+);
 
 export const cubesToTacticsTable = pgTable(
   'cubes_to_tactics',
