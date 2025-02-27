@@ -167,7 +167,7 @@ export const scenariosGeneratedTable = pgTable(
   }),
 );
 
-// TODO: generated tables for msel and threats
+// TODO: generated tables for threats
 
 export const injectsTable = pgTable(
   'injects',
@@ -207,9 +207,12 @@ export const injectsTable = pgTable(
 export const injectsGeneratedTable = pgTable(
   'injects_generated',
   {
+    id: serial().unique().primaryKey(),
     inject_id: varchar(),
-    scenario_number: varchar().notNull(),
-    scenario_project_id: integer().notNull(),
+    scenario_number: varchar(),
+    project_id: integer()
+      .notNull()
+      .references(() => projectsTable.id, { onDelete: 'cascade' }),
     date: date(),
     time: time(),
     inject_desc: text(),
@@ -222,21 +225,10 @@ export const injectsGeneratedTable = pgTable(
     generation_inputs: json().notNull(),
   },
   (table) => ({
-    fk: foreignKey({
-      columns: [table.scenario_number, table.scenario_project_id],
-      foreignColumns: [
-        scenariosTable.scenario_number,
-        scenariosTable.project_id,
-      ],
-    }).onDelete('cascade'),
-    mselFk: foreignKey({
-      columns: [table.scenario_project_id, table.upload_key],
-      foreignColumns: [mselTable.project_id, mselTable.msel],
-    }).onDelete('cascade'),
     pk: primaryKey({
       columns: [
-        table.scenario_project_id,
-        table.scenario_number,
+        table.project_id,
+        table.iteration,
         table.inject_id,
         table.iteration,
       ],
