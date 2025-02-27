@@ -243,15 +243,11 @@ export const rolesTable = pgTable(
 export const injectsToScenariosTable = pgTable(
   'injects_to_scenarios',
   {
-    project_id: integer()
-      .notNull()
-      .references(() => projectsTable.id),
+    project_id: integer().notNull(),
     inject_id: integer()
       .notNull()
       .references(() => injectsTable.id),
-    scenario_number: varchar()
-      .notNull()
-      .references(() => scenariosTable.scenario_number),
+    scenario_number: varchar().notNull(),
   },
   (table) => ({
     uniqueComposite: unique().on(
@@ -259,6 +255,13 @@ export const injectsToScenariosTable = pgTable(
       table.project_id,
       table.scenario_number,
     ),
+    fk: foreignKey({
+      columns: [table.scenario_number, table.project_id],
+      foreignColumns: [
+        scenariosTable.scenario_number,
+        scenariosTable.project_id,
+      ],
+    }).onDelete('cascade'),
   }),
 );
 

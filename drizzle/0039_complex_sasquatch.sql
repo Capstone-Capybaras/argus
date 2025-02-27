@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS "injects_to_scenarios" (
 	"project_id" integer NOT NULL,
 	"inject_id" integer NOT NULL,
-	"scenario_number" varchar NOT NULL
+	"scenario_number" varchar NOT NULL,
+	CONSTRAINT "injects_to_scenarios_inject_id_project_id_scenario_number_unique" UNIQUE("inject_id","project_id","scenario_number")
 );
 --> statement-breakpoint
 ALTER TABLE "injects" RENAME COLUMN "scenario_project_id" TO "project_id";--> statement-breakpoint
@@ -14,19 +15,13 @@ ALTER TABLE "injects" ALTER COLUMN "time" DROP NOT NULL;--> statement-breakpoint
 ALTER TABLE "injects" ALTER COLUMN "inject_type" DROP NOT NULL;--> statement-breakpoint
 ALTER TABLE "injects" ADD COLUMN "id" serial PRIMARY KEY NOT NULL;--> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "injects_to_scenarios" ADD CONSTRAINT "injects_to_scenarios_project_id_projects_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."projects"("id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
  ALTER TABLE "injects_to_scenarios" ADD CONSTRAINT "injects_to_scenarios_inject_id_injects_id_fk" FOREIGN KEY ("inject_id") REFERENCES "public"."injects"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "injects_to_scenarios" ADD CONSTRAINT "injects_to_scenarios_scenario_number_scenarios_scenario_number_fk" FOREIGN KEY ("scenario_number") REFERENCES "public"."scenarios"("scenario_number") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "injects_to_scenarios" ADD CONSTRAINT "injects_to_scenarios_scenario_number_project_id_scenarios_scenario_number_project_id_fk" FOREIGN KEY ("scenario_number","project_id") REFERENCES "public"."scenarios"("scenario_number","project_id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

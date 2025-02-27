@@ -1,5 +1,5 @@
 {
-  "id": "4fc26453-0fda-4551-955c-06d421165346",
+  "id": "7f864b49-de1f-4e6b-9316-1bf2fef2bd88",
   "prevId": "0988114d-20f3-4a41-89c0-c582d4a2beca",
   "version": "7",
   "dialect": "postgresql",
@@ -591,19 +591,6 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "injects_to_scenarios_project_id_projects_id_fk": {
-          "name": "injects_to_scenarios_project_id_projects_id_fk",
-          "tableFrom": "injects_to_scenarios",
-          "tableTo": "projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
         "injects_to_scenarios_inject_id_injects_id_fk": {
           "name": "injects_to_scenarios_inject_id_injects_id_fk",
           "tableFrom": "injects_to_scenarios",
@@ -617,22 +604,34 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "injects_to_scenarios_scenario_number_scenarios_scenario_number_fk": {
-          "name": "injects_to_scenarios_scenario_number_scenarios_scenario_number_fk",
+        "injects_to_scenarios_scenario_number_project_id_scenarios_scenario_number_project_id_fk": {
+          "name": "injects_to_scenarios_scenario_number_project_id_scenarios_scenario_number_project_id_fk",
           "tableFrom": "injects_to_scenarios",
           "tableTo": "scenarios",
           "columnsFrom": [
-            "scenario_number"
+            "scenario_number",
+            "project_id"
           ],
           "columnsTo": [
-            "scenario_number"
+            "scenario_number",
+            "project_id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "injects_to_scenarios_inject_id_project_id_scenario_number_unique": {
+          "name": "injects_to_scenarios_inject_id_project_id_scenario_number_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "inject_id",
+            "project_id",
+            "scenario_number"
+          ]
+        }
+      },
       "checkConstraints": {}
     },
     "public.jobs": {
