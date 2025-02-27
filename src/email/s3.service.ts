@@ -65,6 +65,18 @@ export class S3Service implements OnModuleInit {
     }
   }
 
+  async streamFile(bucketName: string, key: string) {
+    try {
+      const params = { Bucket: bucketName, Key: key };
+      const command = new GetObjectCommand(params);
+      const response = await this.s3.send(command);
+      return response;
+    } catch (err) {
+      console.error('Error getting object from S3:', err);
+      throw new Error(`Error getting object from S3: ${err}`);
+    }
+  }
+
   async getObjectsByPrefix(bucketName: string, prefix: string) {
     try {
       const command = new ListObjectsV2Command({
