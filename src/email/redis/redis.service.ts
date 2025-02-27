@@ -4,7 +4,7 @@ import {
   Logger,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { Redis } from 'ioredis';
+import { Redis, RedisKey } from 'ioredis';
 import { Queue, Worker } from 'bullmq';
 import { EmailService } from '../email.service';
 import { CreateMailDto, UpdateMailClient, UpdateMailDBDto } from '../email.dto';
@@ -234,5 +234,18 @@ export class RedisService {
       Logger.log('update email Error', err);
       throw new InternalServerErrorException(err);
     }
+  }
+
+  async getRedisItem(key: RedisKey) {
+    return this.redisCluster.get(key);
+  }
+
+  async setMselGenerationInput(key: RedisKey, generationInput: Object) {
+    // keys is a single job ID
+    return this.redisCluster.set(key, JSON.stringify(generationInput));
+  }
+
+  async deleteRedisItem(key: RedisKey) {
+    return this.redisCluster.del(key);
   }
 }

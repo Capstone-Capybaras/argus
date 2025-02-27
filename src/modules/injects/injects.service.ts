@@ -1,5 +1,5 @@
 // injects.service.ts
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
 import { DATABASE_CONNECTION } from 'src/config/providers';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { eq } from 'drizzle-orm';
@@ -21,6 +21,7 @@ import { AssetsService } from '../assets/assets.service';
 import { RolesService } from '../roles/roles.service';
 import { GenerateMselCallbackDto } from './dto/generate-msel-callback.dto';
 import { JobsService } from '../jobs/jobs.service';
+import { RedisService } from 'src/email/redis/redis.service';
 
 @Injectable()
 export class InjectsService {
@@ -34,6 +35,7 @@ export class InjectsService {
     private readonly assetService: AssetsService,
     private readonly rolesService: RolesService,
     private readonly jobsService: JobsService,
+    private readonly redisService: RedisService,
     private readonly eventsGateway: EventsGateway,
   ) {}
 
@@ -119,27 +121,22 @@ export class InjectsService {
       asset,
       roles,
     };
-    const job = await this.db.transaction(async (tx) => {
-      // insert base record into generated table
-      await tx.insert(injectsGeneratedTable).values({
-        scenario_number: data.scenario_number,
-        scenario_project_id: data.project_id,
-        generation_inputs: generationInputs,
-        iteration: 0,
-      });
 
-      const [createdJob] = await tx
-        .insert(jobsTable)
-        .values({
-          type: 'msel',
-          status: 'pending',
-          name: data.job_name,
-          project_id: data.project_id,
-        })
-        .returning();
+    const [job] = await this.db
+      .insert(jobsTable)
+      .values({
+        type: 'msel',
+        status: 'pending',
+        name: data.job_name,
+        project_id: data.project_id,
+      })
+      .returning();
 
-      return createdJob;
-    });
+    // set generation input in redis
+    await this.redisService.setMselGenerationInput(
+      String(job.id),
+      generationInputs,
+    );
 
     // last step: send to aether
     await this.aetherService.generateMsel({
@@ -168,36 +165,50 @@ export class InjectsService {
       return;
     }
 
+    // must make sure injects length is not 0
     if (!injects || injects.length === 0) {
       throw new Error('no injects provided');
     }
 
-    // if job succeeds
-    // await this.db.transaction(async (tx) => {
-    //   // update the 2 inject tables (master table + generated)
-    //   // TODO: it's a list of injects that is GENERATED, so how to first insert in the generation inputs if I don't know the inject IDs?
-    //   await tx
-    //     .update(scenariosGeneratedTable)
-    //     .set(scenarioData)
-    //     .where(
-    //       and(
-    //         eq(
-    //           scenariosGeneratedTable.scenario_number,
-    //           scenarioData.scenario_number,
-    //         ),
-    //         eq(scenariosGeneratedTable.project_id, scenarioData.project_id),
-    //       ),
-    //     );
-    //   await tx.insert(scenariosTable).values(scenarioData);
+    // get generation inputs
+    const generationInputs = await this.redisService.getRedisItem(
+      String(job_id),
+    );
 
-    //   // update job
-    //   await tx
-    //     .update(jobsTable)
-    //     .set({
-    //       id: job_id,
-    //       status: job_status,
-    //     })
-    //     .where(eq(jobsTable.id, job_id));
+    if (!generationInputs) {
+      Logger.warn('No msel generation input found in redis');
+    }
+
+    // if job succeeds
+    await this.db.transaction(async (tx) => {
+      // INSERT to the 2 inject tables (master table + generated)
+      // note: we do not care about serial ID matching
+      // since the generated table is just to keep track of generation input and outputs
+      await tx.insert(injectsTable).values(injects);
+      await tx.insert(injectsGeneratedTable).values(
+        injects.map((i) => ({
+          ...i,
+          generation_inputs: generationInputs,
+        })),
+      );
+
+      // update job
+      await tx
+        .update(jobsTable)
+        .set({
+          id: job_id,
+          status: job_status,
+        })
+        .where(eq(jobsTable.id, job_id));
+    });
+
+    // after this is done, send websocket message
+    // this.eventsGateway.onScenarioJobSuccess({
+    //   jobId: job_id,
+    //   scenarioData,
     // });
+
+    // remove redis item
+    this.redisService.deleteRedisItem(String(job_id));
   }
 }
