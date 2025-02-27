@@ -7,5 +7,6 @@ import { DatabaseModule } from 'src/database/database.module';
   imports: [DatabaseModule],
   providers: [InjectsService],
   controllers: [InjectsController],
+  exports: [InjectsService],
 })
 export class InjectsModule {}

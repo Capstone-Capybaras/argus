@@ -14,7 +14,7 @@ export class UpdateInjectDto implements InferUpdate<typeof injectsTable> {
 
   @IsString()
   @IsOptional()
-  scenario_number?: string;
+  scenario_number?: string | null;
 
   @IsNumber()
   @IsOptional()
@@ -22,7 +22,7 @@ export class UpdateInjectDto implements InferUpdate<typeof injectsTable> {
 
   @IsNumber()
   @IsOptional()
-  scenario_project_id?: number;
+  project_id?: number;
 
   @IsDateString() // Ensures date is in "YYYY-MM-DD" format
   @IsOptional()
