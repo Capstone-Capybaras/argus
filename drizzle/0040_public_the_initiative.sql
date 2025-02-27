@@ -1,0 +1,1 @@
+ALTER TABLE "injects_to_scenarios" ADD CONSTRAINT "injects_to_scenarios_inject_id_project_id_scenario_number_unique" UNIQUE("inject_id","project_id","scenario_number");
