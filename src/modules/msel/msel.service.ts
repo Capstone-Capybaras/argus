@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, StreamableFile } from '@nestjs/common';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { DATABASE_CONNECTION } from 'src/config/providers';
 import { S3Service } from 'src/email/s3.service';
@@ -6,7 +6,8 @@ import * as schemas from 'src/database/schema';
 import { UploadMselDto } from './msel.dto';
 import { eq, sql } from 'drizzle-orm';
 import { ConfigService } from '@nestjs/config';
-import { Response } from 'express';
+import { PassThrough } from 'stream';
+import { SdkStreamMixin } from '@smithy/types';
 
 @Injectable()
 export class MselService {
@@ -34,36 +35,38 @@ export class MselService {
     return result[0];
   }
 
-  async downloadMsel(key: string, res: Response) {
+  async downloadMsel(key: string): Promise<StreamableFile | null> {
     const mselKey = await this.database
       .select({ msel: schemas.mselTable.msel })
       .from(schemas.mselTable)
       .where(eq(schemas.mselTable.msel, key))
       .limit(1);
-
-    if (mselKey && mselKey.length > 0) {
+    if (!mselKey || mselKey.length === 0) {
+      throw new Error('File does not exist');
+    }
+    try {
       const bucketName = this.configService.getOrThrow('S3_BUCKET_NAME');
-      const fileExists = await this.s3Service.checkFileExists(
+      const response = await this.s3Service.streamFile(
         bucketName,
         mselKey[0].msel,
       );
-      if (fileExists) {
-        const fileBuffer = await this.s3Service.downloadFile(
-          bucketName,
-          mselKey[0].msel,
-        );
-        const filename = mselKey[0].msel.split('/').pop() ?? key;
-        res.set({
-          'Content-Disposition': `attachment; filename="${filename}"`,
-          'Content-Type': 'application/octet-stream',
-          'Content-Length': fileBuffer.length,
-        });
-        res.send(fileBuffer);
-      } else {
-        res.status(404).json({ message: 'File not found' });
+      if (!response.Body) {
+        throw new Error('File not found');
       }
-    } else {
-      res.status(404).json({ message: 'MSEL key not found' });
+      const nodeStream = (
+        response.Body as SdkStreamMixin
+      ).transformToByteArray();
+      const passThrough = new PassThrough();
+      passThrough.end(await nodeStream);
+
+      return new StreamableFile(passThrough, {
+        type: response.ContentType || 'application/octet-stream',
+        disposition: `attachment; filename="${key.split('/').pop()}"`,
+        length: response.ContentLength,
+      });
+    } catch (error) {
+      console.error('Error fetching file from S3:', error);
+      return null;
     }
   }
 }
