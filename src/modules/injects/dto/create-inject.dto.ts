@@ -14,22 +14,22 @@ export class CreateInjectDto implements InferInsert<typeof injectsTable> {
   inject_id: string;
 
   @IsString()
-  scenario_number: string;
+  scenario_number: string | null;
 
   @IsNumber()
-  scenario_project_id: number;
+  project_id: number;
 
   @IsDateString() // Ensures date is in "YYYY-MM-DD" format
-  date: string;
+  date: string | null;
 
-  @IsDateString() // Ensures time is in "HH:MM:SS" format
-  time: string;
+  @IsString() // Ensures time is in "HH:MM:SS" format
+  time: string | null;
 
   @IsString()
   inject_desc: string;
 
   @IsString()
-  inject_type: string;
+  inject_type: string | null;
 
   @IsOptional() // Makes artefact nullable
   @IsString()

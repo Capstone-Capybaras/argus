@@ -12,6 +12,7 @@ import {
   foreignKey,
   json,
   time,
+  unique,
 } from 'drizzle-orm/pg-core';
 
 // Existing tables
@@ -171,14 +172,15 @@ export const scenariosGeneratedTable = pgTable(
 export const injectsTable = pgTable(
   'injects',
   {
+    id: serial().unique().primaryKey(),
     inject_id: varchar().notNull(),
     // schema draws 1-1, I believe it's many injects to 1 scenario
-    scenario_number: varchar().notNull(),
-    scenario_project_id: integer().notNull(),
-    date: date().notNull(),
-    time: time().notNull(),
+    scenario_number: varchar(),
+    project_id: integer().notNull(),
+    date: date(),
+    time: time(),
     inject_desc: text().notNull(),
-    inject_type: text().notNull(),
+    inject_type: text(),
     artefact: text(),
     from: varchar().notNull(),
     to_recipient: varchar().notNull(),
@@ -189,20 +191,15 @@ export const injectsTable = pgTable(
   },
   (table) => ({
     fk: foreignKey({
-      columns: [table.scenario_number, table.scenario_project_id],
-      foreignColumns: [
-        scenariosTable.scenario_number,
-        scenariosTable.project_id,
-      ],
+      columns: [table.project_id],
+      foreignColumns: [projectsTable.id],
     }).onDelete('cascade'),
-    pk: primaryKey({
-      columns: [
-        table.scenario_project_id,
-        table.scenario_number,
-        table.inject_id,
-        table.iteration,
-      ],
-    }),
+    uniqueComposite: unique().on(
+      table.project_id,
+      table.iteration,
+      table.inject_id,
+      table.upload_key,
+    ),
   }),
 );
 
@@ -242,6 +239,28 @@ export const rolesTable = pgTable(
 );
 
 // ------- JOIN TABLES -------
+
+export const injectsToScenariosTable = pgTable(
+  'injects_to_scenarios',
+  {
+    project_id: integer()
+      .notNull()
+      .references(() => projectsTable.id),
+    inject_id: integer()
+      .notNull()
+      .references(() => injectsTable.id),
+    scenario_number: varchar()
+      .notNull()
+      .references(() => scenariosTable.scenario_number),
+  },
+  (table) => ({
+    uniqueComposite: unique().on(
+      table.inject_id,
+      table.project_id,
+      table.scenario_number,
+    ),
+  }),
+);
 
 export const cubesToTacticsTable = pgTable(
   'cubes_to_tactics',

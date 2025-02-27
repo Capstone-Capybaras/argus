@@ -15,6 +15,11 @@ import { UploadMselDto } from './msel.dto';
 export class MselController {
   constructor(private readonly mselService: MselService) {}
 
+  @Get('test')
+  async test() {
+    const file = await this.mselService.fileParser(1, 'testing');
+    return file;
+  }
   @Get('download')
   async downloadMsel(@Query('key') key: string): Promise<StreamableFile> {
     const fileStream = await this.mselService.downloadMsel(key);

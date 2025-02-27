@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsInt, IsString } from 'class-validator';
-import { mselTable } from 'src/database/schema';
+import { injectsToScenariosTable, mselTable } from 'src/database/schema';
 import { InferInsert } from 'src/utils/modelToDtoTypes';
 
 export class UploadMselDto implements InferInsert<typeof mselTable> {
@@ -13,4 +13,15 @@ export class UploadMselDto implements InferInsert<typeof mselTable> {
 
   @IsNotEmpty()
   date_uploaded: Date;
+}
+
+export class InjectScenarioDto
+  implements InferInsert<typeof injectsToScenariosTable>
+{
+  @IsInt()
+  project_id: number;
+  @IsInt()
+  inject_id: number;
+  @IsString()
+  scenario_number: string;
 }
