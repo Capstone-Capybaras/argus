@@ -15,10 +15,7 @@ import {
 import { ParticipantsService } from './participants.service';
 import { CreateParticipantDto } from './dto/create-participant.dto';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
-import {
-  SelectParticipantDto,
-  ParticipantWithRoles,
-} from './dto/select-participant.dto';
+import { ParticipantWithRoles } from './dto/select-participant.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { ParticipantsWithEntityAndRoles } from './dto/all-participants.dto';
 
