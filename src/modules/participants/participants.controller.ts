@@ -95,9 +95,9 @@ export class ParticipantsController {
   @Patch()
   async updateParticipant(
     @Body() data: UpdateParticipantDto,
-  ): Promise<SelectParticipantDto> {
+  ): Promise<ParticipantWithRoles | undefined> {
     try {
-      return await this.participantsService.updateParticipant(data.email, data);
+      return await this.participantsService.updateParticipant(data);
     } catch (err) {
       Logger.error(err);
       throw new InternalServerErrorException(err);
