@@ -90,10 +90,10 @@ export class RolesController {
   // Delete a role by name
   @Delete()
   async deleteRole(
-    @Query('email') email: string,
+    @Query('name') name: string,
     @Query('entity_id') entity_id: number,
   ) {
-    const deleted = await this.rolesService.deleteRole(email, entity_id);
+    const deleted = await this.rolesService.deleteRole(name, entity_id);
     if (!deleted) {
       throw new HttpException('Role not found', HttpStatus.NOT_FOUND);
     }

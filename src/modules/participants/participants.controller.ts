@@ -15,10 +15,7 @@ import {
 import { ParticipantsService } from './participants.service';
 import { CreateParticipantDto } from './dto/create-participant.dto';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
-import {
-  SelectParticipantDto,
-  ParticipantWithRoles,
-} from './dto/select-participant.dto';
+import { ParticipantWithRoles } from './dto/select-participant.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { ParticipantsWithEntityAndRoles } from './dto/all-participants.dto';
 
@@ -28,7 +25,9 @@ export class ParticipantsController {
   constructor(private readonly participantsService: ParticipantsService) {}
 
   @Post()
-  async createParticipant(@Body() data: CreateParticipantDto): Promise<void> {
+  async createParticipant(
+    @Body() data: CreateParticipantDto,
+  ): Promise<ParticipantWithRoles> {
     try {
       return await this.participantsService.createParticipant(data);
     } catch (e) {
@@ -93,9 +92,9 @@ export class ParticipantsController {
   @Patch()
   async updateParticipant(
     @Body() data: UpdateParticipantDto,
-  ): Promise<SelectParticipantDto> {
+  ): Promise<ParticipantWithRoles | undefined> {
     try {
-      return await this.participantsService.updateParticipant(data.email, data);
+      return await this.participantsService.updateParticipant(data);
     } catch (err) {
       Logger.error(err);
       throw new InternalServerErrorException(err);
