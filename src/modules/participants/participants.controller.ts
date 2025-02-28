@@ -28,7 +28,9 @@ export class ParticipantsController {
   constructor(private readonly participantsService: ParticipantsService) {}
 
   @Post()
-  async createParticipant(@Body() data: CreateParticipantDto): Promise<void> {
+  async createParticipant(
+    @Body() data: CreateParticipantDto,
+  ): Promise<ParticipantWithRoles> {
     try {
       return await this.participantsService.createParticipant(data);
     } catch (e) {

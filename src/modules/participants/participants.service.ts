@@ -21,14 +21,19 @@ export class ParticipantsService {
     private readonly db: ReturnType<typeof drizzle>,
   ) {}
 
-  async createParticipant(data: CreateParticipantDto) {
+  async createParticipant(
+    data: CreateParticipantDto,
+  ): Promise<ParticipantWithRoles> {
     // when creating a participant we need to do multiple things, so use a SQL transaction
     return this.db.transaction(async (tx) => {
       // 1) update base participant table
-      await tx.insert(participantsTable).values({
-        email: data.email,
-        name: data.name,
-      });
+      const [participant] = await tx
+        .insert(participantsTable)
+        .values({
+          email: data.email,
+          name: data.name,
+        })
+        .returning();
 
       // 2) tag participant to entity
       await tx.insert(entitesToParticipantsTable).values({
@@ -46,6 +51,14 @@ export class ParticipantsService {
           }),
         ),
       );
+
+      // we can just return the object like this because once code reaches here
+      // guaranteed successful insertion for all 3 tables above
+      return {
+        ...participant,
+        roles: data.roles,
+        entity_id: data.entity_id,
+      };
     });
   }
 
