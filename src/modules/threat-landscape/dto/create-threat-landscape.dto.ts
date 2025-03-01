@@ -31,4 +31,7 @@ export class CreateThreatLandscapeDto
 
   @IsString()
   opportunity_reason: string;
+
+  @IsString()
+  file_key: string;
 }

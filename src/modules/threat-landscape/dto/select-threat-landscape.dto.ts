@@ -13,4 +13,5 @@ export class SelectThreatLandscapeDto
   intent_reason: string | null;
   opportunity: string | null;
   opportunity_reason: string | null;
+  file_key: string;
 }

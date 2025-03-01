@@ -16,6 +16,9 @@ import { CreateThreatLandscapeDto } from './dto/create-threat-landscape.dto';
 import { UpdateThreatLandscapeDto } from './dto/update-threat-landscape.dto';
 import { SelectThreatLandscapeDto } from './dto/select-threat-landscape.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { GenerateThreatDto } from './dto/generate-threat.dto';
+import { SelectJobDto } from '../jobs/dto/select-job.dto';
+import { SelectThreatFileDto } from './dto/select-threat-file.dto';
 
 @ApiBearerAuth()
 @Controller('threat-landscape')
@@ -42,19 +45,68 @@ export class ThreatLandscapeController {
     }
   }
 
-  @Get()
+  @Post('generate')
+  async generateThreatLandscape(
+    @Body() generateThreatDto: GenerateThreatDto,
+  ): Promise<SelectJobDto> {
+    try {
+      const generateThreatJob =
+        await this.threatLandscapeService.generateThreatLandscape(
+          generateThreatDto,
+        );
+      return generateThreatJob;
+    } catch (error) {
+      Logger.error(error);
+      throw new BadRequestException(
+        `Failed to generate threat landscape ${error}`,
+      );
+    }
+  }
+
+  @Get('threat-actors')
   async getAllThreatLandscapes(
     @Query('entity_id', ParseIntPipe) entity_id: number,
+    @Query('file_key') file_key: string,
   ): Promise<SelectThreatLandscapeDto[]> {
     try {
-      const threatLandscapes = Number.isInteger(entity_id)
-        ? await this.threatLandscapeService.getThreatLandscapeByEntityId(
-            entity_id,
+      const threatLandscapes = await this.threatLandscapeService.getThreatLandscapeByEntityIdAndFile(
+            entity_id, file_key
           )
-        : await this.threatLandscapeService.getAllThreatLandscape();
       return threatLandscapes;
     } catch (error) {
       Logger.error(error);
+      throw new BadRequestException(
+        `Failed to fetch threat landscapes ${error}`,
+      );
+    }
+  }
+
+  @Get('threat-actors-latest')
+  async getLatestThreatLandscapes(
+    @Query('entity_id', ParseIntPipe) entity_id: number,
+  ): Promise<SelectThreatLandscapeDto[]> {
+    try {
+      const threatLandscapes = await this.threatLandscapeService.getLatestThreatLandscape(
+            entity_id
+          )
+      return threatLandscapes ?? [];
+    } catch (error) {
+      Logger.error(error);
+      throw new BadRequestException(
+        `Failed to fetch threat landscapes ${error}`,
+      );
+    }
+  }
+
+  @Get('uploaded-files')
+  async getFiles(
+    @Query('entity_id', ParseIntPipe) entity_id: number,
+  ): Promise<SelectThreatFileDto[]>{
+    try{
+      const threatFiles = await this.threatLandscapeService.getUploadHistory(entity_id);
+      return threatFiles ?? []
+    } catch(error){
+      console.log(`Error Getting uploaded files: ${error}`)
       throw new BadRequestException(
         `Failed to fetch threat landscapes ${error}`,
       );
