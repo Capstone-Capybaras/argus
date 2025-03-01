@@ -133,7 +133,7 @@ export class InjectsService {
       .returning();
 
     // set generation input in redis
-    await this.redisService.setMselGenerationInput(
+    await this.redisService.setGenerationInput(
       String(job.id),
       generationInputs,
     );

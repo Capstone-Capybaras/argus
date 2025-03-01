@@ -240,7 +240,7 @@ export class RedisService {
     return this.redisCluster.get(key);
   }
 
-  async setMselGenerationInput(key: RedisKey, generationInput: object) {
+  async setGenerationInput(key: RedisKey, generationInput: object) {
     // keys is a single job ID
     return this.redisCluster.set(key, JSON.stringify(generationInput));
   }
