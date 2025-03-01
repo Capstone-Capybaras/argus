@@ -19,6 +19,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { GenerateThreatDto } from './dto/generate-threat.dto';
 import { SelectJobDto } from '../jobs/dto/select-job.dto';
 import { SelectThreatFileDto } from './dto/select-threat-file.dto';
+import { GenerateThreatCallbackDto } from './dto/generate-threat-callback.dto';
 
 @ApiBearerAuth()
 @Controller('threat-landscape')
@@ -62,6 +63,19 @@ export class ThreatLandscapeController {
       );
     }
   }
+
+  @Post('/generate/callback')
+    async generateThreatLandscapeCallback(
+      @Body() generateThreatCallbackDto: GenerateThreatCallbackDto,
+    ) {
+      try {
+        return await this.threatLandscapeService.generateThreatCallback(
+          generateThreatCallbackDto,
+        );
+      } catch (e) {
+        throw new BadRequestException('Failed to callback Threat Landscape: ', String(e));
+      }
+    }
 
   @Get('threat-actors')
   async getAllThreatLandscapes(
