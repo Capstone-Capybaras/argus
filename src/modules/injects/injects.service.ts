@@ -13,7 +13,6 @@ import { UpdateInjectDto } from './dto/update-inject.dto';
 import { GenerateMselDto } from './dto/generate-msel.dto';
 import { SelectJobDto } from '../jobs/dto/select-job.dto';
 import { AetherService } from '../aether/aether.service';
-import { EventsGateway } from 'src/events/events.gateway';
 import { ScenarioService } from '../scenario/scenario.service';
 import { TtpUsedService } from '../ttp-used/ttp-used.service';
 import { EntityService } from '../entity/entity.service';

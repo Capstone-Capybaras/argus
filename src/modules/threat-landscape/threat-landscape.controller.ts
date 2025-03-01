@@ -65,17 +65,20 @@ export class ThreatLandscapeController {
   }
 
   @Post('/generate/callback')
-    async generateThreatLandscapeCallback(
-      @Body() generateThreatCallbackDto: GenerateThreatCallbackDto,
-    ) {
-      try {
-        return await this.threatLandscapeService.generateThreatCallback(
-          generateThreatCallbackDto,
-        );
-      } catch (e) {
-        throw new BadRequestException('Failed to callback Threat Landscape: ', String(e));
-      }
+  async generateThreatLandscapeCallback(
+    @Body() generateThreatCallbackDto: GenerateThreatCallbackDto,
+  ) {
+    try {
+      return await this.threatLandscapeService.generateThreatCallback(
+        generateThreatCallbackDto,
+      );
+    } catch (e) {
+      throw new BadRequestException(
+        'Failed to callback Threat Landscape: ',
+        String(e),
+      );
     }
+  }
 
   @Get('threat-actors')
   async getAllThreatLandscapes(
