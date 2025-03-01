@@ -207,7 +207,7 @@ export class ThreatLandscapeService {
     );
 
     if (!generationInputs) {
-      Logger.warn('No msel generation input found in redis');
+      Logger.warn('No threat landscape generation input found in redis');
     }
 
     // if job succeeds
