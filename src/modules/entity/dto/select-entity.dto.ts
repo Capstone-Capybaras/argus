@@ -16,3 +16,12 @@ export class SelectEntityDto extends SelectEntityOnlyDto {
   participants?: ParticipantWithRoles[];
   assets?: SelectAssetDto[];
 }
+
+type AssetSimple = Pick<SelectAssetDto, 'id' | 'name'>;
+
+export class SelectEntityWithAssetSimpleDto {
+  id: typeof entitiesTable.$inferSelect.id;
+  name: typeof entitiesTable.$inferSelect.name;
+
+  assets: AssetSimple[];
+}

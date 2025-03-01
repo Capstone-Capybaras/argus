@@ -17,7 +17,11 @@ import {
 import { EntityService } from './entity.service';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
-import { SelectEntityDto, SelectEntityOnlyDto } from './dto/select-entity.dto';
+import {
+  SelectEntityDto,
+  SelectEntityOnlyDto,
+  SelectEntityWithAssetSimpleDto,
+} from './dto/select-entity.dto';
 import { AssignEntityDto } from './dto/assign-entity.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
@@ -66,9 +70,24 @@ export class EntityController {
   ): Promise<SelectEntityOnlyDto[]> {
     try {
       if (projectId) {
-        return await this.entityService.getEntitiesByProjectId(projectId);
+        return await this.entityService.getEntitiesByProjectId({ projectId });
       }
       return await this.entityService.getEntities();
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
+    }
+  }
+
+  @Get('assets')
+  async getProjectEntitiesWithAssets(
+    @Query('project_id', ParseIntPipe) projectId: number,
+  ): Promise<SelectEntityWithAssetSimpleDto[]> {
+    try {
+      return await this.entityService.getEntitiesByProjectId({
+        projectId,
+        withAssets: true,
+      });
     } catch (err) {
       Logger.error(err);
       throw new InternalServerErrorException(err);

@@ -11,7 +11,11 @@ import { eq, not, inArray } from 'drizzle-orm';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
 import { AssignEntityDto } from './dto/assign-entity.dto';
-import { SelectEntityDto, SelectEntityOnlyDto } from './dto/select-entity.dto';
+import {
+  SelectEntityDto,
+  SelectEntityOnlyDto,
+  SelectEntityWithAssetSimpleDto,
+} from './dto/select-entity.dto';
 import { DeepSet } from 'src/utils/DeepSet';
 import { ParticipantsService } from '../participants/participants.service';
 import { SelectAssetDto } from '../assets/dto/select-asset.dto';
@@ -42,7 +46,24 @@ export class EntityService {
     return entities;
   }
 
-  async getEntitiesByProjectId(projectId: number) {
+  // function signature overloading
+  async getEntitiesByProjectId(args: {
+    projectId: number;
+    withAssets: true;
+  }): Promise<SelectEntityWithAssetSimpleDto[]>;
+
+  async getEntitiesByProjectId(args: {
+    projectId: number;
+    withAssets?: false;
+  }): Promise<SelectEntityOnlyDto[]>;
+
+  async getEntitiesByProjectId({
+    projectId,
+    withAssets = false,
+  }: {
+    projectId: number;
+    withAssets?: boolean;
+  }) {
     const results = await this.db
       .select()
       .from(projectsToEntitiesTable)
@@ -55,7 +76,29 @@ export class EntityService {
         eq(projectsToEntitiesTable.entity_id, entitiesTable.id),
       )
       .where(eq(projectsTable.id, projectId));
-    return results.map((res) => res.entities).filter((res) => !!res);
+
+    const entities = results.map((res) => res.entities).filter((res) => !!res);
+    if (!withAssets) return entities;
+
+    const entitiesWithAssets = await Promise.all(
+      entities.map<Promise<SelectEntityWithAssetSimpleDto>>(async (entity) => {
+        const assets = await this.db
+          .select({
+            id: assetsTable.id,
+            name: assetsTable.name,
+          })
+          .from(assetsTable)
+          .where(eq(assetsTable.entity_id, entity.id));
+
+        return {
+          id: entity.id,
+          name: entity.name,
+          assets,
+        };
+      }),
+    );
+
+    return entitiesWithAssets;
   }
 
   async getUnassignedEntitiesByProjectId(projectId: number) {

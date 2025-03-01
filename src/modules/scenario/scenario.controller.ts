@@ -23,6 +23,7 @@ import {
 import { GenerateScenarioDto } from './dto/generate-scenario.dto';
 import { GenerateScenarioCallbackDto } from './dto/generate-scenario-callback.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { SelectJobDto } from '../jobs/dto/select-job.dto';
 
 @ApiBearerAuth()
 @Controller('scenarios')
@@ -45,7 +46,9 @@ export class ScenarioController {
   }
 
   @Post('/generate')
-  async generateScenario(@Body() generateScenarioDto: GenerateScenarioDto) {
+  async generateScenario(
+    @Body() generateScenarioDto: GenerateScenarioDto,
+  ): Promise<SelectJobDto> {
     try {
       return await this.scenarioService.generateScenario(generateScenarioDto);
     } catch (e) {
