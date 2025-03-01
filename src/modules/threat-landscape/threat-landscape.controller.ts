@@ -69,9 +69,11 @@ export class ThreatLandscapeController {
     @Query('file_key') file_key: string,
   ): Promise<SelectThreatLandscapeDto[]> {
     try {
-      const threatLandscapes = await this.threatLandscapeService.getThreatLandscapeByEntityIdAndFile(
-            entity_id, file_key
-          )
+      const threatLandscapes =
+        await this.threatLandscapeService.getThreatLandscapeByEntityIdAndFile(
+          entity_id,
+          file_key,
+        );
       return threatLandscapes;
     } catch (error) {
       Logger.error(error);
@@ -86,9 +88,8 @@ export class ThreatLandscapeController {
     @Query('entity_id', ParseIntPipe) entity_id: number,
   ): Promise<SelectThreatLandscapeDto[]> {
     try {
-      const threatLandscapes = await this.threatLandscapeService.getLatestThreatLandscape(
-            entity_id
-          )
+      const threatLandscapes =
+        await this.threatLandscapeService.getLatestThreatLandscape(entity_id);
       return threatLandscapes ?? [];
     } catch (error) {
       Logger.error(error);
@@ -101,12 +102,13 @@ export class ThreatLandscapeController {
   @Get('uploaded-files')
   async getFiles(
     @Query('entity_id', ParseIntPipe) entity_id: number,
-  ): Promise<SelectThreatFileDto[]>{
-    try{
-      const threatFiles = await this.threatLandscapeService.getUploadHistory(entity_id);
-      return threatFiles ?? []
-    } catch(error){
-      console.log(`Error Getting uploaded files: ${error}`)
+  ): Promise<SelectThreatFileDto[]> {
+    try {
+      const threatFiles =
+        await this.threatLandscapeService.getUploadHistory(entity_id);
+      return threatFiles ?? [];
+    } catch (error) {
+      console.log(`Error Getting uploaded files: ${error}`);
       throw new BadRequestException(
         `Failed to fetch threat landscapes ${error}`,
       );

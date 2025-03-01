@@ -68,16 +68,19 @@ export const participantsTable = pgTable('participants', {
   name: text().notNull(),
 });
 
-export const threatFilesTable = pgTable('threat_files', {
-  entity_id: integer().notNull(),
-  file_key: varchar().notNull(),
-  date_uploaded: timestamp().notNull(),
-},
-(table)=>({
-  pk: primaryKey({
-    columns:[table.entity_id, table.file_key]
-  })
-}))
+export const threatFilesTable = pgTable(
+  'threat_files',
+  {
+    entity_id: integer().notNull(),
+    file_key: varchar().notNull(),
+    date_uploaded: timestamp().notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({
+      columns: [table.entity_id, table.file_key],
+    }),
+  }),
+);
 
 export const threatLandscapeTable = pgTable(
   'threat_landscape',
@@ -93,7 +96,9 @@ export const threatLandscapeTable = pgTable(
     intent_reason: text(),
     opportunity: text(),
     opportunity_reason: text(),
-    file_key: text().notNull().references(()=>threatFilesTable.file_key),
+    file_key: text()
+      .notNull()
+      .references(() => threatFilesTable.file_key),
   },
   (table) => {
     return {

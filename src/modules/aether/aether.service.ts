@@ -68,7 +68,7 @@ export class AetherService {
     return data;
   }
 
-  async generateThreatLandscape(body: AetherGenerateThreatLandscapeDto){
+  async generateThreatLandscape(body: AetherGenerateThreatLandscapeDto) {
     const token = await this.createToken();
 
     const { data } = await firstValueFrom(
