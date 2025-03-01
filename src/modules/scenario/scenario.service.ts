@@ -53,6 +53,7 @@ export class ScenarioService {
   // Retrieve a specific scenario by scenario_number
   async getScenarioByNumber(
     scenario_number: string,
+    project_id: number,
   ): Promise<SelectScenarioByNumberDto | void> {
     const rows = await this.db
       .select()
@@ -64,7 +65,12 @@ export class ScenarioService {
           eq(scenariosTable.scenario_number, ttpUsedTable.scenario_number),
         ),
       )
-      .where(eq(scenariosTable.scenario_number, scenario_number));
+      .where(
+        and(
+          eq(scenariosTable.scenario_number, scenario_number),
+          eq(scenariosTable.project_id, project_id),
+        ),
+      );
 
     if (rows.length === 0) return;
 
@@ -219,15 +225,7 @@ export class ScenarioService {
     if (job_status === 'pending') return;
 
     if (job_status === 'failed') {
-      await this.jobsService.updateJob({
-        id: job_id,
-        status: job_status,
-      });
-
-      // send websocket that job failed
-      this.eventsGateway.onScenarioJobFailed({
-        jobId: job_id,
-      });
+      await this.jobsService.onJobFailed(job_id);
 
       return;
     }

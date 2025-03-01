@@ -17,6 +17,9 @@ import { CreateInjectDto } from './dto/create-inject.dto';
 import { UpdateInjectDto } from './dto/update-inject.dto';
 import { SelectInjectDto } from './dto/select-inject.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { GenerateMselDto } from './dto/generate-msel.dto';
+import { SelectJobDto } from '../jobs/dto/select-job.dto';
+import { GenerateMselCallbackDto } from './dto/generate-msel-callback.dto';
 
 @ApiBearerAuth()
 @Controller('injects')
@@ -91,5 +94,29 @@ export class InjectsController {
       throw new HttpException('Inject not found', HttpStatus.NOT_FOUND);
     }
     return true;
+  }
+
+  @Post('/generate')
+  async generateMsel(
+    @Body() generateMselDto: GenerateMselDto,
+  ): Promise<SelectJobDto> {
+    try {
+      return await this.injectsService.generateMsel(generateMselDto);
+    } catch (e) {
+      throw new BadRequestException('Failed to generate scenario: ', String(e));
+    }
+  }
+
+  @Post('/generate/callback')
+  async generateScenarioCallback(
+    @Body() generateScenarioCallbackDto: GenerateMselCallbackDto,
+  ) {
+    try {
+      return await this.injectsService.generateMselCallback(
+        generateScenarioCallbackDto,
+      );
+    } catch (e) {
+      throw new BadRequestException('Failed to callback scenario: ', String(e));
+    }
   }
 }

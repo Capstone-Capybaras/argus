@@ -19,5 +19,6 @@ import { AetherModule } from '../aether/aether.module';
   ],
   providers: [ScenarioService],
   controllers: [ScenarioController],
+  exports: [ScenarioService],
 })
 export class ScenarioModule {}

@@ -4,12 +4,13 @@ import Redis from 'ioredis';
 import { RedisService } from './redis.service';
 import { EmailModule } from '../email.module';
 import { ConfigService } from '@nestjs/config';
+import { REDIS_CLUSTER } from 'src/config/providers';
 
 @Module({
   imports: [EmailModule],
   providers: [
     {
-      provide: 'REDIS_CLUSTER',
+      provide: REDIS_CLUSTER,
       useFactory: (configService: ConfigService) => {
         const redisEndpoint = configService.getOrThrow('VALKEY_ENDPOINT');
         const redisURL = redisEndpoint + ':6379';
@@ -58,7 +59,7 @@ import { ConfigService } from '@nestjs/config';
     },
     RedisService,
   ],
-  exports: ['REDIS_CLUSTER', RedisService],
+  exports: [REDIS_CLUSTER, RedisService],
   controllers: [RedisController], // Export the Redis cluster for use in other services
 })
 export class RedisModule {}

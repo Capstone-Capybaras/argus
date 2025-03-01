@@ -167,7 +167,7 @@ export const scenariosGeneratedTable = pgTable(
   }),
 );
 
-// TODO: generated tables for msel and threats
+// TODO: generated tables for threats
 
 export const injectsTable = pgTable(
   'injects',
@@ -199,6 +199,37 @@ export const injectsTable = pgTable(
       table.iteration,
       table.inject_id,
       table.upload_key,
+    ),
+  }),
+);
+
+// needs to be in sync with injects base table
+export const injectsGeneratedTable = pgTable(
+  'injects_generated',
+  {
+    id: serial().unique().primaryKey(),
+    inject_id: varchar(),
+    scenario_number: varchar(),
+    project_id: integer()
+      .notNull()
+      .references(() => projectsTable.id, { onDelete: 'cascade' }),
+    date: date(),
+    time: time(),
+    inject_desc: text(),
+    inject_type: text(),
+    artefact: text(),
+    from: varchar(),
+    to_recipient: varchar(),
+    iteration: integer().notNull(),
+    upload_key: varchar(),
+    generation_inputs: json().notNull(),
+  },
+  (table) => ({
+    uniqueComposite: unique().on(
+      table.project_id,
+      table.iteration,
+      table.inject_id,
+      table.iteration,
     ),
   }),
 );
