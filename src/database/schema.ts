@@ -225,14 +225,12 @@ export const injectsGeneratedTable = pgTable(
     generation_inputs: json().notNull(),
   },
   (table) => ({
-    pk: primaryKey({
-      columns: [
-        table.project_id,
-        table.iteration,
-        table.inject_id,
-        table.iteration,
-      ],
-    }),
+    uniqueComposite: unique().on(
+      table.project_id,
+      table.iteration,
+      table.inject_id,
+      table.iteration,
+    )
   }),
 );
 
