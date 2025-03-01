@@ -1,5 +1,5 @@
 import { SelectAssetDto } from 'src/modules/assets/dto/select-asset.dto';
-import { SelectEntityOnlyDto } from 'src/modules/entity/dto/select-entity.dto';
+import { SelectEntityDto } from 'src/modules/entity/dto/select-entity.dto';
 import { SelectRoleDto } from 'src/modules/roles/dto/select-roles.dto';
 import { SelectScenarioDto } from 'src/modules/scenario/dto/select-scenario.dto';
 import { SelectTtpUsedDto } from 'src/modules/ttp-used/dto/select-ttp-used.dto';
@@ -13,7 +13,7 @@ export class AetherGenerateMselDto {
 
   scenario: SelectScenarioDto;
   ttpUsed: SelectTtpUsedDto[];
-  entity: SelectEntityOnlyDto;
+  entity: SelectEntityDto;
   asset: SelectAssetDto;
   roles: SelectRoleDto['name'][];
 }
