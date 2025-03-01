@@ -5,6 +5,7 @@ import { catchError, firstValueFrom } from 'rxjs';
 import { AetherGenerateScenarioDto } from './dto/aether-generate-scenario.dto';
 import { AxiosError } from 'axios';
 import { AetherGenerateMselDto } from './dto/aether-generate-msel.dto';
+import { AetherGenerateThreatLandscapeDto } from './dto/aether-generate-threat.dto';
 
 interface AetherJwtPayload {
   username: string;
@@ -60,6 +61,27 @@ export class AetherService {
           catchError((error: AxiosError) => {
             Logger.error(error?.response?.data);
             throw 'An error happened sending MSEL generation request to AI service';
+          }),
+        ),
+    );
+
+    return data;
+  }
+
+  async generateThreatLandscape(body: AetherGenerateThreatLandscapeDto) {
+    const token = await this.createToken();
+
+    const { data } = await firstValueFrom(
+      this.httpService
+        .post('/generate_threat_landscape', body, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .pipe(
+          catchError((error: AxiosError) => {
+            Logger.error(error?.response?.data);
+            throw 'An error happened sending Threat Landscape generation request to AI service';
           }),
         ),
     );

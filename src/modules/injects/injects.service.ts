@@ -13,7 +13,6 @@ import { UpdateInjectDto } from './dto/update-inject.dto';
 import { GenerateMselDto } from './dto/generate-msel.dto';
 import { SelectJobDto } from '../jobs/dto/select-job.dto';
 import { AetherService } from '../aether/aether.service';
-import { EventsGateway } from 'src/events/events.gateway';
 import { ScenarioService } from '../scenario/scenario.service';
 import { TtpUsedService } from '../ttp-used/ttp-used.service';
 import { EntityService } from '../entity/entity.service';
@@ -36,7 +35,6 @@ export class InjectsService {
     private readonly rolesService: RolesService,
     private readonly jobsService: JobsService,
     private readonly redisService: RedisService,
-    private readonly eventsGateway: EventsGateway,
   ) {}
 
   async createInject(data: CreateInjectDto) {
@@ -134,7 +132,7 @@ export class InjectsService {
       .returning();
 
     // set generation input in redis
-    await this.redisService.setMselGenerationInput(
+    await this.redisService.setGenerationInput(
       String(job.id),
       generationInputs,
     );

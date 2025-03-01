@@ -68,6 +68,20 @@ export const participantsTable = pgTable('participants', {
   name: text().notNull(),
 });
 
+export const threatFilesTable = pgTable(
+  'threat_files',
+  {
+    entity_id: integer().notNull(),
+    file_key: varchar().notNull(),
+    date_uploaded: timestamp().notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({
+      columns: [table.entity_id, table.file_key],
+    }),
+  }),
+);
+
 export const threatLandscapeTable = pgTable(
   'threat_landscape',
   {
@@ -82,6 +96,34 @@ export const threatLandscapeTable = pgTable(
     intent_reason: text(),
     opportunity: text(),
     opportunity_reason: text(),
+    file_key: text()
+      .notNull()
+      .references(() => threatFilesTable.file_key),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({
+        columns: [table.entity_id, table.threat_actor_name],
+      }),
+    };
+  },
+);
+
+export const threatLandscapeGeneratedTable = pgTable(
+  'threat_landscape_generated',
+  {
+    entity_id: integer()
+      .notNull()
+      .references(() => entitiesTable.id, { onDelete: 'cascade' }),
+    threat_actor_name: text(),
+    category: text(),
+    capability: text(),
+    capability_reason: text(),
+    intent: text(),
+    intent_reason: text(),
+    opportunity: text(),
+    opportunity_reason: text(),
+    generation_inputs: json().notNull(),
   },
   (table) => {
     return {

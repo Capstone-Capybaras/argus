@@ -116,7 +116,7 @@ export class InjectsController {
         generateScenarioCallbackDto,
       );
     } catch (e) {
-      throw new BadRequestException('Failed to callback scenario: ', String(e));
+      throw new BadRequestException('Failed to callback msel: ', String(e));
     }
   }
 }

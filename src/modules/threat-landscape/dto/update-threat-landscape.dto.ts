@@ -40,4 +40,8 @@ export class UpdateThreatLandscapeDto
   @IsString()
   @IsOptional()
   opportunity_reason?: string;
+
+  @IsString()
+  @IsOptional()
+  file_key?: string;
 }
