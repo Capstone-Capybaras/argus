@@ -230,7 +230,7 @@ export const injectsGeneratedTable = pgTable(
       table.iteration,
       table.inject_id,
       table.iteration,
-    )
+    ),
   }),
 );
 

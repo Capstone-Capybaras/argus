@@ -11,6 +11,8 @@ import {
   BadRequestException,
   Logger,
   InternalServerErrorException,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ScenarioService } from './scenario.service';
 import { CreateScenarioDto } from './dto/create-scenario.dto';
@@ -82,10 +84,13 @@ export class ScenarioController {
   @Get(':scenario_number')
   async getScenarioByNumber(
     @Param('scenario_number') scenario_number: string,
+    @Query('project_id', ParseIntPipe) project_id: number,
   ): Promise<SelectScenarioByNumberDto> {
     try {
-      const scenario =
-        await this.scenarioService.getScenarioByNumber(scenario_number);
+      const scenario = await this.scenarioService.getScenarioByNumber(
+        scenario_number,
+        project_id,
+      );
       if (!scenario) {
         throw new HttpException('Scenario not found', HttpStatus.NOT_FOUND);
       }

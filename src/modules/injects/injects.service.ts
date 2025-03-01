@@ -79,6 +79,7 @@ export class InjectsService {
     // get scenario
     const scenario = await this.scenarioService.getScenarioByNumber(
       data.scenario_number,
+      data.project_id,
     );
 
     if (!scenario) {
