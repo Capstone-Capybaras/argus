@@ -9,4 +9,7 @@ export class UpdateTacticsDto implements InferUpdate<typeof tacticsTable> {
   @IsString()
   @IsOptional()
   name?: string;
+
+  @IsString()
+  version: string;
 }
