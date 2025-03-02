@@ -271,7 +271,7 @@ export const injectsGeneratedTable = pgTable(
       table.project_id,
       table.iteration,
       table.inject_id,
-      table.iteration,
+      table.upload_key,
     ),
   }),
 );
