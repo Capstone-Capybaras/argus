@@ -68,14 +68,11 @@ export const participantsTable = pgTable('participants', {
   name: text().notNull(),
 });
 
-export const threatFilesTable = pgTable(
-  'threat_files',
-  {
-    entity_id: integer().notNull(),
-    file_key: varchar().primaryKey(),
-    date_uploaded: timestamp().notNull(),
-  }
-);
+export const threatFilesTable = pgTable('threat_files', {
+  entity_id: integer().notNull(),
+  file_key: varchar().primaryKey(),
+  date_uploaded: timestamp().notNull(),
+});
 
 export const threatLandscapeTable = pgTable(
   'threat_landscape',

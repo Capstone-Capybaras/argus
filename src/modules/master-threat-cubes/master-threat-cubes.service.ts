@@ -84,10 +84,7 @@ export class MasterThreatCubesService {
       )
       .innerJoin(
         cubesToTacticsTable,
-        eq(
-          masterThreatCubesTable.id,
-          cubesToTacticsTable.technique_id,
-        ),
+        eq(masterThreatCubesTable.id, cubesToTacticsTable.technique_id),
       )
       .innerJoin(
         tacticsTable,
@@ -170,13 +167,13 @@ export class MasterThreatCubesService {
     //const fileBuffer = fs.readFileSync('./src/modules/threat-landscape/test/layer_by_operation.json', "utf-8");
     const data = JSON.parse(fileBuffer.toString('utf-8'));
     const uniqueTechniquesMap = new Map<string, CreateEntityToCubeJoinDto>();
-    const version = data.versions.attack
+    const version = data.versions.attack;
     data.techniques.forEach((tech: { techniqueID: string; score: number }) => {
       uniqueTechniquesMap.set(tech.techniqueID, {
         entity_id: entityId,
         threat_cube_id: tech.techniqueID,
         score: tech.score,
-        version: version
+        version: version,
       });
     });
     const techniques: CreateEntityToCubeJoinDto[] = Array.from(

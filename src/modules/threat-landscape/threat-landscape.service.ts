@@ -111,12 +111,12 @@ export class ThreatLandscapeService {
     return uploads;
   }
 
-  async addFilesToDB(threatFilesDto: ThreatFilesDto){
+  async addFilesToDB(threatFilesDto: ThreatFilesDto) {
     const threatFileEntry = await this.db
       .insert(threatFilesTable)
       .values(threatFilesDto)
       .returning();
-    return threatFileEntry
+    return threatFileEntry;
   }
 
   async generateThreatLandscape(data: GenerateThreatDto) {
