@@ -72,14 +72,9 @@ export const threatFilesTable = pgTable(
   'threat_files',
   {
     entity_id: integer().notNull(),
-    file_key: varchar().notNull(),
+    file_key: varchar().primaryKey(),
     date_uploaded: timestamp().notNull(),
-  },
-  (table) => ({
-    pk: primaryKey({
-      columns: [table.entity_id, table.file_key],
-    }),
-  }),
+  }
 );
 
 export const threatLandscapeTable = pgTable(

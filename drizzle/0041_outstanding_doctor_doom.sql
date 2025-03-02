@@ -1,2 +1,2 @@
-ALTER TABLE "injects_generated" DROP CONSTRAINT "injects_generated_project_id_iteration_inject_id_iteration_pk";--> statement-breakpoint
-ALTER TABLE "injects_generated" ADD CONSTRAINT "injects_generated_project_id_iteration_inject_id_iteration_unique" UNIQUE("project_id","iteration","inject_id","iteration");
+-- ALTER TABLE "injects_generated" DROP CONSTRAINT "injects_generated_project_id_iteration_inject_id_iteration_pk";--> statement-breakpoint
+ALTER TABLE "injects_generated" ADD CONSTRAINT "injects_generated_project_id_iteration_inject_id_upload_key_unique" UNIQUE("project_id","iteration","inject_id","upload_key");

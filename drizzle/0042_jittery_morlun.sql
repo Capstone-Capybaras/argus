@@ -5,6 +5,10 @@ CREATE TABLE IF NOT EXISTS "threat_files" (
 	CONSTRAINT "threat_files_entity_id_file_key_pk" PRIMARY KEY("entity_id","file_key")
 );
 --> statement-breakpoint
+ALTER TABLE "threat_files" DROP CONSTRAINT "threat_files_entity_id_file_key_pk";--> statement-breakpoint
+ALTER TABLE "threat_files" ADD PRIMARY KEY ("file_key");
+--> statement-breakpoint
+
 CREATE TABLE IF NOT EXISTS "threat_landscape_generated" (
 	"entity_id" integer NOT NULL,
 	"threat_actor_name" text,
