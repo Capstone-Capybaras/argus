@@ -46,7 +46,7 @@ export class MasterThreatCubesService {
     const masterThreatCube = await this.db
       .select()
       .from(masterThreatCubesTable)
-      .where(eq(masterThreatCubesTable.threat_cube_id, id));
+      .where(eq(masterThreatCubesTable.id, id));
     return masterThreatCube[0];
   }
 
@@ -54,7 +54,7 @@ export class MasterThreatCubesService {
     const result = await this.db
       .update(masterThreatCubesTable)
       .set(data)
-      .where(eq(masterThreatCubesTable.threat_cube_id, id))
+      .where(eq(masterThreatCubesTable.id, id))
       .returning();
     return result[0];
   }
@@ -62,7 +62,7 @@ export class MasterThreatCubesService {
   async deleteMasterThreatCube(id: string): Promise<boolean> {
     const result = await this.db
       .delete(masterThreatCubesTable)
-      .where(eq(masterThreatCubesTable.threat_cube_id, id))
+      .where(eq(masterThreatCubesTable.id, id))
       .returning();
     return result.length > 0;
   }
@@ -79,15 +79,12 @@ export class MasterThreatCubesService {
         masterThreatCubesTable,
         eq(
           entitiesToThreatCubesTable.threat_cube_id,
-          masterThreatCubesTable.threat_cube_id,
+          masterThreatCubesTable.id,
         ),
       )
       .innerJoin(
         cubesToTacticsTable,
-        eq(
-          masterThreatCubesTable.threat_cube_id,
-          cubesToTacticsTable.technique_id,
-        ),
+        eq(masterThreatCubesTable.id, cubesToTacticsTable.technique_id),
       )
       .innerJoin(
         tacticsTable,
@@ -170,11 +167,13 @@ export class MasterThreatCubesService {
     //const fileBuffer = fs.readFileSync('./src/modules/threat-landscape/test/layer_by_operation.json', "utf-8");
     const data = JSON.parse(fileBuffer.toString('utf-8'));
     const uniqueTechniquesMap = new Map<string, CreateEntityToCubeJoinDto>();
+    const version = data.versions.attack;
     data.techniques.forEach((tech: { techniqueID: string; score: number }) => {
       uniqueTechniquesMap.set(tech.techniqueID, {
         entity_id: entityId,
         threat_cube_id: tech.techniqueID,
         score: tech.score,
+        version: version,
       });
     });
     const techniques: CreateEntityToCubeJoinDto[] = Array.from(

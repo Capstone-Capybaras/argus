@@ -1,11 +1,14 @@
 import { IsString } from 'class-validator';
 import { tacticsTable } from 'src/database/schema';
-import { InferUpdate } from 'src/utils/modelToDtoTypes';
+import { InferInsert } from 'src/utils/modelToDtoTypes';
 
-export class CreateTacticsDto implements InferUpdate<typeof tacticsTable> {
+export class CreateTacticsDto implements InferInsert<typeof tacticsTable> {
   @IsString()
   id: string;
 
   @IsString()
   name: string;
+
+  @IsString()
+  version: string;
 }

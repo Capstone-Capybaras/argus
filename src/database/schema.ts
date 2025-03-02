@@ -68,14 +68,11 @@ export const participantsTable = pgTable('participants', {
   name: text().notNull(),
 });
 
-export const threatFilesTable = pgTable(
-  'threat_files',
-  {
-    entity_id: integer().notNull(),
-    file_key: varchar().primaryKey(),
-    date_uploaded: timestamp().notNull(),
-  }
-);
+export const threatFilesTable = pgTable('threat_files', {
+  entity_id: integer().notNull(),
+  file_key: varchar().primaryKey(),
+  date_uploaded: timestamp().notNull(),
+});
 
 export const threatLandscapeTable = pgTable(
   'threat_landscape',
@@ -279,18 +276,29 @@ export const injectsGeneratedTable = pgTable(
 //   id: serial('id').unique().primaryKey(),
 // });
 
-export const masterThreatCubesTable = pgTable('master_threat_cubes', {
-  threat_cube_id: text().primaryKey(), // Use only `id` as primary key
-  // tactic: text()
-  //   .notNull()
-  //   .references(() => tacticsTable.id),
-  name: text().notNull(),
-});
+export const masterThreatCubesTable = pgTable(
+  'master_threat_cubes',
+  {
+    id: text().notNull(),
+    name: text().notNull(),
+    version: varchar().notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.id, table.version] }),
+  }),
+);
 
-export const tacticsTable = pgTable('tactics', {
-  id: text().primaryKey(),
-  name: text().notNull(),
-});
+export const tacticsTable = pgTable(
+  'tactics',
+  {
+    id: text().notNull(),
+    name: text().notNull(),
+    version: varchar().notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.id, table.version] }),
+  }),
+);
 
 // a role is unique identified by the combination of role name and entity id
 export const rolesTable = pgTable(
@@ -341,10 +349,13 @@ export const cubesToTacticsTable = pgTable(
       .references(() => tacticsTable.id),
     technique_id: text()
       .notNull()
-      .references(() => masterThreatCubesTable.threat_cube_id),
+      .references(() => masterThreatCubesTable.id),
+    version: varchar().notNull(),
   },
   (table) => ({
-    pk: primaryKey({ columns: [table.tactic_id, table.technique_id] }),
+    pk: primaryKey({
+      columns: [table.tactic_id, table.technique_id, table.version],
+    }),
   }),
 );
 
@@ -371,14 +382,15 @@ export const entitiesToThreatCubesTable = pgTable(
       .references(() => entitiesTable.id, { onDelete: 'cascade' }),
     threat_cube_id: text()
       .notNull()
-      .references(() => masterThreatCubesTable.threat_cube_id, {
+      .references(() => masterThreatCubesTable.id, {
         onDelete: 'cascade',
       }),
     score: integer().notNull(), // Associated score for entity-threat cube relationship
+    version: varchar().notNull(),
   },
   (table) => ({
     pk: primaryKey({
-      columns: [table.entity_id, table.threat_cube_id],
+      columns: [table.entity_id, table.threat_cube_id, table.version],
     }),
   }),
 );
