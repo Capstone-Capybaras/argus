@@ -344,18 +344,25 @@ export const injectsToScenariosTable = pgTable(
 export const cubesToTacticsTable = pgTable(
   'cubes_to_tactics',
   {
-    tactic_id: text()
-      .notNull()
-      .references(() => tacticsTable.id),
-    technique_id: text()
-      .notNull()
-      .references(() => masterThreatCubesTable.id),
+    tactic_id: text().notNull(),
+    technique_id: text().notNull(),
     version: varchar().notNull(),
   },
   (table) => ({
     pk: primaryKey({
       columns: [table.tactic_id, table.technique_id, table.version],
     }),
+    tacticFk: foreignKey({
+      columns: [table.tactic_id, table.version],
+      foreignColumns: [tacticsTable.id, tacticsTable.version],
+    }).onDelete('cascade'),
+    techniqueFk: foreignKey({
+      columns: [table.technique_id, table.version],
+      foreignColumns: [
+        masterThreatCubesTable.id,
+        masterThreatCubesTable.version,
+      ],
+    }).onDelete('cascade'),
   }),
 );
 
@@ -380,11 +387,7 @@ export const entitiesToThreatCubesTable = pgTable(
     entity_id: integer()
       .notNull()
       .references(() => entitiesTable.id, { onDelete: 'cascade' }),
-    threat_cube_id: text()
-      .notNull()
-      .references(() => masterThreatCubesTable.id, {
-        onDelete: 'cascade',
-      }),
+    threat_cube_id: text().notNull(),
     score: integer().notNull(), // Associated score for entity-threat cube relationship
     version: varchar().notNull(),
   },
@@ -392,6 +395,13 @@ export const entitiesToThreatCubesTable = pgTable(
     pk: primaryKey({
       columns: [table.entity_id, table.threat_cube_id, table.version],
     }),
+    fk: foreignKey({
+      columns: [table.threat_cube_id, table.version],
+      foreignColumns: [
+        masterThreatCubesTable.id,
+        masterThreatCubesTable.version,
+      ],
+    }).onDelete('cascade'),
   }),
 );
 

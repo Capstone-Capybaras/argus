@@ -1,5 +1,5 @@
 {
-  "id": "322577b4-6f40-482c-b300-2857ae034fcf",
+  "id": "8dea9ccf-e86d-40ea-a9d8-07680fe4830b",
   "prevId": "920222ee-416e-48fb-a0f1-f4490fd6d75e",
   "version": "7",
   "dialect": "postgresql",
@@ -94,43 +94,54 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "cubes_to_tactics_tactic_id_tactics_id_fk": {
-          "name": "cubes_to_tactics_tactic_id_tactics_id_fk",
+        "cubes_to_tactics_tactic_id_version_tactics_id_version_fk": {
+          "name": "cubes_to_tactics_tactic_id_version_tactics_id_version_fk",
           "tableFrom": "cubes_to_tactics",
           "tableTo": "tactics",
           "columnsFrom": [
-            "tactic_id"
+            "tactic_id",
+            "version"
           ],
           "columnsTo": [
-            "id"
+            "id",
+            "version"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "cubes_to_tactics_technique_id_master_threat_cubes_threat_cube_id_fk": {
-          "name": "cubes_to_tactics_technique_id_master_threat_cubes_threat_cube_id_fk",
+        "cubes_to_tactics_technique_id_version_master_threat_cubes_id_version_fk": {
+          "name": "cubes_to_tactics_technique_id_version_master_threat_cubes_id_version_fk",
           "tableFrom": "cubes_to_tactics",
           "tableTo": "master_threat_cubes",
           "columnsFrom": [
-            "technique_id"
+            "technique_id",
+            "version"
           ],
           "columnsTo": [
-            "threat_cube_id"
+            "id",
+            "version"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
-        "cubes_to_tactics_tactic_id_technique_id_pk": {
-          "name": "cubes_to_tactics_tactic_id_technique_id_pk",
+        "cubes_to_tactics_tactic_id_technique_id_version_pk": {
+          "name": "cubes_to_tactics_tactic_id_technique_id_version_pk",
           "columns": [
             "tactic_id",
-            "technique_id"
+            "technique_id",
+            "version"
           ]
         }
       },
@@ -389,6 +400,12 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
@@ -406,26 +423,29 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "entities_to_threat_cubes_threat_cube_id_master_threat_cubes_threat_cube_id_fk": {
-          "name": "entities_to_threat_cubes_threat_cube_id_master_threat_cubes_threat_cube_id_fk",
+        "entities_to_threat_cubes_threat_cube_id_version_master_threat_cubes_id_version_fk": {
+          "name": "entities_to_threat_cubes_threat_cube_id_version_master_threat_cubes_id_version_fk",
           "tableFrom": "entities_to_threat_cubes",
           "tableTo": "master_threat_cubes",
           "columnsFrom": [
-            "threat_cube_id"
+            "threat_cube_id",
+            "version"
           ],
           "columnsTo": [
-            "threat_cube_id"
+            "id",
+            "version"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
-        "entities_to_threat_cubes_entity_id_threat_cube_id_pk": {
-          "name": "entities_to_threat_cubes_entity_id_threat_cube_id_pk",
+        "entities_to_threat_cubes_entity_id_threat_cube_id_version_pk": {
+          "name": "entities_to_threat_cubes_entity_id_threat_cube_id_version_pk",
           "columns": [
             "entity_id",
-            "threat_cube_id"
+            "threat_cube_id",
+            "version"
           ]
         }
       },
@@ -829,10 +849,10 @@
       "name": "master_threat_cubes",
       "schema": "",
       "columns": {
-        "threat_cube_id": {
-          "name": "threat_cube_id",
+        "id": {
+          "name": "id",
           "type": "text",
-          "primaryKey": true,
+          "primaryKey": false,
           "notNull": true
         },
         "name": {
@@ -840,11 +860,25 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "master_threat_cubes_id_version_pk": {
+          "name": "master_threat_cubes_id_version_pk",
+          "columns": [
+            "id",
+            "version"
+          ]
+        }
+      },
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
@@ -1478,7 +1512,7 @@
         "id": {
           "name": "id",
           "type": "text",
-          "primaryKey": true,
+          "primaryKey": false,
           "notNull": true
         },
         "name": {
@@ -1486,11 +1520,25 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "tactics_id_version_pk": {
+          "name": "tactics_id_version_pk",
+          "columns": [
+            "id",
+            "version"
+          ]
+        }
+      },
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
@@ -1507,7 +1555,7 @@
         "file_key": {
           "name": "file_key",
           "type": "varchar",
-          "primaryKey": false,
+          "primaryKey": true,
           "notNull": true
         },
         "date_uploaded": {
@@ -1519,15 +1567,7 @@
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "threat_files_entity_id_file_key_pk": {
-          "name": "threat_files_entity_id_file_key_pk",
-          "columns": [
-            "entity_id",
-            "file_key"
-          ]
-        }
-      },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
     },

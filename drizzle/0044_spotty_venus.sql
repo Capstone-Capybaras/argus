@@ -1,2 +1,0 @@
--- ALTER TABLE "threat_files" DROP CONSTRAINT "threat_files_entity_id_file_key_pk";--> statement-breakpoint
--- ALTER TABLE "threat_files" ADD PRIMARY KEY ("file_key");
