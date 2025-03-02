@@ -51,6 +51,18 @@ export class InjectsController {
     }
   }
 
+  @Get('project/:project_id')
+  async getInjectsByProject(
+    @Param('project_id') project_id: number,
+  ): Promise<SelectInjectDto[]> {
+    try {
+      return await this.injectsService.getInjectsByProjectId(project_id);
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
+    }
+  }
+
   // Retrieve a specific inject by ID
   @Get(':id')
   async getInjectById(@Param('id') id: string): Promise<SelectInjectDto> {

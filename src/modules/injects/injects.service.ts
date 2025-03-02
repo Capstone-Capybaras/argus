@@ -56,6 +56,14 @@ export class InjectsService {
     return inject[0] || null;
   }
 
+  async getInjectsByProjectId(projectId: number) {
+    const injects = await this.db
+      .select()
+      .from(injectsTable)
+      .where(eq(injectsTable.project_id, projectId));
+    return injects;
+  }
+
   async updateInject(id: string, data: UpdateInjectDto) {
     const result = await this.db
       .update(injectsTable)
