@@ -4,7 +4,7 @@ import { InferSelect } from 'src/utils/modelToDtoTypes';
 export class SelectMasterThreatCubeDto
   implements InferSelect<typeof masterThreatCubesTable>
 {
-  threat_cube_id: string;
+  id: string;
   name: string;
-  //tactic: string;
+  version: string;
 }

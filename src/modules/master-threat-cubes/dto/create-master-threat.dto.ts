@@ -10,13 +10,16 @@ export class CreateMasterThreatCubeDto
   implements InferInsert<typeof masterThreatCubesTable>
 {
   @IsString()
-  threat_cube_id: string;
+  id: string;
 
   // @IsString()
   // tactic: string;
 
   @IsString()
   name: string;
+
+  @IsString()
+  version: string;
 }
 
 export class CreateEntityToCubeJoinDto
@@ -28,6 +31,8 @@ export class CreateEntityToCubeJoinDto
   entity_id: number;
   @IsInt()
   score: number;
+  @IsString()
+  version: string;
 }
 
 export class CreateCubeToTacticJoinDto
@@ -37,6 +42,8 @@ export class CreateCubeToTacticJoinDto
   tactic_id: string;
   @IsString()
   technique_id: string;
+  @IsString()
+  version: string;
 }
 
 export class AddHeatMapDto {
