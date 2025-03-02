@@ -111,6 +111,14 @@ export class ThreatLandscapeService {
     return uploads;
   }
 
+  async addFilesToDB(threatFilesDto: ThreatFilesDto){
+    const threatFileEntry = await this.db
+      .insert(threatFilesTable)
+      .values(threatFilesDto)
+      .returning();
+    return threatFileEntry
+  }
+
   async generateThreatLandscape(data: GenerateThreatDto) {
     const entity = await this.db
       .select()
@@ -151,10 +159,7 @@ export class ThreatLandscapeService {
       file_key: data.file_key,
       date_uploaded: dateObj,
     };
-    const [threatFileEntry] = await this.db
-      .insert(threatFilesTable)
-      .values(threatFilesDto)
-      .returning();
+    const [threatFileEntry] = await this.addFilesToDB(threatFilesDto);
     if (!threatFileEntry) {
       throw new Error('Error adding threat file to db.');
     }
