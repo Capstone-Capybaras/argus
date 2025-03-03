@@ -63,7 +63,7 @@ export class MasterThreatCubesController {
   @Get('heatMap/:id')
   async getHeatmap(@Param('id') id: number) {
     const data = await this.masterThreatCubesService.getTTPsfromEntity(id);
-    return data;
+    return data ?? [];
   }
 
   @Get(':id')
