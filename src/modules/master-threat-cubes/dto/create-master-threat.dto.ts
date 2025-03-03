@@ -12,9 +12,6 @@ export class CreateMasterThreatCubeDto
   @IsString()
   id: string;
 
-  // @IsString()
-  // tactic: string;
-
   @IsString()
   name: string;
 

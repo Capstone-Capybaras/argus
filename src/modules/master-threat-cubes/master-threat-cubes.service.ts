@@ -7,7 +7,7 @@ import {
   cubesToTacticsTable,
   tacticsTable,
 } from 'src/database/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import {
   CreateCubeToTacticJoinDto,
   CreateEntityToCubeJoinDto,
@@ -67,7 +67,33 @@ export class MasterThreatCubesService {
     return result.length > 0;
   }
 
-  async getCubesByEntity(entityId: number) {
+  async deleteMasterThreatCubeByEntity(entity_id: number): Promise<boolean> {
+    const result = await this.db
+      .delete(entitiesToThreatCubesTable)
+      .where(eq(entitiesToThreatCubesTable.entity_id, entity_id))
+      .returning();
+    return result.length > 0;
+  }
+
+  async checkEntityExists(entity_id: number): Promise<boolean> {
+    const result = await this.db
+      .select()
+      .from(entitiesToThreatCubesTable)
+      .where(eq(entitiesToThreatCubesTable.entity_id, entity_id))
+      .limit(1);
+    return result.length > 0;
+  }
+
+  async getVersionFromEntity(entity_id: number) {
+    const result = await this.db
+      .select({ version: entitiesToThreatCubesTable.version })
+      .from(entitiesToThreatCubesTable)
+      .where(eq(entitiesToThreatCubesTable.entity_id, entity_id))
+      .limit(1);
+    return result;
+  }
+
+  async getCubesByEntityAndVersion(entityId: number, version: string) {
     const results = await this.db
       .select({
         tactic: tacticsTable.name,
@@ -77,25 +103,56 @@ export class MasterThreatCubesService {
       .from(entitiesToThreatCubesTable)
       .innerJoin(
         masterThreatCubesTable,
-        eq(
-          entitiesToThreatCubesTable.threat_cube_id,
-          masterThreatCubesTable.id,
+        and(
+          eq(
+            entitiesToThreatCubesTable.threat_cube_id,
+            masterThreatCubesTable.id,
+          ),
+          eq(
+            entitiesToThreatCubesTable.version,
+            masterThreatCubesTable.version,
+          ),
         ),
       )
       .innerJoin(
         cubesToTacticsTable,
-        eq(masterThreatCubesTable.id, cubesToTacticsTable.technique_id),
+        and(
+          eq(masterThreatCubesTable.id, cubesToTacticsTable.technique_id),
+          eq(masterThreatCubesTable.version, cubesToTacticsTable.version),
+        ),
       )
       .innerJoin(
         tacticsTable,
-        eq(cubesToTacticsTable.tactic_id, tacticsTable.id),
+        and(
+          eq(cubesToTacticsTable.tactic_id, tacticsTable.id),
+          eq(cubesToTacticsTable.version, tacticsTable.version),
+        ),
       )
-      .where(eq(entitiesToThreatCubesTable.entity_id, entityId));
+      .where(
+        and(
+          eq(entitiesToThreatCubesTable.entity_id, entityId),
+          eq(entitiesToThreatCubesTable.version, version),
+        ),
+      );
     return results;
   }
 
   async getTTPsfromEntity(entityId: number) {
-    const ttps = await this.getCubesByEntity(entityId);
+    const exist = await this.checkEntityExists(entityId);
+    if (!exist) {
+      return;
+    }
+    const [version] = await this.getVersionFromEntity(entityId);
+    if (!version) {
+      throw new Error('Unable to get version from Entity');
+    }
+    const ttps = await this.getCubesByEntityAndVersion(
+      entityId,
+      version.version,
+    );
+    if (!ttps || ttps.length === 0) {
+      return;
+    }
     const groupedResults = ttps.reduce(
       (acc, { tactic, technique, score }) => {
         if (!acc[tactic]) {
@@ -114,13 +171,6 @@ export class MasterThreatCubesService {
     ]);
 
     return groupedResults;
-
-    // Convert to desired format
-    // return Object.entries(groupedResults).map(([tactic, {techn}]) => ({
-    //   tactic,
-    //   techniques,
-    //   score
-    // }));
   }
 
   async createMultipleThreatCube(data: CreateMasterThreatCubeDto[]) {
@@ -132,7 +182,7 @@ export class MasterThreatCubesService {
   }
 
   // async addFromJson(){
-  //   const fileBuffer = fs.readFileSync('./src/modules/threat-landscape/test/allTechs.json', "utf-8");
+  //   const fileBuffer = fs.readFileSync('./src/modules/threat-landscape/.test/allTechsv14.json', "utf-8");
   //   const data = JSON.parse(fileBuffer);
   //   const res = await this.createMultipleThreatCube(data);
   //   return res
@@ -147,7 +197,7 @@ export class MasterThreatCubesService {
   }
 
   // async addRelationFromJson(){
-  //   const fileBuffer = fs.readFileSync('./src/modules/threat-landscape/test/joins.json', "utf-8");
+  //   const fileBuffer = fs.readFileSync('./src/modules/threat-landscape/.test/joinsv14.json', "utf-8");
   //   const data = JSON.parse(fileBuffer);
   //   const res = await this.createJoinToTacs(data);
   //   return res
@@ -165,6 +215,10 @@ export class MasterThreatCubesService {
     const bucketName = this.configService.getOrThrow('S3_BUCKET_NAME');
     const fileBuffer = await this.s3Service.downloadFile(bucketName, key);
     //const fileBuffer = fs.readFileSync('./src/modules/threat-landscape/test/layer_by_operation.json', "utf-8");
+    const exists = await this.checkEntityExists(entityId);
+    if (exists) {
+      await this.deleteMasterThreatCubeByEntity(entityId);
+    }
     const data = JSON.parse(fileBuffer.toString('utf-8'));
     const uniqueTechniquesMap = new Map<string, CreateEntityToCubeJoinDto>();
     const version = data.versions.attack;

@@ -19,6 +19,21 @@ export class TacticsService {
     return result[0]; // Assuming you only want the first inserted record
   }
 
+  // async createMultipleTactic(data: CreateTacticsDto[]) {
+  //     const result = await this.db
+  //       .insert(tacticsTable)
+  //       .values(data)
+  //       .returning();
+  //     return result[0];
+  //   }
+
+  // async addFromJson(){
+  //   const fileBuffer = fs.readFileSync('./src/modules/threat-landscape/.test/allTacsv14.json', "utf-8");
+  //   const data = JSON.parse(fileBuffer);
+  //   const res = await this.createMultipleTactic(data);
+  //   return res
+  // }
+
   // Retrieve all tactics
   async getAllTactics() {
     const tactics = await this.db.select().from(tacticsTable);
@@ -52,4 +67,12 @@ export class TacticsService {
       .returning();
     return result.length > 0;
   }
+
+  //   async deleteTacticByVersion(version: string) {
+  //     const result = await this.db
+  //       .delete(tacticsTable)
+  //       .where(eq(tacticsTable.version, version))
+  //       .returning();
+  //     return result.length > 0;
+  //   }
 }
