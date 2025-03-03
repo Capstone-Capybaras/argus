@@ -10,7 +10,7 @@ export class AetherGenerateMselDto {
   start_datetime: string;
   end_datetime: string;
   additional_context?: string;
-
+  exercise_type: 'sectorial' | 'executive';
   scenario: SelectScenarioDto;
   ttpUsed: SelectTtpUsedDto[];
   entity: SelectEntityDto;

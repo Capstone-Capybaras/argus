@@ -7,6 +7,7 @@ import {
   injectsGeneratedTable,
   injectsTable,
   jobsTable,
+  projectsTable,
 } from 'src/database/schema';
 import { CreateInjectDto } from './dto/create-inject.dto';
 import { UpdateInjectDto } from './dto/update-inject.dto';
@@ -119,9 +120,21 @@ export class InjectsService {
     const roles = (await this.rolesService.getAllRolesForEntity(entity.id)).map(
       (r) => r.name,
     );
-
+    //get exercise type
+    const [project] = await this.db
+      .select()
+      .from(projectsTable)
+      .where(eq(projectsTable.id, data.project_id))
+      .limit(1);
+    if (!project) {
+      throw new Error(
+        `Could not get exercise type from project ${data.project_id}`,
+      );
+    }
+    const exercise_type = project.exercise_type;
     // create job
     const generationInputs = {
+      exercise_type,
       scenario,
       ttpUsed,
       entity,
@@ -151,6 +164,7 @@ export class InjectsService {
       project_id: data.project_id,
       start_datetime: data.start_datetime,
       end_datetime: data.end_datetime,
+      exercise_type:exercise_type,
       scenario,
       ttpUsed,
       entity,
