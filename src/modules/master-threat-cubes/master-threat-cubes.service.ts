@@ -138,8 +138,11 @@ export class MasterThreatCubesService {
   }
 
   async getTTPsfromEntity(entityId: number) {
+    const exist = await this.checkEntityExists(entityId);
+    if (!exist) {
+      return;
+    }
     const [version] = await this.getVersionFromEntity(entityId);
-    console.log('version: ', version);
     if (!version) {
       throw new Error('Unable to get version from Entity');
     }
