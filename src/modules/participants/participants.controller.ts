@@ -49,6 +49,23 @@ export class ParticipantsController {
     }
   }
 
+  @Get('uploadParticipants')
+  async uploadParticipants(
+    @Query('entity_id', ParseIntPipe) entityId: number,
+    @Query('file_key') fileKey: string,
+  ) {
+    try {
+      const p = await this.participantsService.uploadParticipants(
+        fileKey,
+        entityId,
+      );
+      return p;
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
+    }
+  }
+
   @Get('getAllParticipantsInProject')
   async getParticipantsByProject(
     @Query('project_id', ParseIntPipe) project_id: number,
