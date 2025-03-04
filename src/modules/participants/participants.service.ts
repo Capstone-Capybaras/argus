@@ -496,7 +496,9 @@ export class ParticipantsService {
       const roles = rolesInEntity.map((role) => role.name);
       await this.db.transaction(async (tx) => {
         for (const row of rows) {
-          const newRoles = row['TTX Exercise Role'].split(';');
+          const newRoles = row['TTX Exercise Role']
+            .split(';')
+            .map((role) => role.trim());
 
           // Ensure roles exist in the entity
           for (const role of newRoles) {

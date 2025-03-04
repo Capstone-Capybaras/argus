@@ -25,7 +25,7 @@ export class BatchScheduleService {
       const bucket = this.configService.getOrThrow('S3_BUCKET_NAME');
       const uploadedFiles = await this.s3Service.getObjectsByPrefix(
         bucket,
-        `${project_id}/Artefacts/Batch`,
+        `${project_id}/artefact/batch`,
       );
       if (uploadedFiles) {
         return uploadedFiles;
@@ -130,7 +130,6 @@ export class BatchScheduleService {
     attachments: string[],
     filePath: string,
   ) {
-    //file: Express.Multer.File, attachments: string[]) {
     //const attachments : string[] = ["Artefacts/Capstone Application CGH - Machine learning model.pdf"]
     //const filePath = 'src/email/batch-schedule/test/testinguploadtemplate.xlsx';
     //const fileBuffer = fs.readFileSync(filePath)
@@ -144,7 +143,6 @@ export class BatchScheduleService {
         "The uploaded Excel file must contain a sheet named 'schedule'.",
       );
       return { success: false, errors: errors };
-      //throw new Error('The uploaded Excel file must contain a sheet named "msel".');
     }
     const worksheet = workbook.Sheets['schedule'];
     interface Row {
@@ -175,7 +173,6 @@ export class BatchScheduleService {
       if (missingColumns.length > 0) {
         errors.push(`Missing required columns: ${missingColumns.join(', ')}`);
         return { success: false, errors: errors };
-        //throw new Error(`Missing required columns: ${missingColumns.join(', ')}`);
       }
       //parse and check for error
       //check if file exists and number of uploaded files matched number of attachments needed.
@@ -189,11 +186,6 @@ export class BatchScheduleService {
         );
       }
 
-      // const missingValues = artefacts.filter(
-      //   (value) =>
-      //     !attachments.includes(`${projectId}/Artefacts/Batch/${value}`),
-      // );
-
       const missingValues = artefacts.filter(
         (value) =>
           !attachments.some((attachment) => attachment.endsWith(value)),
@@ -202,7 +194,6 @@ export class BatchScheduleService {
         errors.push(
           `Missing files found in column 'artefact_name': ${missingValues.join(', ')}`,
         );
-        //throw new Error(`Invalid values found in column "${columnName}": ${missingValues.join(', ')}`);
       }
       const additionalValues = attachments
         .filter(
@@ -217,7 +208,6 @@ export class BatchScheduleService {
         errors.push(
           `Additional files not found in column 'artefact_name': ${additionalValues.join(', ')}`,
         );
-        //throw new Error(`Invalid values found in column "${columnName}": ${missingValues.join(', ')}`);
       }
       //check body not empty, subject not empty,
       //const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
@@ -478,7 +468,7 @@ export class BatchScheduleService {
         html: this.convertPlainTextToHTML(value.inject),
         attachments:
           value.artefact_name !== undefined && value.artefact_name !== ''
-            ? [`${projectId}/Artefacts/Batch/${value.artefact_name}`]
+            ? [`${projectId}/artefact/batch/${value.artefact_name}`]
             : [],
         ...(datetimeString !== '' && { scheduleDateTime: datetimeString }),
         ...(ccs.length > 0 && { cc: ccs }),
@@ -506,17 +496,10 @@ export class BatchScheduleService {
           }
           await this.emailService.deleteEmail(mail.emailId);
         }
-        // try{
-        //   const emailsInDb = await this.emailService.getEmailsByProject(projectId);
-        //   console.log('emails in DB: ', emailsInDb.emails.length);
-        // } catch(err){
-        //   console.log(err)
-        // }
 
         return { success: false, errors: errors };
       }
     }
-
     return { success: true, message: 'Emails scheduled successfully' };
   }
 }
