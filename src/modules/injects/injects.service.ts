@@ -110,7 +110,7 @@ export class InjectsService {
     }
 
     // get entity
-    const entity = await this.entityService.getEntityById(asset.entity_id);
+    const entity = await this.entityService.getPlainEntityById(asset.entity_id);
     if (!entity) {
       throw new Error(
         `Could not find entity with ID ${asset.entity_id} when generating msel`,
@@ -164,7 +164,7 @@ export class InjectsService {
       project_id: data.project_id,
       start_datetime: data.start_datetime,
       end_datetime: data.end_datetime,
-      exercise_type:exercise_type,
+      exercise_type,
       scenario,
       ttpUsed,
       entity,
