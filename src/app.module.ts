@@ -26,6 +26,7 @@ import { EventsModule } from './events/events.module';
 import { RedisModule } from './email/redis/redis.module';
 //import { RedisConfigModule } from './email/redis-config/redis-config.module';
 import { MselModule } from './modules/msel/msel.module';
+import { ChatsModule } from './modules/chats/chats.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { MselModule } from './modules/msel/msel.module';
     EventsModule,
     RedisModule,
     MselModule,
+    ChatsModule,
   ],
   controllers: [],
 })

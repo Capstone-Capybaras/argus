@@ -333,12 +333,12 @@ export const chatsTable = pgTable('chats', {
 
 export const chatMessagesTable = pgTable('chat_messages', {
   id: uuid().defaultRandom().primaryKey(),
-  chat_id: text()
+  chat_id: uuid()
     .notNull()
-    .references(() => chatsTable.id),
+    .references(() => chatsTable.id, { onDelete: 'cascade' }),
   role: text().notNull(),
   content: text().notNull(),
-  files: text(), // TODO: json string or array of strings? ask abram
+  files: text().array(), // list of file names
   created_at: timestamp().notNull().defaultNow(),
   updated_at: timestamp()
     .notNull()
