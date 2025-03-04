@@ -50,17 +50,12 @@ export class AuthGuard implements CanActivate {
         'utf8',
       );
 
-      jwt.verify(
-        token,
-        publicKey,
-        { algorithms: ['RS256'] },
-        (err, decoded) => {
-          if (err) {
-            throw new UnauthorizedException(err);
-          }
-          request['user'] = decoded;
-        },
-      );
+      /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+      jwt.verify(token, publicKey, { algorithms: ['RS256'] }, (err, _) => {
+        if (err) {
+          throw new UnauthorizedException(err);
+        }
+      });
     }
     return true;
   }
