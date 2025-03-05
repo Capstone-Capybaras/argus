@@ -22,7 +22,6 @@ import { TacticsModule } from './modules/tactics/tactics.module';
 import { BatchScheduleModule } from './email/batch-schedule/batch-schedule.module';
 import { JobsModule } from './modules/jobs/jobs.module';
 import { AetherModule } from './modules/aether/aether.module';
-import { EventsModule } from './events/events.module';
 import { RedisModule } from './email/redis/redis.module';
 //import { RedisConfigModule } from './email/redis-config/redis-config.module';
 import { MselModule } from './modules/msel/msel.module';
@@ -57,7 +56,6 @@ import { ChatsModule } from './modules/chats/chats.module';
     BatchScheduleModule,
     JobsModule,
     AetherModule,
-    EventsModule,
     RedisModule,
     MselModule,
     ChatsModule,

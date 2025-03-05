@@ -75,7 +75,12 @@ export const threatFilesTable = pgTable('threat_files', {
   date_uploaded: timestamp().notNull(),
 });
 
-export const threatLandscapeCategory = pgEnum('category', ['Material', 'Impending', 'Potential', 'Insubstantial'])
+export const threatLandscapeCategory = pgEnum('category', [
+  'Material',
+  'Impending',
+  'Potential',
+  'Insubstantial',
+]);
 export const threatLandscapeTable = pgTable(
   'threat_landscape',
   {

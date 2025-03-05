@@ -10,5 +10,6 @@ import { JobsModule } from '../jobs/jobs.module';
   imports: [DatabaseModule, AetherModule, RedisModule, JobsModule],
   providers: [ThreatLandscapeService],
   controllers: [ThreatLandscapeController],
+  exports: [ThreatLandscapeService],
 })
 export class ThreatLandscapeModule {}

@@ -16,7 +16,6 @@ import { EntityService } from '../entity/entity.service';
 import { AssetsService } from '../assets/assets.service';
 import { JobsService } from '../jobs/jobs.service';
 import { GenerateScenarioCallbackDto } from './dto/generate-scenario-callback.dto';
-import { EventsGateway } from 'src/events/events.gateway';
 import {
   SelectScenarioWithAssetDto,
   SelectScenarioByNumberDto,
@@ -34,7 +33,6 @@ export class ScenarioService {
     private readonly assetService: AssetsService,
     private readonly jobsService: JobsService,
     private readonly aetherService: AetherService,
-    private readonly eventsGateway: EventsGateway,
     private readonly masterThreatCubeService: MasterThreatCubesService,
     private readonly threatLandscapeService: ThreatLandscapeService,
   ) {}
@@ -301,12 +299,6 @@ export class ScenarioService {
           status: job_status,
         })
         .where(eq(jobsTable.id, job_id));
-    });
-
-    // after this is done, send websocket message
-    this.eventsGateway.onScenarioJobSuccess({
-      jobId: job_id,
-      scenarioData,
     });
   }
 }

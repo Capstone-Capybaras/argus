@@ -8,6 +8,6 @@ import { S3Service } from 'src/email/s3.service';
   imports: [DatabaseModule],
   providers: [MasterThreatCubesService, S3Service],
   controllers: [MasterThreatCubesController],
-  exports: [S3Service],
+  exports: [S3Service, MasterThreatCubesService],
 })
 export class MasterThreatCubesModule {}

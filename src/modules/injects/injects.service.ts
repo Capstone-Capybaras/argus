@@ -223,12 +223,6 @@ export class InjectsService {
         .where(eq(jobsTable.id, job_id));
     });
 
-    // after this is done, send websocket message
-    // this.eventsGateway.onScenarioJobSuccess({
-    //   jobId: job_id,
-    //   scenarioData,
-    // });
-
     // remove redis item
     this.redisService.deleteRedisItem(String(job_id));
   }

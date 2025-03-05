@@ -5,7 +5,6 @@ import { DatabaseModule } from 'src/database/database.module';
 import { EntityModule } from '../entity/entity.module';
 import { AssetsModule } from '../assets/assets.module';
 import { JobsModule } from '../jobs/jobs.module';
-import { EventsModule } from 'src/events/events.module';
 import { AetherModule } from '../aether/aether.module';
 import { ThreatLandscapeModule } from '../threat-landscape/threat-landscape.module';
 import { MasterThreatCubesModule } from '../master-threat-cubes/master-threat-cubes.module';
@@ -16,10 +15,9 @@ import { MasterThreatCubesModule } from '../master-threat-cubes/master-threat-cu
     EntityModule,
     AssetsModule,
     JobsModule,
-    EventsModule,
     AetherModule,
     ThreatLandscapeModule,
-    MasterThreatCubesModule
+    MasterThreatCubesModule,
   ],
   providers: [ScenarioService],
   controllers: [ScenarioController],

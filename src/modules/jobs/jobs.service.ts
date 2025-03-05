@@ -6,14 +6,12 @@ import { jobsTable } from 'src/database/schema';
 import { SelectJobDto } from './dto/select-job.dto';
 import { and, eq, ne } from 'drizzle-orm';
 import { UpdateJobDto } from './dto/update-job.dto';
-import { EventsGateway } from 'src/events/events.gateway';
 
 @Injectable()
 export class JobsService {
   constructor(
     @Inject(DATABASE_CONNECTION)
     private readonly db: ReturnType<typeof drizzle>,
-    private readonly eventsGateway: EventsGateway,
   ) {}
 
   async createJob(data: CreateJobDto) {
@@ -52,10 +50,6 @@ export class JobsService {
     await this.updateJob({
       id,
       status: 'failed',
-    });
-
-    this.eventsGateway.onJobFailed({
-      jobId: id,
     });
   }
 }
