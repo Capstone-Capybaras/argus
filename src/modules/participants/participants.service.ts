@@ -186,42 +186,6 @@ export class ParticipantsService {
     }, {} as ParticipantWithRoles);
   }
 
-  async checkParticipantExists(email: string) {
-    const p = await this.db
-      .select()
-      .from(participantsTable)
-      .where(eq(participantsTable.email, email))
-      .limit(1);
-    return p.length > 0;
-  }
-
-  async checkParticipantInEntity(email: string, entity: number) {
-    const result = await this.db
-      .select({ entity: entitesToParticipantsTable.entity_id })
-      .from(entitesToParticipantsTable)
-      .where(eq(entitesToParticipantsTable.participant_email, email));
-    if (!result || result.length === 0) {
-      return;
-    }
-    const emails = Object.values(result).includes({ entity: entity });
-    return emails;
-  }
-
-  async checkPartToRolesExists(email: string, role: string, entity_id: number) {
-    const result = await this.db
-      .select()
-      .from(participantsToRolesTable)
-      .where(
-        and(
-          eq(participantsToRolesTable.participant_email, email),
-          eq(participantsToRolesTable.role_name, role),
-          eq(participantsToRolesTable.role_entity_id, entity_id),
-        ),
-      )
-      .limit(1);
-    return result.length > 0;
-  }
-
   async addParticipantToRole(email: string, role: string, entity_id: number) {
     const data: CreateParticipantToRolesDto = {
       participant_email: email,
