@@ -18,6 +18,7 @@ import { AccessTokenResponse, SignInDto } from './auth.dto';
 import { RegisterDto } from './auth.dto';
 import { SelectUserDto } from '../users/dto/select-user.dto';
 import { Public } from './public.guard';
+import { EventsGateway } from 'src/events/events.gateway';
 
 const cookieConfig: CookieOptions = {
   httpOnly: true,
@@ -30,7 +31,10 @@ const REFRESH_TOKEN_COOKIE = 'refreshToken';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private eventsGateway: EventsGateway,
+  ) {}
 
   @Public()
   @HttpCode(HttpStatus.OK)
@@ -94,6 +98,14 @@ export class AuthController {
     } catch (err) {
       throw new InternalServerErrorException(String(err));
     }
+    return true;
+  }
+
+  @Public()
+  async testWebsocket() {
+    this.eventsGateway.onJobFailed({
+      jobId: 0,
+    });
     return true;
   }
 

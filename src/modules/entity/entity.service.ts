@@ -36,8 +36,21 @@ export class EntityService {
 
   // Create a new entity
   async createEntity(data: CreateEntityDto) {
-    const result = await this.db.insert(entitiesTable).values(data).returning();
-    return result[0]; // Assuming you only want the first inserted record
+    const { project_id, ...entity } = data;
+    return this.db.transaction(async (tx) => {
+      // first insert the entity itself
+      const [createdEntity] = await tx
+        .insert(entitiesTable)
+        .values(entity)
+        .returning();
+      // then add to join table
+      await tx.insert(projectsToEntitiesTable).values({
+        project_id,
+        entity_id: createdEntity.id,
+      });
+
+      return createdEntity;
+    });
   }
 
   // Retrieve all entities

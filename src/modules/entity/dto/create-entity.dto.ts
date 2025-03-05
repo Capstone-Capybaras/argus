@@ -1,5 +1,5 @@
 // create-entity.dto.ts
-import { IsString, IsArray, IsOptional } from 'class-validator';
+import { IsString, IsArray, IsOptional, IsNumber } from 'class-validator';
 import { entitiesTable } from 'src/database/schema';
 import { InferInsert } from 'src/utils/modelToDtoTypes';
 
@@ -27,4 +27,7 @@ export class CreateEntityDto implements InferInsert<typeof entitiesTable> {
   @IsString()
   @IsOptional()
   severity_levels?: string;
+
+  @IsNumber()
+  project_id: number; // used for assigning to join table
 }
