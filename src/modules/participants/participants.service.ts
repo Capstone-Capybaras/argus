@@ -423,6 +423,7 @@ export class ParticipantsService {
       Email: string;
       'Participant Name': string;
     }
+    console.log('sheet names: ', workbook.SheetNames);
     if (!workbook.SheetNames.includes('Participants List')) {
       errors.push(
         "The uploaded Excel file must contain a sheet named 'Participants List'.",
@@ -491,61 +492,44 @@ export class ParticipantsService {
         return { success: false, errors: errors };
       }
       //insert into db
-      const rolesInEntity =
-        await this.rolesService.getAllRolesForEntity(entity_id);
-      const roles = rolesInEntity.map((role) => role.name);
       await this.db.transaction(async (tx) => {
         for (const row of rows) {
           const newRoles = row['TTX Exercise Role']
             .split(';')
             .map((role) => role.trim());
-
           // Ensure roles exist in the entity
           for (const role of newRoles) {
-            if (!roles.includes(role)) {
-              await tx.insert(rolesTable).values({ name: role, entity_id });
-              roles.push(role);
-            }
+            await tx
+              .insert(rolesTable)
+              .values({ name: role, entity_id })
+              .onConflictDoNothing();
           }
-
-          // Check if participant exists
-          const participantExists = await this.checkParticipantExists(
-            row['Email'],
-          );
-          if (!participantExists) {
-            // Insert participant
-            await tx.insert(participantsTable).values({
+          // Insert participant, dont insert if already exists
+          await tx
+            .insert(participantsTable)
+            .values({
               email: row['Email'],
               name: row['Participant Name'],
-            });
-          }
-
+            })
+            .onConflictDoNothing();
           // Ensure participant is linked to entity
-          const partInEntity = await this.checkParticipantInEntity(
-            row['Email'],
-            entity_id,
-          );
-          if (!partInEntity) {
-            await tx.insert(entitesToParticipantsTable).values({
+          await tx
+            .insert(entitesToParticipantsTable)
+            .values({
               participant_email: row['Email'],
               entity_id: entity_id,
-            });
-          }
-
+            })
+            .onConflictDoNothing();
           // Assign roles to participant
           for (const role of newRoles) {
-            const roleExists = await this.checkPartToRolesExists(
-              row['Email'],
-              role,
-              entity_id,
-            );
-            if (!roleExists) {
-              await tx.insert(participantsToRolesTable).values({
+            await tx
+              .insert(participantsToRolesTable)
+              .values({
                 participant_email: row['Email'],
                 role_name: role,
                 role_entity_id: entity_id,
-              });
-            }
+              })
+              .onConflictDoNothing();
           }
         }
       });
