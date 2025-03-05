@@ -82,7 +82,7 @@ export const threatLandscapeTable = pgTable(
       .notNull()
       .references(() => entitiesTable.id, { onDelete: 'cascade' }),
     threat_actor_name: text(),
-    category: text(),
+    category: text({ enum: ["Material", "Impending", "Potential", "Insubstantial"] }),
     capability: text(),
     capability_reason: text(),
     intent: text(),

@@ -6,7 +6,7 @@ export class SelectThreatLandscapeDto
 {
   entity_id: number;
   threat_actor_name: string | null;
-  category: string | null;
+  category: "Material" | "Impending" | "Potential" | "Insubstantial" | null;
   capability: string | null;
   capability_reason: string | null;
   intent: string | null;
