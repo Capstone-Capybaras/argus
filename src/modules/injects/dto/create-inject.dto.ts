@@ -22,7 +22,7 @@ export class CreateInjectDto implements InferInsert<typeof injectsTable> {
   @IsDateString() // Ensures date is in "YYYY-MM-DD" format
   date: string | null;
 
-  @IsString() // Ensures time is in "HH:MM:SS" format
+  @IsString()
   time: string | null;
 
   @IsString()

@@ -2,7 +2,7 @@ import { IsNotEmpty, IsInt, IsString } from 'class-validator';
 import { injectsToScenariosTable, mselTable } from 'src/database/schema';
 import { InferInsert } from 'src/utils/modelToDtoTypes';
 
-export class UploadMselDto implements InferInsert<typeof mselTable> {
+export class CreateMselDto implements InferInsert<typeof mselTable> {
   @IsNotEmpty()
   @IsInt()
   project_id: number;
@@ -24,4 +24,11 @@ export class InjectScenarioDto
   inject_id: number;
   @IsString()
   scenario_number: string;
+}
+
+export class UploadMselDto {
+  @IsInt()
+  project_id: number;
+  @IsString()
+  file_key: string;
 }
