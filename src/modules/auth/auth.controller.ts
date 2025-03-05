@@ -102,6 +102,7 @@ export class AuthController {
   }
 
   @Public()
+  @Get('websocket')
   async testWebsocket() {
     this.eventsGateway.onJobFailed({
       jobId: 0,
