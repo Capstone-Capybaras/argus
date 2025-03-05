@@ -238,6 +238,10 @@ export class ScenarioService {
       throw new Error('no ttp used data provided');
     }
 
+    if (ttpUsed.length === 0) {
+      throw new Error('ttp used cannot be an empty array');
+    }
+
     // if job succeeds
     await this.db.transaction(async (tx) => {
       // update the 2 secnario tables (master table + generated)

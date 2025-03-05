@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsIn,
   IsNumber,
   IsObject,
@@ -23,9 +24,9 @@ export class GenerateScenarioCallbackDto {
   @Type(() => CreateScenarioDto)
   scenario?: CreateScenarioDto;
 
+  @IsArray()
   @IsOptional()
-  @IsObject()
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @Type(() => CreateTtpUsedDto)
-  ttpUsed?: CreateTtpUsedDto;
+  ttpUsed?: CreateTtpUsedDto[];
 }
