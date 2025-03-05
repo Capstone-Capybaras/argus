@@ -18,6 +18,7 @@ import { UpdateParticipantDto } from './dto/update-participant.dto';
 import { ParticipantWithRoles } from './dto/select-participant.dto';
 import { ConfigService } from '@nestjs/config';
 import * as XLSX from 'xlsx';
+import * as fs from 'fs';
 import { S3Service } from 'src/email/s3.service';
 import { RolesService } from '../roles/roles.service';
 
@@ -379,7 +380,8 @@ export class ParticipantsService {
 
   async uploadParticipants(file_key: string, entity_id: number) {
     const bucketName = this.configService.getOrThrow('S3_BUCKET_NAME');
-    const fileBuffer = await this.s3Service.downloadFile(bucketName, file_key);
+    //const fileBuffer = await this.s3Service.downloadFile(bucketName, file_key);
+    const fileBuffer = fs.readFileSync('src/modules/participants/.test/testparticipants.xlsx')
     const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
     const errors: string[] = [];
     interface Row {

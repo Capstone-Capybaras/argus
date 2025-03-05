@@ -452,6 +452,7 @@ export const participantsToRolesTable = pgTable(
       columns: [table.role_name, table.role_entity_id],
       foreignColumns: [rolesTable.name, rolesTable.entity_id],
     }).onDelete('cascade'),
+    uniqueComposite: unique().on(table.participant_email, table.role_entity_id, table.role_name)
   }),
 );
 
