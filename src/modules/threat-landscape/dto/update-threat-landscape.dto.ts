@@ -15,7 +15,7 @@ export class UpdateThreatLandscapeDto
 
   @IsString()
   @IsOptional()
-  category?: "Material" | "Impending" | "Potential" | "Insubstantial" | null;
+  category?: 'Material' | 'Impending' | 'Potential' | 'Insubstantial' | null;
 
   @IsString()
   @IsOptional()

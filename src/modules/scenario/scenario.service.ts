@@ -182,26 +182,37 @@ export class ScenarioService {
 
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     const { participants, assets, ...entityInfo } = entity;
-    let generationInputs: any = {
+    const generationInputs: any = {
       entity: entityInfo,
       asset,
     };
 
-    try{
-      const threatLandscape = await this.threatLandscapeService.getLatestThreatLandscape(generateScenarioDto.entity_id);
-      if(threatLandscape && threatLandscape.length>0){
-        const materialThreats = threatLandscape.filter((threats)=>threats.category === "Material");
-        generationInputs["threatLandscape"] = materialThreats;
+    try {
+      const threatLandscape =
+        await this.threatLandscapeService.getLatestThreatLandscape(
+          generateScenarioDto.entity_id,
+        );
+      if (threatLandscape && threatLandscape.length > 0) {
+        const materialThreats = threatLandscape.filter(
+          (threats) => threats.category === 'Material',
+        );
+        generationInputs['threatLandscape'] = materialThreats;
       }
-    } catch(error){
-      console.log(`Could not get threat landscape for entity: ${generateScenarioDto.entity_id}`);
+    } catch (error) {
+      console.log(
+        `Could not get threat landscape for entity: ${generateScenarioDto.entity_id}. Error:${error}`,
+      );
     }
 
-    try{
-      const ttpMap = await this.masterThreatCubeService.getTTPsfromEntity(generateScenarioDto.entity_id);
-      generationInputs["ttpHeatMap"] = ttpMap;
-    } catch(error){
-      console.log(`Could not get ttps for entity: ${generateScenarioDto.entity_id}`);
+    try {
+      const ttpMap = await this.masterThreatCubeService.getTTPsfromEntity(
+        generateScenarioDto.entity_id,
+      );
+      generationInputs['ttpHeatMap'] = ttpMap;
+    } catch (error) {
+      console.log(
+        `Could not get ttps for entity: ${generateScenarioDto.entity_id}. Error:${error}`,
+      );
     }
 
     // create job and return it

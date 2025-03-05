@@ -12,7 +12,7 @@ export class CreateThreatLandscapeDto
   threat_actor_name: string;
 
   @IsString()
-  category: "Material" | "Impending" | "Potential" | "Insubstantial" | null;
+  category: 'Material' | 'Impending' | 'Potential' | 'Insubstantial' | null;
 
   @IsString()
   capability: string;

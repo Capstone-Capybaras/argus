@@ -12,8 +12,11 @@ export class AetherGenerateScenarioDto {
   asset: SelectAssetDto;
 
   threatLandscape?: SelectThreatLandscapeDto;
-  ttpHeatMap?: Record<string, {
-    technique: string;
-    score: number;
-  }[]>
+  ttpHeatMap?: Record<
+    string,
+    {
+      technique: string;
+      score: number;
+    }[]
+  >;
 }
