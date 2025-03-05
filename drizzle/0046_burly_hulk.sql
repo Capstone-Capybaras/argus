@@ -1,0 +1,1 @@
+ALTER TABLE "participants_to_roles" ADD CONSTRAINT "participants_to_roles_participant_email_role_entity_id_role_name_unique" UNIQUE("participant_email","role_entity_id","role_name");

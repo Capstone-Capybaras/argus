@@ -323,6 +323,13 @@
       "when": 1741107963854,
       "tag": "0045_burly_mesmero",
       "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "7",
+      "when": 1741167216965,
+      "tag": "0046_burly_hulk",
+      "breakpoints": true
     }
   ]
 }
