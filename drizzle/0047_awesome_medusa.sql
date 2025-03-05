@@ -1,0 +1,2 @@
+CREATE TYPE "public"."category" AS ENUM('Material', 'Impending', 'Potential', 'Insubstantial');--> statement-breakpoint
+ALTER TABLE "threat_landscape" ALTER COLUMN "category" SET DATA TYPE category USING category::category;

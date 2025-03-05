@@ -330,6 +330,13 @@
       "when": 1741167216965,
       "tag": "0046_burly_hulk",
       "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1741182661343,
+      "tag": "0047_awesome_medusa",
+      "breakpoints": true
     }
   ]
 }

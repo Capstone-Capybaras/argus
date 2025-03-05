@@ -7,7 +7,6 @@ import { ConfigService } from '@nestjs/config';
 import { DatabaseModule } from '../../database/database.module';
 import { AuthGuard } from './auth.guard';
 import { APP_GUARD } from '@nestjs/core';
-import { EventsModule } from 'src/events/events.module';
 
 @Module({
   imports: [
@@ -20,7 +19,6 @@ import { EventsModule } from 'src/events/events.module';
       }),
       inject: [ConfigService],
     }),
-    EventsModule,
   ],
   controllers: [AuthController],
   providers: [
