@@ -1,5 +1,8 @@
 import { IsArray, IsEmail, IsNumber, IsString } from 'class-validator';
-import { participantsTable } from 'src/database/schema';
+import {
+  participantsTable,
+  participantsToRolesTable,
+} from 'src/database/schema';
 import { InferInsert } from 'src/utils/modelToDtoTypes';
 
 export class CreateParticipantDto
@@ -21,4 +24,12 @@ export class CreateParticipantDto
   @IsArray()
   @IsString({ each: true })
   roles: string[];
+}
+
+export class CreateParticipantToRolesDto
+  implements InferInsert<typeof participantsToRolesTable>
+{
+  participant_email: string;
+  role_name: string;
+  role_entity_id: number;
 }

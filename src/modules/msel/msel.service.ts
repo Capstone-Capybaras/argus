@@ -9,7 +9,6 @@ import { ConfigService } from '@nestjs/config';
 import { PassThrough } from 'stream';
 import { SdkStreamMixin } from '@smithy/types';
 import * as XLSX from 'xlsx';
-import * as fs from 'fs';
 import { CreateInjectDto } from '../injects/dto/create-inject.dto';
 import { InjectsService } from '../injects/injects.service';
 
@@ -130,12 +129,11 @@ export class MselService {
   }
 
   async fileParser(project_id: number, filePath: string) {
-    //project_id: number, filePath: string
-    //const bucketName = this.configService.getOrThrow('S3_BUCKET_NAME');
-    //const fileBuffer = await this.s3Service.downloadFile(bucketName, filePath);
-    const fileBuffer = fs.readFileSync(
-      'src/modules/msel/.test/companyM-msel.xlsx',
-    );
+    const bucketName = this.configService.getOrThrow('S3_BUCKET_NAME');
+    const fileBuffer = await this.s3Service.downloadFile(bucketName, filePath);
+    // const fileBuffer = fs.readFileSync(
+    //   'src/modules/msel/.test/companyM-msel.xlsx',
+    // );
     const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
     const errors: string[] = [];
 
