@@ -3,14 +3,13 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { DATABASE_CONNECTION } from 'src/config/providers';
 import { S3Service } from 'src/email/s3.service';
 import * as schemas from 'src/database/schema';
-import { InjectScenarioDto, UploadMselDto } from './msel.dto';
+import { CreateMselDto, InjectScenarioDto } from './msel.dto';
+import { CreateInjectDto } from '../injects/dto/create-inject.dto';
 import { eq, sql } from 'drizzle-orm';
 import { ConfigService } from '@nestjs/config';
 import { PassThrough } from 'stream';
 import { SdkStreamMixin } from '@smithy/types';
 import * as XLSX from 'xlsx';
-import { CreateInjectDto } from '../injects/dto/create-inject.dto';
-import { InjectsService } from '../injects/injects.service';
 
 @Injectable()
 export class MselService {
@@ -19,7 +18,6 @@ export class MselService {
     @Inject(DATABASE_CONNECTION)
     private readonly database: NodePgDatabase<typeof schemas>,
     private readonly configService: ConfigService,
-    private readonly injectsService: InjectsService,
   ) {}
 
   async addInjectScenarioNum(joinInjectScenarioDto: InjectScenarioDto) {
@@ -85,7 +83,7 @@ export class MselService {
     return result;
   }
 
-  async uploadMsel(data: UploadMselDto) {
+  async uploadMsel(data: CreateMselDto) {
     const result = await this.database
       .insert(schemas.mselTable)
       .values(data)
@@ -128,12 +126,17 @@ export class MselService {
     }
   }
 
+  private isValid24HourTime(value: any): boolean {
+    if (typeof value !== 'string') return false; // Must be a string
+    if (!/^\d{4}$/.test(value)) return false; // Must be exactly 4 digits
+    const hours = parseInt(value.substring(0, 2), 10);
+    const minutes = parseInt(value.substring(2, 4), 10);
+    return hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60;
+  }
+
   async fileParser(project_id: number, filePath: string) {
     const bucketName = this.configService.getOrThrow('S3_BUCKET_NAME');
     const fileBuffer = await this.s3Service.downloadFile(bucketName, filePath);
-    // const fileBuffer = fs.readFileSync(
-    //   'src/modules/msel/.test/companyM-msel.xlsx',
-    // );
     const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
     const errors: string[] = [];
 
@@ -198,48 +201,62 @@ export class MselService {
           ) {
             errors.push(
               `Inject ID must be unique and cannot be empty at row: ${i + 2}`,
-            ); // Adding row number
+            );
           }
         } else if (injectIDs.includes(row['Inject ID'])) {
           errors.push(
             `Duplicated Inject ID at row: ${i + 2} Inject IDs must be unique`,
-          ); // Adding row number
+          );
         } else {
           injectIDs.push(row['Inject ID']);
+          if (!this.isValid24HourTime(row['Real Time']?.toString())) {
+            console.log('time: ', row['Real Time']);
+            errors.push(
+              `Value of "Real Time" column at row ${i + 2} is not a valid time (24 hour format eg.1300)`,
+            );
+          }
         }
       }
       if (errors.length > 0) {
         return { success: false, errors: errors };
       }
       //insert into db
-      for (const row of rows) {
-        if (row['Inject ID'] === null) {
-          if (
-            row['Sce. #'] === null &&
-            row['From'] === null &&
-            row['To'] === null
-          ) {
-            continue;
-          }
-        }
-        const injectDto: CreateInjectDto = {
+      return this.database.transaction(async (tx) => {
+        await tx.insert(schemas.mselTable).values({
+          msel: filePath,
           project_id: project_id,
-          scenario_number: row['Sce. #'],
-          date: row['Real Day']
-            ? this.excelSerialToDate(row['Real Day'])
-            : null,
-          time: row['Real Time'],
-          inject_desc: row['Inject/Sequence'],
-          inject_id: row['Inject ID'],
-          inject_type: row['Inject Type'],
-          from: row['From'],
-          to_recipient: row['To'],
-          artefact: row['Artefact'],
-          iteration: 0,
-          upload_key: filePath,
-        };
-        try {
-          const response = await this.injectsService.createInject(injectDto);
+          date_uploaded: new Date(),
+        });
+        for (const row of rows) {
+          if (row['Inject ID'] === null) {
+            if (
+              row['Sce. #'] === null &&
+              row['From'] === null &&
+              row['To'] === null
+            ) {
+              continue;
+            }
+          }
+          const injectDto: CreateInjectDto = {
+            project_id: project_id,
+            scenario_number: row['Sce. #'],
+            date: row['Real Day']
+              ? this.excelSerialToDate(row['Real Day'])
+              : null,
+            time: row['Real Time'],
+            inject_desc: row['Inject/Sequence'],
+            inject_id: row['Inject ID'],
+            inject_type: row['Inject Type'],
+            from: row['From'],
+            to_recipient: row['To'],
+            artefact: row['Artefact'],
+            iteration: 0,
+            upload_key: filePath,
+          };
+          const [response] = await tx
+            .insert(schemas.injectsTable)
+            .values(injectDto)
+            .returning();
           if (response) {
             const injectSerialId = response.id;
             if (
@@ -251,7 +268,9 @@ export class MselService {
                 inject_id: injectSerialId,
                 scenario_number: row['Sce. #'],
               };
-              this.addInjectScenarioNum(joinTableEntry);
+              await tx
+                .insert(schemas.injectsToScenariosTable)
+                .values(joinTableEntry);
             } else if (row['Sce. #'] === '0') {
               for (const num of existingScenarioNumbers) {
                 const joinTableEntry: InjectScenarioDto = {
@@ -259,14 +278,15 @@ export class MselService {
                   inject_id: injectSerialId,
                   scenario_number: num,
                 };
-                this.addInjectScenarioNum(joinTableEntry);
+                await tx
+                  .insert(schemas.injectsToScenariosTable)
+                  .values(joinTableEntry);
               }
             }
           }
-        } catch (error) {
-          console.log('error creating inject in db: ', error);
         }
-      }
+        return { success: true };
+      });
     } catch (error) {
       errors.push(error as string);
       console.log(error);
