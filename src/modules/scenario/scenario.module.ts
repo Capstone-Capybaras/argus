@@ -7,6 +7,8 @@ import { AssetsModule } from '../assets/assets.module';
 import { JobsModule } from '../jobs/jobs.module';
 import { EventsModule } from 'src/events/events.module';
 import { AetherModule } from '../aether/aether.module';
+import { ThreatLandscapeModule } from '../threat-landscape/threat-landscape.module';
+import { MasterThreatCubesModule } from '../master-threat-cubes/master-threat-cubes.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { AetherModule } from '../aether/aether.module';
     JobsModule,
     EventsModule,
     AetherModule,
+    ThreatLandscapeModule,
+    MasterThreatCubesModule
   ],
   providers: [ScenarioService],
   controllers: [ScenarioController],

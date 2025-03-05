@@ -22,6 +22,8 @@ import {
   SelectScenarioByNumberDto,
 } from './dto/select-scenario.dto';
 import { AetherService } from '../aether/aether.service';
+import { MasterThreatCubesService } from '../master-threat-cubes/master-threat-cubes.service';
+import { ThreatLandscapeService } from '../threat-landscape/threat-landscape.service';
 
 @Injectable()
 export class ScenarioService {
@@ -33,6 +35,8 @@ export class ScenarioService {
     private readonly jobsService: JobsService,
     private readonly aetherService: AetherService,
     private readonly eventsGateway: EventsGateway,
+    private readonly masterThreatCubeService: MasterThreatCubesService,
+    private readonly threatLandscapeService: ThreatLandscapeService,
   ) {}
 
   // Create a new scenario
@@ -178,10 +182,38 @@ export class ScenarioService {
 
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     const { participants, assets, ...entityInfo } = entity;
-    const generationInputs = {
+    const generationInputs: any = {
       entity: entityInfo,
       asset,
     };
+
+    try {
+      const threatLandscape =
+        await this.threatLandscapeService.getLatestThreatLandscape(
+          generateScenarioDto.entity_id,
+        );
+      if (threatLandscape && threatLandscape.length > 0) {
+        const materialThreats = threatLandscape.filter(
+          (threats) => threats.category === 'Material',
+        );
+        generationInputs['threatLandscape'] = materialThreats;
+      }
+    } catch (error) {
+      console.log(
+        `Could not get threat landscape for entity: ${generateScenarioDto.entity_id}. Error:${error}`,
+      );
+    }
+
+    try {
+      const ttpMap = await this.masterThreatCubeService.getTTPsfromEntity(
+        generateScenarioDto.entity_id,
+      );
+      generationInputs['ttpHeatMap'] = ttpMap;
+    } catch (error) {
+      console.log(
+        `Could not get ttps for entity: ${generateScenarioDto.entity_id}. Error:${error}`,
+      );
+    }
 
     // create job and return it
     const job = await this.db.transaction(async (tx) => {
@@ -209,12 +241,11 @@ export class ScenarioService {
     });
 
     await this.aetherService.generateScenario({
+      ...generationInputs,
       scenario_number: generateScenarioDto.scenario_number,
       project_id: generateScenarioDto.project_id,
       additional_context: generateScenarioDto.additional_context,
       job_id: job.id,
-      entity: entityInfo,
-      asset,
     });
 
     return job;
