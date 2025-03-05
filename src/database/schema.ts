@@ -75,6 +75,7 @@ export const threatFilesTable = pgTable('threat_files', {
   date_uploaded: timestamp().notNull(),
 });
 
+export const threatLandscapeCategory = pgEnum('category', ['Material', 'Impending', 'Potential', 'Insubstantial'])
 export const threatLandscapeTable = pgTable(
   'threat_landscape',
   {
@@ -82,9 +83,7 @@ export const threatLandscapeTable = pgTable(
       .notNull()
       .references(() => entitiesTable.id, { onDelete: 'cascade' }),
     threat_actor_name: text(),
-    category: text({
-      enum: ['Material', 'Impending', 'Potential', 'Insubstantial'],
-    }),
+    category: threatLandscapeCategory(),
     capability: text(),
     capability_reason: text(),
     intent: text(),
