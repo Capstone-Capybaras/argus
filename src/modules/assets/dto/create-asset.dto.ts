@@ -9,17 +9,17 @@ export class CreateAssetDto implements InferInsert<typeof assetsTable> {
 
   @IsNotEmpty()
   @IsString()
-  users: string;
+  users: string | null;
 
   @IsNotEmpty()
   @IsString()
-  function: string;
+  function: string | null;
 
   @IsString()
-  sensitive_info: string;
+  sensitive_info: string | null;
 
   @IsString()
-  category: string;
+  category: 'IT' | 'IOT' | 'OT' | null;
 
   @IsInt()
   entity_id: number;

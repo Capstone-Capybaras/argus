@@ -12,19 +12,19 @@ export class UpdateAssetDto implements InferUpdate<typeof assetsTable> {
 
   @IsOptional()
   @IsString()
-  users?: string;
+  users?: string | null;
 
   @IsOptional()
   @IsString()
-  function?: string;
+  function?: string | null;
 
   @IsOptional()
   @IsString()
-  sensitive_info?: string;
+  sensitive_info?: string | null;
 
   @IsOptional()
   @IsString()
-  category?: string;
+  category?: 'IT' | 'IOT' | 'OT' | null;
 
   @IsOptional()
   @IsInt()
