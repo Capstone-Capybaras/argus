@@ -181,6 +181,7 @@ export class ThreatLandscapeService {
 
     // last step: send to aether
     await this.aetherService.generateThreatLandscape({
+      project_id: data.project_id,
       job_id: job.id,
       entity: entity[0],
       assets: assets,
