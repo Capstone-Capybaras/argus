@@ -455,7 +455,7 @@ export class ParticipantsService {
         return { success: false, errors: errors };
       }
       //insert into db
-      await this.db.transaction(async (tx) => {
+      return await this.db.transaction(async (tx) => {
         for (const row of rows) {
           const newRoles = row['TTX Exercise Role']
             .split(';')
@@ -495,8 +495,42 @@ export class ParticipantsService {
               .onConflictDoNothing();
           }
         }
+        const participantsInEntity = await tx
+          .select({
+            name: participantsTable.name,
+            email: participantsTable.email,
+            entity_id: entitesToParticipantsTable.entity_id,
+            role_name: participantsToRolesTable.role_name,
+          })
+          .from(participantsTable)
+          .leftJoin(
+            entitesToParticipantsTable,
+            eq(participantsTable.email, entitesToParticipantsTable.participant_email)
+          )
+          .leftJoin(
+            participantsToRolesTable,
+            eq(participantsTable.email, participantsToRolesTable.participant_email)
+          )
+          .where(eq(entitesToParticipantsTable.entity_id, entity_id));
+        
+        if(participantsInEntity.length === 0){return}
+        const result = Object.values(
+          participantsInEntity.reduce((acc, row) => {
+            if (row.entity_id === null){throw Error("Row returned with null entity id")}
+            if (!acc[row.email]) {
+              acc[row.email] = {
+                name: row.name,
+                email: row.email,
+                entity_id: row.entity_id,
+                roles: [],
+              };
+            }
+            if (row.role_name) acc[row.email].roles.push(row.role_name);
+            return acc;
+          }, {} as Record<string, { name: string; email: string; roles: string[]; entity_id: number }>)
+        );
+        return { success: true, participants: result };
       });
-      return { success: true };
     } catch (error) {
       errors.push(error as string);
       console.log(error);
