@@ -26,6 +26,7 @@ import { GenerateScenarioDto } from './dto/generate-scenario.dto';
 import { GenerateScenarioCallbackDto } from './dto/generate-scenario-callback.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { SelectJobDto } from '../jobs/dto/select-job.dto';
+import { UriDecodePipe } from 'src/utils/uriDecode.pipe';
 
 @ApiBearerAuth()
 @Controller('scenarios')
@@ -83,7 +84,7 @@ export class ScenarioController {
 
   @Get(':scenario_number')
   async getScenarioByNumber(
-    @Param('scenario_number') scenario_number: string,
+    @Param('scenario_number', UriDecodePipe) scenario_number: string,
     @Query('project_id', ParseIntPipe) project_id: number,
   ): Promise<SelectScenarioByNumberDto> {
     try {
@@ -102,7 +103,7 @@ export class ScenarioController {
 
   @Get('project/:project_id')
   async getScenariosByProject(
-    @Param('project_id') project_id: number,
+    @Param('project_id', ParseIntPipe) project_id: number,
   ): Promise<SelectScenarioWithAssetDto[]> {
     try {
       const scenarios =
@@ -142,7 +143,9 @@ export class ScenarioController {
 
   // Delete a scenario by scenario_number
   @Delete(':scenario_number')
-  async deleteScenario(@Param('scenario_number') scenario_number: string) {
+  async deleteScenario(
+    @Param('scenario_number', UriDecodePipe) scenario_number: string,
+  ) {
     const deleted = await this.scenarioService.deleteScenario(scenario_number);
     if (!deleted) {
       throw new HttpException('Scenario not found', HttpStatus.NOT_FOUND);

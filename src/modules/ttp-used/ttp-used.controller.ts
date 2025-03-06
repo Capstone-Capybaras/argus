@@ -99,7 +99,7 @@ export class TtpUsedController {
   }
 
   @Delete(':id')
-  async deleteTtpUsed(@Param('id') id: number): Promise<boolean> {
+  async deleteTtpUsed(@Param('id', ParseIntPipe) id: number): Promise<boolean> {
     const deleted = await this.ttpUsedService.deleteTtpUsed(id);
     if (!deleted) {
       throw new HttpException('TTP used not found', HttpStatus.NOT_FOUND);

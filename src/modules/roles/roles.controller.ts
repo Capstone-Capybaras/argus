@@ -18,6 +18,7 @@ import { CreateRoleDto } from './dto/create-roles.dto';
 import { UpdateRoleDto } from './dto/update-roles.dto';
 import { SelectRoleDto } from './dto/select-roles.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { UriDecodePipe } from 'src/utils/uriDecode.pipe';
 
 @ApiBearerAuth()
 @Controller('roles')
@@ -54,7 +55,9 @@ export class RolesController {
 
   // Get a role by name
   @Get(':name')
-  async getRoleById(@Param('name') name: string): Promise<SelectRoleDto> {
+  async getRoleById(
+    @Param('name', UriDecodePipe) name: string,
+  ): Promise<SelectRoleDto> {
     try {
       const role = await this.rolesService.getRoleById(name);
       if (!role) {

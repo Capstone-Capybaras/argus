@@ -15,6 +15,7 @@ import { TacticsService } from './tactics.service';
 import { CreateTacticsDto } from './dto/create-tactics.dto';
 import { UpdateTacticsDto } from './dto/update-tactics.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { UriDecodePipe } from 'src/utils/uriDecode.pipe';
 
 @ApiBearerAuth()
 @Controller('tactics')
@@ -44,7 +45,7 @@ export class TacticsController {
   }
 
   @Get(':id')
-  async getTacticById(@Param('id') id: string) {
+  async getTacticById(@Param('id', UriDecodePipe) id: string) {
     try {
       const tactic = await this.tacticsService.getTacticById(id);
       if (!tactic) {
@@ -59,7 +60,7 @@ export class TacticsController {
 
   @Patch(':id')
   async updateTactic(
-    @Param('id') id: string,
+    @Param('id', UriDecodePipe) id: string,
     @Body() updateTacticsDto: UpdateTacticsDto,
   ) {
     try {
@@ -78,7 +79,7 @@ export class TacticsController {
   }
 
   @Delete(':id')
-  async deleteTactic(@Param('id') id: string) {
+  async deleteTactic(@Param('id', UriDecodePipe) id: string) {
     const deleted = await this.tacticsService.deleteTactic(id);
     if (!deleted) {
       throw new HttpException('Tactic not found', HttpStatus.NOT_FOUND);

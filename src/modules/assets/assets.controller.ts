@@ -10,6 +10,7 @@ import {
   HttpStatus,
   BadRequestException,
   Logger,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { AssetsService } from './assets.service';
 import { CreateAssetDto } from './dto/create-asset.dto';
@@ -45,7 +46,9 @@ export class AssetsController {
   }
 
   @Get(':id')
-  async getAssetById(@Param('id') id: number): Promise<SelectAssetDto> {
+  async getAssetById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<SelectAssetDto> {
     try {
       const asset = await this.assetsService.getAssetById(id);
       if (!asset) {
@@ -78,7 +81,7 @@ export class AssetsController {
   }
 
   @Delete(':id')
-  async deleteAsset(@Param('id') id: number) {
+  async deleteAsset(@Param('id', ParseIntPipe) id: number) {
     const deleted = await this.assetsService.deleteAsset(id);
     if (!deleted) {
       throw new HttpException('Asset not found', HttpStatus.NOT_FOUND);

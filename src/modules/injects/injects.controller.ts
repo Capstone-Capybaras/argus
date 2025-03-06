@@ -11,6 +11,7 @@ import {
   BadRequestException,
   Logger,
   InternalServerErrorException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { InjectsService } from './injects.service';
 import { CreateInjectDto } from './dto/create-inject.dto';
@@ -20,6 +21,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { GenerateMselDto } from './dto/generate-msel.dto';
 import { SelectJobDto } from '../jobs/dto/select-job.dto';
 import { GenerateMselCallbackDto } from './dto/generate-msel-callback.dto';
+import { UriDecodePipe } from 'src/utils/uriDecode.pipe';
 
 @ApiBearerAuth()
 @Controller('injects')
@@ -53,7 +55,7 @@ export class InjectsController {
 
   @Get('project/:project_id')
   async getInjectsByProject(
-    @Param('project_id') project_id: number,
+    @Param('project_id', ParseIntPipe) project_id: number,
   ): Promise<SelectInjectDto[]> {
     try {
       return await this.injectsService.getInjectsByProjectId(project_id);
@@ -65,7 +67,9 @@ export class InjectsController {
 
   // Retrieve a specific inject by ID
   @Get(':id')
-  async getInjectById(@Param('id') id: string): Promise<SelectInjectDto> {
+  async getInjectById(
+    @Param('id', UriDecodePipe) id: string,
+  ): Promise<SelectInjectDto> {
     try {
       const inject = await this.injectsService.getInjectByName(id);
       if (!inject) {
@@ -100,7 +104,7 @@ export class InjectsController {
 
   // Delete a specific inject by ID
   @Delete(':id')
-  async deleteInject(@Param('id') id: string) {
+  async deleteInject(@Param('id', UriDecodePipe) id: string) {
     const deletedInject = await this.injectsService.deleteInject(id);
     if (!deletedInject) {
       throw new HttpException('Inject not found', HttpStatus.NOT_FOUND);

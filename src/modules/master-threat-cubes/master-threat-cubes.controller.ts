@@ -11,6 +11,7 @@ import {
   BadRequestException,
   Logger,
   InternalServerErrorException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { MasterThreatCubesService } from './master-threat-cubes.service';
 import {
@@ -20,6 +21,7 @@ import {
 import { UpdateMasterThreatCubeDto } from './dto/update-master-threat.dto';
 import { SelectMasterThreatCubeDto } from './dto/select-master-threat.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { UriDecodePipe } from 'src/utils/uriDecode.pipe';
 
 @ApiBearerAuth()
 @Controller('master-threat-cubes')
@@ -61,7 +63,7 @@ export class MasterThreatCubesController {
   }
 
   @Get('heatMap/:id')
-  async getHeatmap(@Param('id') id: number): Promise<
+  async getHeatmap(@Param('id', ParseIntPipe) id: number): Promise<
     Record<
       string,
       {
@@ -76,7 +78,7 @@ export class MasterThreatCubesController {
 
   @Get(':id')
   async getMasterThreatCubeById(
-    @Param('id') id: string,
+    @Param('id', UriDecodePipe) id: string,
   ): Promise<SelectMasterThreatCubeDto> {
     try {
       const masterThreatCube =
@@ -122,7 +124,7 @@ export class MasterThreatCubesController {
   }
 
   @Delete(':id')
-  async deleteMasterThreatCube(@Param('id') id: string) {
+  async deleteMasterThreatCube(@Param('id', UriDecodePipe) id: string) {
     const deleted =
       await this.masterThreatCubesService.deleteMasterThreatCube(id);
     if (!deleted) {
