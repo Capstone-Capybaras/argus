@@ -505,29 +505,50 @@ export class ParticipantsService {
           .from(participantsTable)
           .leftJoin(
             entitesToParticipantsTable,
-            eq(participantsTable.email, entitesToParticipantsTable.participant_email)
+            eq(
+              participantsTable.email,
+              entitesToParticipantsTable.participant_email,
+            ),
           )
           .leftJoin(
             participantsToRolesTable,
-            eq(participantsTable.email, participantsToRolesTable.participant_email)
+            eq(
+              participantsTable.email,
+              participantsToRolesTable.participant_email,
+            ),
           )
           .where(eq(entitesToParticipantsTable.entity_id, entity_id));
-        
-        if(participantsInEntity.length === 0){return}
+
+        if (participantsInEntity.length === 0) {
+          return;
+        }
         const result = Object.values(
-          participantsInEntity.reduce((acc, row) => {
-            if (row.entity_id === null){throw Error("Row returned with null entity id")}
-            if (!acc[row.email]) {
-              acc[row.email] = {
-                name: row.name,
-                email: row.email,
-                entity_id: row.entity_id,
-                roles: [],
-              };
-            }
-            if (row.role_name) acc[row.email].roles.push(row.role_name);
-            return acc;
-          }, {} as Record<string, { name: string; email: string; roles: string[]; entity_id: number }>)
+          participantsInEntity.reduce(
+            (acc, row) => {
+              if (row.entity_id === null) {
+                throw Error('Row returned with null entity id');
+              }
+              if (!acc[row.email]) {
+                acc[row.email] = {
+                  name: row.name,
+                  email: row.email,
+                  entity_id: row.entity_id,
+                  roles: [],
+                };
+              }
+              if (row.role_name) acc[row.email].roles.push(row.role_name);
+              return acc;
+            },
+            {} as Record<
+              string,
+              {
+                name: string;
+                email: string;
+                roles: string[];
+                entity_id: number;
+              }
+            >,
+          ),
         );
         return { success: true, participants: result };
       });

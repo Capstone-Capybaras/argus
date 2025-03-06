@@ -7,6 +7,7 @@ import {
   StreamableFile,
   NotFoundException,
   Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { MselService } from './msel.service';
 import { UploadMselDto } from './msel.dto';
@@ -25,7 +26,9 @@ export class MselController {
   }
 
   @Get(':project_id')
-  async getMselsByProject(@Param('project_id') project_id: number) {
+  async getMselsByProject(
+    @Param('project_id', ParseIntPipe) project_id: number,
+  ) {
     return await this.mselService.getMselsByProject(project_id);
   }
 

@@ -111,7 +111,9 @@ export class EntityController {
 
   // Retrieve a specific entity by id
   @Get(':id')
-  async getEntityById(@Param('id') id: number): Promise<SelectEntityDto> {
+  async getEntityById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<SelectEntityDto> {
     try {
       const entity = await this.entityService.getEntityById(id);
       if (!entity) {
@@ -145,7 +147,7 @@ export class EntityController {
 
   // Delete an entity by id
   @Delete(':id')
-  async deleteEntity(@Param('id') id: number) {
+  async deleteEntity(@Param('id', ParseIntPipe) id: number) {
     const deleted = await this.entityService.deleteEntity(id);
     if (!deleted) {
       throw new HttpException('Entity not found', HttpStatus.NOT_FOUND);

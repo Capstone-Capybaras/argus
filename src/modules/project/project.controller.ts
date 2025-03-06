@@ -11,12 +11,14 @@ import {
   Logger,
   BadRequestException,
   InternalServerErrorException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from '../project/dto/create-project.dto';
 import { UpdateProjectDto } from '../project/dto/update-project.dto';
 import { SelectProjectDto } from './dto/select-project.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { UriDecodePipe } from 'src/utils/uriDecode.pipe';
 
 @ApiBearerAuth()
 @Controller('projects')
@@ -50,7 +52,7 @@ export class ProjectController {
   // Retrieve a specific project by name
   @Get(':name')
   async getProjectByName(
-    @Param('name') name: string,
+    @Param('name', UriDecodePipe) name: string,
   ): Promise<SelectProjectDto> {
     try {
       const project = await this.projectService.getProjectByName(name);
@@ -85,7 +87,7 @@ export class ProjectController {
 
   // Delete a project by name
   @Delete(':id')
-  async deleteProject(@Param('id') id: number) {
+  async deleteProject(@Param('id', ParseIntPipe) id: number) {
     const deleted = await this.projectService.deleteProject(id);
     if (!deleted) {
       throw new HttpException('Project not found', HttpStatus.NOT_FOUND);

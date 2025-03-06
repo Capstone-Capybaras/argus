@@ -30,7 +30,7 @@ export class JobsController {
   }
 
   @Delete(':id')
-  async deleteJob(@Param('id') id: number): Promise<boolean> {
+  async deleteJob(@Param('id', ParseIntPipe) id: number): Promise<boolean> {
     try {
       return await this.jobsService.deleteJob(id);
     } catch (err) {
