@@ -99,7 +99,7 @@ export const threatLandscapeTable = pgTable(
     opportunity_reason: text(),
     file_key: text()
       .notNull()
-      .references(() => threatFilesTable.file_key),
+      .references(() => threatFilesTable.file_key, { onDelete: 'cascade' }),
   },
   (table) => {
     return {
@@ -125,13 +125,6 @@ export const threatLandscapeGeneratedTable = pgTable(
     opportunity: text(),
     opportunity_reason: text(),
     generation_inputs: json().notNull(),
-  },
-  (table) => {
-    return {
-      pk: primaryKey({
-        columns: [table.entity_id, table.threat_actor_name],
-      }),
-    };
   },
 );
 
@@ -183,32 +176,26 @@ export const scenariosTable = pgTable(
 );
 
 // this must always be kept in sync with scenarios
-export const scenariosGeneratedTable = pgTable(
-  'scenarios_generated',
-  {
-    scenario_number: varchar().notNull(),
-    additional_context: text(),
-    scenario_title: text(),
-    threat_actor_motivation: text(),
-    intended_system_impact: text(),
-    intended_biz_impact: text(),
-    attack_sophistication: text(),
-    severity_level: text(),
-    initial_access: text(),
-    exploit: text(),
-    impact: text(),
-    project_id: integer()
-      .notNull()
-      .references(() => projectsTable.id, { onDelete: 'cascade' }),
-    asset_id: integer()
-      .notNull()
-      .references(() => assetsTable.id, { onDelete: 'cascade' }),
-    generation_inputs: json().notNull(),
-  },
-  (table) => ({
-    pk: primaryKey({ columns: [table.scenario_number, table.project_id] }),
-  }),
-);
+export const scenariosGeneratedTable = pgTable('scenarios_generated', {
+  scenario_number: varchar().notNull(),
+  additional_context: text(),
+  scenario_title: text(),
+  threat_actor_motivation: text(),
+  intended_system_impact: text(),
+  intended_biz_impact: text(),
+  attack_sophistication: text(),
+  severity_level: text(),
+  initial_access: text(),
+  exploit: text(),
+  impact: text(),
+  project_id: integer()
+    .notNull()
+    .references(() => projectsTable.id, { onDelete: 'cascade' }),
+  asset_id: integer()
+    .notNull()
+    .references(() => assetsTable.id, { onDelete: 'cascade' }),
+  generation_inputs: json().notNull(),
+});
 
 // TODO: generated tables for threats
 
