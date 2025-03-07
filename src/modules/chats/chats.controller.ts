@@ -18,11 +18,19 @@ import { CreateChatDto } from './dto/create-chat.dto';
 import { SelectChatMessageDto } from './dto/select-chat-message.dto';
 import { CreateChatMessageDto } from './dto/create-chat-message.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
+import {
+  AetherChatMessage,
+  AetherGenerateChatDto,
+} from '../aether/dto/aether-generate-chat.dto';
+import { AetherService } from '../aether/aether.service';
 
 @Controller('chats')
 @ApiBearerAuth()
 export class ChatsController {
-  constructor(private readonly chatsService: ChatsService) {}
+  constructor(
+    private readonly chatsService: ChatsService,
+    private readonly aetherService: AetherService,
+  ) {}
 
   @Get()
   async getChats(@User() user: UserInfo): Promise<SelectChatDto[]> {
@@ -99,6 +107,19 @@ export class ChatsController {
   ): Promise<SelectChatMessageDto> {
     try {
       return await this.chatsService.createMessage(createChatMessageDto);
+    } catch (err) {
+      throw new InternalServerErrorException(err);
+    }
+  }
+
+  @Post('generate')
+  async generateMessage(
+    @Body() generateChatMessageDto: AetherGenerateChatDto,
+  ): Promise<AetherChatMessage> {
+    try {
+      return await this.aetherService.generateChatMessage(
+        generateChatMessageDto,
+      );
     } catch (err) {
       throw new InternalServerErrorException(err);
     }
