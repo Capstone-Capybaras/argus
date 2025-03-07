@@ -227,6 +227,7 @@ export class MselService {
           project_id: project_id,
           date_uploaded: new Date(),
         });
+        const insertedInjects = [];
         for (const row of rows) {
           if (row['Inject ID'] === null) {
             if (
@@ -258,6 +259,7 @@ export class MselService {
             .values(injectDto)
             .returning();
           if (response) {
+            insertedInjects.push(response);
             const injectSerialId = response.id;
             if (
               row['Sce. #'] !== null &&
@@ -285,7 +287,8 @@ export class MselService {
             }
           }
         }
-        return { success: true };
+        //return new msel injects:
+        return { success: true, injects: insertedInjects };
       });
     } catch (error) {
       errors.push(error as string);

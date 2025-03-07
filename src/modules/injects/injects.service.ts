@@ -7,7 +7,6 @@ import {
   injectsGeneratedTable,
   injectsTable,
   jobsTable,
-  mselTable,
   projectsTable,
 } from 'src/database/schema';
 import { CreateInjectDto } from './dto/create-inject.dto';
@@ -50,82 +49,15 @@ export class InjectsService {
   }
 
   async getInjectsByProjectId(project_id: number) {
-    //get latest msel
-    const [latestMsel] = await this.db
-      .select()
-      .from(mselTable)
-      .where(eq(mselTable.project_id, project_id))
-      .orderBy(sql`${mselTable.date_uploaded} DESC`)
-      .limit(1);
-
-    if (latestMsel) {
-      const latestIterations = await this.db
-        .select({
-          project_id: injectsTable.project_id,
-          scenarios: injectsTable.scenario_number,
-          key: injectsTable.upload_key,
-          latest_iteration: max(injectsTable.iteration), // Get the latest iteration for each scenario
-        })
-        .from(injectsTable)
-        .where(
-          and(
-            eq(injectsTable.project_id, project_id),
-            eq(injectsTable.upload_key, latestMsel.msel),
-          ),
-        )
-        .groupBy(
-          injectsTable.project_id,
-          injectsTable.scenario_number,
-          injectsTable.upload_key,
-        ); // Group by project_id, scenarios, and key
-
-      const scenarioNumbers = latestIterations
-        .map((item) => item.scenarios)
-        .filter((value): value is string => value !== null);
-      console.log('scenario numbers: ', scenarioNumbers);
-
-      const iterations = latestIterations
-        .map((item) => item.latest_iteration)
-        .filter((value): value is number => value !== null);
-      console.log('interations: ', iterations);
-
-      // Then you can retrieve the full items (with all columns) for each latest iteration
-      const injectsWithLatestIteration = await this.db
-        .select()
-        .from(injectsTable)
-        .where(
-          and(
-            eq(injectsTable.project_id, project_id),
-            eq(injectsTable.upload_key, latestMsel.msel),
-            inArray(
-              injectsTable.scenario_number,
-              sql`(SELECT DISTINCT scenario_number FROM injects WHERE project_id = ${project_id} AND upload_key = ${latestMsel.msel})`,
-            ),
-            inArray(
-              injectsTable.iteration,
-              sql`(SELECT MAX(i.iteration) FROM injects i WHERE i.scenario_number = injects.scenario_number AND i.project_id = ${project_id} AND i.upload_key = ${latestMsel.msel})`,
-            ),
-          ),
-        );
-      return injectsWithLatestIteration;
-    }
-
     const latestIterations = await this.db
       .select({
         project_id: injectsTable.project_id,
         scenarios: injectsTable.scenario_number,
-        key: injectsTable.upload_key,
         latest_iteration: max(injectsTable.iteration), // Get the latest iteration for each scenario
       })
       .from(injectsTable)
       .where(eq(injectsTable.project_id, project_id))
-      .groupBy(
-        injectsTable.project_id,
-        injectsTable.scenario_number,
-        injectsTable.upload_key,
-      ); // Group by project_id, scenarios, and key
-
-    //console.log("latest iterations: ", latestIterations)
+      .groupBy(injectsTable.project_id, injectsTable.scenario_number); // Group by project_id, scenarios, and key
 
     const scenarioNumbers = latestIterations
       .map((item) => item.scenarios)
@@ -304,13 +236,42 @@ export class InjectsService {
       // INSERT to the 2 inject tables (master table + generated)
       // note: we do not care about serial ID matching
       // since the generated table is just to keep track of generation input and outputs
-      await tx.insert(injectsTable).values(injects);
-      await tx.insert(injectsGeneratedTable).values(
-        injects.map((i) => ({
-          ...i,
+      for (const inject of injects) {
+        const { scenario_number, project_id } = inject;
+        if (!scenario_number) {
+          throw Error(
+            `No scenario number for generated inject: ${inject.inject_id}`,
+          );
+        }
+        // Get the latest iteration for the scenario_number and project_id
+        const [latestIteration] = await this.db
+          .select({ iteration: sql`MAX(${injectsTable.iteration})` }) // Get max iteration
+          .from(injectsTable)
+          .where(
+            and(
+              eq(injectsTable.project_id, project_id),
+              eq(injectsTable.scenario_number, scenario_number),
+            ),
+          );
+
+        // If no previous injects exist, set iteration to 0; otherwise, increment
+        const newIteration = latestIteration
+          ? Number(latestIteration.iteration) + 1
+          : 0;
+
+        // Insert the new inject with the updated iteration
+        await tx.insert(injectsTable).values({
+          ...inject, // Spread existing inject values
+          iteration: newIteration,
+        });
+
+        //insert generated table
+        await tx.insert(injectsGeneratedTable).values({
+          ...inject,
+          iteration: newIteration,
           generation_inputs: generationInputs,
-        })),
-      );
+        });
+      }
 
       // update job
       await tx
