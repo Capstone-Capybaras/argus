@@ -5,9 +5,8 @@ import { S3Service } from 'src/email/s3.service';
 import * as schemas from 'src/database/schema';
 import {
   CreateMselDto,
-  ErrorUploadResponse,
+  MselUploadResponse,
   InjectScenarioDto,
-  SuccessUploadResponse,
 } from './msel.dto';
 import { CreateInjectDto } from '../injects/dto/create-inject.dto';
 import { eq, sql } from 'drizzle-orm';
@@ -142,7 +141,7 @@ export class MselService {
   async fileParser(
     project_id: number,
     filePath: string,
-  ): Promise<SuccessUploadResponse | ErrorUploadResponse> {
+  ): Promise<MselUploadResponse> {
     const bucketName = this.configService.getOrThrow('S3_BUCKET_NAME');
     const fileBuffer = await this.s3Service.downloadFile(bucketName, filePath);
     const workbook = XLSX.read(fileBuffer, { type: 'buffer' });

@@ -40,12 +40,8 @@ export class UploadMselDto {
   file_key: string;
 }
 
-export interface SuccessUploadResponse {
-  success: true;
-  injects: SelectInjectDto[];
-}
-
-export interface ErrorUploadResponse {
-  success: false;
-  errors: string[];
+export class MselUploadResponse {
+  success: boolean;
+  injects?: SelectInjectDto[];
+  errors?: string[];
 }
