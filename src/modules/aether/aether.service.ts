@@ -6,6 +6,10 @@ import { AetherGenerateScenarioDto } from './dto/aether-generate-scenario.dto';
 import { AxiosError } from 'axios';
 import { AetherGenerateMselDto } from './dto/aether-generate-msel.dto';
 import { AetherGenerateThreatLandscapeDto } from './dto/aether-generate-threat.dto';
+import {
+  AetherChatMessage,
+  AetherGenerateChatDto,
+} from './dto/aether-generate-chat.dto';
 
 interface AetherJwtPayload {
   username: string;
@@ -87,5 +91,27 @@ export class AetherService {
     );
 
     return data;
+  }
+
+  async generateChatMessage(body: AetherGenerateChatDto) {
+    const token = await this.createToken();
+
+    const { data } = await firstValueFrom(
+      this.httpService
+        .post('/api/chat', body, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .pipe(
+          catchError((error: AxiosError) => {
+            Logger.error(error?.response?.data);
+            throw 'An error happened sending chat message generation request to AI service';
+          }),
+        ),
+    );
+
+    // TODO: make sure this is correct
+    return data as AetherChatMessage;
   }
 }
