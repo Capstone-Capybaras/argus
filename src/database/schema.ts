@@ -272,7 +272,7 @@ export const injectsGeneratedTable = pgTable(
       table.project_id,
       table.iteration,
       table.inject_id,
-      table.upload_key,
+      table.scenario_number,
     ),
   }),
 );
