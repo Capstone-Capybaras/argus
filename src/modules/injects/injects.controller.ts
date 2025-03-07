@@ -12,6 +12,7 @@ import {
   Logger,
   InternalServerErrorException,
   ParseIntPipe,
+  StreamableFile,
 } from '@nestjs/common';
 import { InjectsService } from './injects.service';
 import { CreateInjectDto } from './dto/create-inject.dto';
@@ -63,6 +64,14 @@ export class InjectsController {
       Logger.error(err);
       throw new InternalServerErrorException(err);
     }
+  }
+
+  @Get('download/:project_id')
+  async downloadToExcel(
+    @Param('project_id', ParseIntPipe) project_id: number,
+  ): Promise<StreamableFile> {
+    const stream = await this.injectsService.exportInjectsToMSEL(project_id);
+    return new StreamableFile(stream);
   }
 
   // Retrieve a specific inject by ID

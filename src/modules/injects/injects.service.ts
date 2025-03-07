@@ -22,6 +22,8 @@ import { RolesService } from '../roles/roles.service';
 import { GenerateMselCallbackDto } from './dto/generate-msel-callback.dto';
 import { JobsService } from '../jobs/jobs.service';
 import { RedisService } from 'src/email/redis/redis.service';
+import * as XLSX from 'xlsx';
+import { Readable } from 'stream';
 
 @Injectable()
 export class InjectsService {
@@ -85,6 +87,38 @@ export class InjectsService {
         ),
       );
     return injectsWithLatestIteration;
+  }
+
+  async exportInjectsToMSEL(project_id: number) {
+    const injects = await this.getInjectsByProjectId(project_id);
+    if (!injects || injects.length === 0) {
+      throw new Error(`No Injects for project: ${project_id}`);
+    }
+
+    const formattedData = injects.map((inject) => ({
+      'Inject ID': inject.inject_id,
+      'Real Day': inject.date,
+      'Real Time': inject.time,
+      'Inject/Sequence': inject.inject_desc,
+      'Inject Type': inject.inject_type,
+      Artefact: inject.artefact,
+      'Sce. #': inject.scenario_number,
+      To: inject.to_recipient,
+      From: inject.from,
+    }));
+
+    // Create a worksheet
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'MSEL');
+
+    // Generate buffer
+    const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+    // Convert buffer to a readable stream
+    const stream = new Readable();
+    stream.push(buffer);
+    stream.push(null); // Signals end of stream
+    return stream;
   }
 
   async getInjectByName(id: string) {
