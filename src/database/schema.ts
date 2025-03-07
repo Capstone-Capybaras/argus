@@ -99,7 +99,7 @@ export const threatLandscapeTable = pgTable(
     opportunity_reason: text(),
     file_key: text()
       .notNull()
-      .references(() => threatFilesTable.file_key),
+      .references(() => threatFilesTable.file_key, { onDelete: 'cascade' }),
   },
   (table) => {
     return {
@@ -125,14 +125,7 @@ export const threatLandscapeGeneratedTable = pgTable(
     opportunity: text(),
     opportunity_reason: text(),
     generation_inputs: json().notNull(),
-  },
-  (table) => {
-    return {
-      pk: primaryKey({
-        columns: [table.entity_id, table.threat_actor_name],
-      }),
-    };
-  },
+  }
 );
 
 export const ttpUsedTable = pgTable(
@@ -204,10 +197,7 @@ export const scenariosGeneratedTable = pgTable(
       .notNull()
       .references(() => assetsTable.id, { onDelete: 'cascade' }),
     generation_inputs: json().notNull(),
-  },
-  (table) => ({
-    pk: primaryKey({ columns: [table.scenario_number, table.project_id] }),
-  }),
+  }
 );
 
 // TODO: generated tables for threats
