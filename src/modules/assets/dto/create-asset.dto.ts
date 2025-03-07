@@ -20,7 +20,8 @@ export class CreateAssetDto implements InferInsert<typeof assetsTable> {
   sensitive_info?: string | null;
 
   @IsIn(['IT', 'IOT', 'OT'])
-  category: 'IT' | 'IOT' | 'OT' | null;
+  @IsOptional()
+  category?: 'IT' | 'IOT' | 'OT' | null;
 
   @IsInt()
   entity_id: number;

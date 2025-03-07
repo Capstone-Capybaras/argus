@@ -79,7 +79,7 @@ export class MselService {
       .select()
       .from(schemas.mselTable)
       .where(eq(schemas.mselTable.project_id, project_id))
-      .orderBy(sql`${schemas.mselTable.date_uploaded} ASC`);
+      .orderBy(sql`${schemas.mselTable.date_uploaded} DESC`);
     return result;
   }
 
