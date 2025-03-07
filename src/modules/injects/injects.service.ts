@@ -142,8 +142,14 @@ export class InjectsService {
       .where(
         and(
           eq(injectsTable.project_id, project_id),
-          inArray(injectsTable.scenario_number, scenarioNumbers),
-          inArray(injectsTable.iteration, iterations),
+          inArray(
+            injectsTable.scenario_number,
+            sql`(SELECT DISTINCT scenario_number FROM injects WHERE project_id = ${project_id})`,
+          ),
+          inArray(
+            injectsTable.iteration,
+            sql`(SELECT MAX(i.iteration) FROM injects i WHERE i.scenario_number = injects.scenario_number AND i.project_id = ${project_id})`,
+          ),
         ),
       );
     return injectsWithLatestIteration;
