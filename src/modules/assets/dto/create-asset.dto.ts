@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsInt } from 'class-validator';
+import { IsNotEmpty, IsString, IsInt, IsOptional, IsIn } from 'class-validator';
 import { assetsTable } from 'src/database/schema';
 import { InferInsert } from 'src/utils/modelToDtoTypes';
 
@@ -7,18 +7,19 @@ export class CreateAssetDto implements InferInsert<typeof assetsTable> {
   @IsString()
   name: string;
 
-  @IsNotEmpty()
   @IsString()
-  users: string | null;
-
-  @IsNotEmpty()
-  @IsString()
-  function: string | null;
+  @IsOptional()
+  users?: string | null;
 
   @IsString()
-  sensitive_info: string | null;
+  @IsOptional()
+  function?: string | null;
 
   @IsString()
+  @IsOptional()
+  sensitive_info?: string | null;
+
+  @IsIn(['IT', 'IOT', 'OT'])
   category: 'IT' | 'IOT' | 'OT' | null;
 
   @IsInt()

@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsNumber, IsInt } from 'class-validator';
+import { IsOptional, IsString, IsNumber, IsInt, IsIn } from 'class-validator';
 import { assetsTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
@@ -23,7 +23,7 @@ export class UpdateAssetDto implements InferUpdate<typeof assetsTable> {
   sensitive_info?: string | null;
 
   @IsOptional()
-  @IsString()
+  @IsIn(['IT', 'IOT', 'OT'])
   category?: 'IT' | 'IOT' | 'OT' | null;
 
   @IsOptional()

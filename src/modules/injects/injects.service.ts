@@ -23,7 +23,6 @@ import { RolesService } from '../roles/roles.service';
 import { GenerateMselCallbackDto } from './dto/generate-msel-callback.dto';
 import { JobsService } from '../jobs/jobs.service';
 import { RedisService } from 'src/email/redis/redis.service';
-import { inet } from 'drizzle-orm/pg-core';
 
 @Injectable()
 export class InjectsService {
@@ -56,9 +55,10 @@ export class InjectsService {
       .select()
       .from(mselTable)
       .where(eq(mselTable.project_id, project_id))
-      .orderBy(sql`${mselTable.date_uploaded} DESC`).limit(1);
+      .orderBy(sql`${mselTable.date_uploaded} DESC`)
+      .limit(1);
 
-    if(latestMsel){
+    if (latestMsel) {
       const latestIterations = await this.db
         .select({
           project_id: injectsTable.project_id,
@@ -67,34 +67,49 @@ export class InjectsService {
           latest_iteration: max(injectsTable.iteration), // Get the latest iteration for each scenario
         })
         .from(injectsTable)
-        .where(and(
-          eq(injectsTable.project_id, project_id),
-          eq(injectsTable.upload_key, latestMsel.msel)
-        ))
-        .groupBy(injectsTable.project_id, injectsTable.scenario_number, injectsTable.upload_key); // Group by project_id, scenarios, and key
+        .where(
+          and(
+            eq(injectsTable.project_id, project_id),
+            eq(injectsTable.upload_key, latestMsel.msel),
+          ),
+        )
+        .groupBy(
+          injectsTable.project_id,
+          injectsTable.scenario_number,
+          injectsTable.upload_key,
+        ); // Group by project_id, scenarios, and key
 
       const scenarioNumbers = latestIterations
-        .map(item => item.scenarios)
+        .map((item) => item.scenarios)
         .filter((value): value is string => value !== null);
-      
+      console.log('scenario numbers: ', scenarioNumbers);
+
       const iterations = latestIterations
-        .map(item => item.latest_iteration)
+        .map((item) => item.latest_iteration)
         .filter((value): value is number => value !== null);
-        // Then you can retrieve the full items (with all columns) for each latest iteration
+      console.log('interations: ', iterations);
+
+      // Then you can retrieve the full items (with all columns) for each latest iteration
       const injectsWithLatestIteration = await this.db
         .select()
         .from(injectsTable)
-        .where( and(
-          eq(injectsTable.project_id, project_id),
-          eq(injectsTable.upload_key, latestMsel.msel),
-          inArray(injectsTable.scenario_number, scenarioNumbers),
-          inArray(injectsTable.iteration, iterations)
-        ))
-
-      console.log(injectsWithLatestIteration);
-      return injectsWithLatestIteration
+        .where(
+          and(
+            eq(injectsTable.project_id, project_id),
+            eq(injectsTable.upload_key, latestMsel.msel),
+            inArray(
+              injectsTable.scenario_number,
+              sql`(SELECT DISTINCT scenario_number FROM injects WHERE project_id = ${project_id} AND upload_key = ${latestMsel.msel})`,
+            ),
+            inArray(
+              injectsTable.iteration,
+              sql`(SELECT MAX(i.iteration) FROM injects i WHERE i.scenario_number = injects.scenario_number AND i.project_id = ${project_id} AND i.upload_key = ${latestMsel.msel})`,
+            ),
+          ),
+        );
+      return injectsWithLatestIteration;
     }
-    
+
     const latestIterations = await this.db
       .select({
         project_id: injectsTable.project_id,
@@ -104,27 +119,34 @@ export class InjectsService {
       })
       .from(injectsTable)
       .where(eq(injectsTable.project_id, project_id))
-      .groupBy(injectsTable.project_id, injectsTable.scenario_number, injectsTable.upload_key); // Group by project_id, scenarios, and key
+      .groupBy(
+        injectsTable.project_id,
+        injectsTable.scenario_number,
+        injectsTable.upload_key,
+      ); // Group by project_id, scenarios, and key
+
+    //console.log("latest iterations: ", latestIterations)
 
     const scenarioNumbers = latestIterations
-      .map(item => item.scenarios)
+      .map((item) => item.scenarios)
       .filter((value): value is string => value !== null);
-    
+    console.log('scenario numbers: ', scenarioNumbers);
     const iterations = latestIterations
-      .map(item => item.latest_iteration)
+      .map((item) => item.latest_iteration)
       .filter((value): value is number => value !== null);
-      // Then you can retrieve the full items (with all columns) for each latest iteration
+    console.log('interations: ', iterations);
+    // Then you can retrieve the full items (with all columns) for each latest iteration
     const injectsWithLatestIteration = await this.db
       .select()
       .from(injectsTable)
-      .where( and(
-        eq(injectsTable.project_id, project_id),
-        inArray(injectsTable.scenario_number, scenarioNumbers),
-        inArray(injectsTable.iteration, iterations)
-      ))
-
-    console.log(injectsWithLatestIteration);
-    return injectsWithLatestIteration
+      .where(
+        and(
+          eq(injectsTable.project_id, project_id),
+          inArray(injectsTable.scenario_number, scenarioNumbers),
+          inArray(injectsTable.iteration, iterations),
+        ),
+      );
+    return injectsWithLatestIteration;
   }
 
   async getInjectByName(id: string) {
