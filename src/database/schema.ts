@@ -52,13 +52,15 @@ export const entitiesTable = pgTable('entities', {
   severity_levels: text(),
 });
 
+export const assetCategory = pgEnum('asset_category', ['IT', 'IOT', 'OT']);
+
 export const assetsTable = pgTable('assets', {
   id: serial('id').unique().primaryKey(),
   name: varchar().notNull(),
-  users: text().notNull(),
-  function: text().notNull(),
-  sensitive_info: text().notNull(),
-  category: text().notNull(),
+  users: text(),
+  function: text(),
+  sensitive_info: text(),
+  category: assetCategory(),
   entity_id: integer()
     .notNull()
     .references(() => entitiesTable.id, { onDelete: 'cascade' }),
