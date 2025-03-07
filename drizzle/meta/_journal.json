@@ -351,6 +351,13 @@
       "when": 1741320191276,
       "tag": "0049_wakeful_jack_flag",
       "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1741334115800,
+      "tag": "0050_clumsy_mole_man",
+      "breakpoints": true
     }
   ]
 }
