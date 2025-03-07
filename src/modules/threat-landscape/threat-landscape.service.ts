@@ -141,23 +141,12 @@ export class ThreatLandscapeService {
       );
     }
     const generationInputs = { entity: entity[0], assets: assets };
-    const match = data.file_key.match(
-      /_(\d{4}-\d{2}-\d{2})_(\d{2}-\d{2}-\d{2})/,
-    );
-    if (!match) {
-      throw new Error('Unable to extract date from file name!');
-    }
-    const date = match[1]; // "2025-03-01"
-    const time = match[2].replace(/-/g, ':'); // "15:30:45"
-    console.log('Date:', date); // Date: 2025-03-01
-    console.log('Time:', time); // Time: 15:30:45
-    const isoString = `${date}T${time}Z`;
-    const dateObj = new Date(isoString);
+
     //store in threat files table:
     const threatFilesDto: ThreatFilesDto = {
       entity_id: data.entity_id,
       file_key: data.file_key,
-      date_uploaded: dateObj,
+      date_uploaded: new Date(),
     };
     const [threatFileEntry] = await this.addFilesToDB(threatFilesDto);
     if (!threatFileEntry) {
@@ -168,7 +157,7 @@ export class ThreatLandscapeService {
       .values({
         type: 'threat',
         status: 'pending',
-        name: `${entity[0].name} - threatLandscape - ${dateObj.toISOString()}`,
+        name: `${entity[0].name} - threatLandscape - ${new Date().toISOString()}`,
         project_id: data.project_id,
       })
       .returning();
