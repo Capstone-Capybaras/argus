@@ -1,5 +1,6 @@
 import { SelectAssetDto } from 'src/modules/assets/dto/select-asset.dto';
 import { SelectEntityOnlyDto } from 'src/modules/entity/dto/select-entity.dto';
+import { SelectInjectDto } from 'src/modules/injects/dto/select-inject.dto';
 import { SelectProjectDto } from 'src/modules/project/dto/select-project.dto';
 import { SelectRoleDto } from 'src/modules/roles/dto/select-roles.dto';
 import { SelectScenarioDto } from 'src/modules/scenario/dto/select-scenario.dto';
@@ -11,6 +12,7 @@ export class AetherGenerateMselDto {
   start_datetime: string;
   end_datetime: string;
   additional_context?: string;
+  upload_key?: SelectInjectDto['upload_key'];
   exercise_type: SelectProjectDto['exercise_type'];
   scenario: SelectScenarioDto;
   ttpUsed: SelectTtpUsedDto[];

@@ -205,6 +205,7 @@ export class InjectsService {
       entity,
       asset,
       roles,
+      ...(data.upload_key ? { upload_key: data.upload_key } : {}),
     };
 
     const [job] = await this.db
@@ -235,6 +236,7 @@ export class InjectsService {
       entity,
       asset,
       roles,
+      ...(data.upload_key ? { upload_key: data.upload_key } : {}),
     });
 
     return job;

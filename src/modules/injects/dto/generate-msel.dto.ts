@@ -1,5 +1,10 @@
 import { IsDateString, IsNumber, IsOptional, IsString } from 'class-validator';
-import { jobsTable, projectsTable, scenariosTable } from 'src/database/schema';
+import {
+  injectsTable,
+  jobsTable,
+  projectsTable,
+  scenariosTable,
+} from 'src/database/schema';
 
 export class GenerateMselDto {
   @IsString()
@@ -20,4 +25,8 @@ export class GenerateMselDto {
 
   @IsDateString()
   end_datetime: string;
+
+  @IsString()
+  @IsOptional()
+  upload_key?: typeof injectsTable.$inferSelect.upload_key;
 }
