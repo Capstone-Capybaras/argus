@@ -3,7 +3,12 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { DATABASE_CONNECTION } from 'src/config/providers';
 import { S3Service } from 'src/email/s3.service';
 import * as schemas from 'src/database/schema';
-import { CreateMselDto, InjectScenarioDto } from './msel.dto';
+import {
+  CreateMselDto,
+  ErrorUploadResponse,
+  InjectScenarioDto,
+  SuccessUploadResponse,
+} from './msel.dto';
 import { CreateInjectDto } from '../injects/dto/create-inject.dto';
 import { eq, sql } from 'drizzle-orm';
 import { ConfigService } from '@nestjs/config';
@@ -134,7 +139,10 @@ export class MselService {
     return hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60;
   }
 
-  async fileParser(project_id: number, filePath: string) {
+  async fileParser(
+    project_id: number,
+    filePath: string,
+  ): Promise<SuccessUploadResponse | ErrorUploadResponse> {
     const bucketName = this.configService.getOrThrow('S3_BUCKET_NAME');
     const fileBuffer = await this.s3Service.downloadFile(bucketName, filePath);
     const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
@@ -288,7 +296,10 @@ export class MselService {
           }
         }
         //return new msel injects:
-        return { success: true, injects: insertedInjects };
+        return {
+          success: true,
+          injects: insertedInjects,
+        };
       });
     } catch (error) {
       errors.push(error as string);

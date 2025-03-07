@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsInt, IsString } from 'class-validator';
 import { injectsToScenariosTable, mselTable } from 'src/database/schema';
-import { InferInsert } from 'src/utils/modelToDtoTypes';
+import { InferInsert, InferSelect } from 'src/utils/modelToDtoTypes';
+import { SelectInjectDto } from '../injects/dto/select-inject.dto';
 
 export class CreateMselDto implements InferInsert<typeof mselTable> {
   @IsNotEmpty()
@@ -12,6 +13,12 @@ export class CreateMselDto implements InferInsert<typeof mselTable> {
   msel: string;
 
   @IsNotEmpty()
+  date_uploaded: Date;
+}
+
+export class SelectMselDto implements InferSelect<typeof mselTable> {
+  msel: string;
+  project_id: number;
   date_uploaded: Date;
 }
 
@@ -31,4 +38,14 @@ export class UploadMselDto {
   project_id: number;
   @IsString()
   file_key: string;
+}
+
+export interface SuccessUploadResponse {
+  success: true;
+  injects: SelectInjectDto[];
+}
+
+export interface ErrorUploadResponse {
+  success: false;
+  errors: string[];
 }

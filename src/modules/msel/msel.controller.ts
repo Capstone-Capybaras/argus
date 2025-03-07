@@ -10,7 +10,12 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { MselService } from './msel.service';
-import { UploadMselDto } from './msel.dto';
+import {
+  ErrorUploadResponse,
+  SelectMselDto,
+  SuccessUploadResponse,
+  UploadMselDto,
+} from './msel.dto';
 
 @Controller('msel')
 export class MselController {
@@ -28,12 +33,14 @@ export class MselController {
   @Get(':project_id')
   async getMselsByProject(
     @Param('project_id', ParseIntPipe) project_id: number,
-  ) {
+  ): Promise<SelectMselDto[]> {
     return await this.mselService.getMselsByProject(project_id);
   }
 
   @Post('upload')
-  async uploadMsel(@Body() uploadMselDto: UploadMselDto) {
+  async uploadMsel(
+    @Body() uploadMselDto: UploadMselDto,
+  ): Promise<SuccessUploadResponse | ErrorUploadResponse> {
     return await this.mselService.fileParser(
       uploadMselDto.project_id,
       uploadMselDto.file_key,
