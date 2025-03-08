@@ -1,10 +1,5 @@
 import { IsDateString, IsNumber, IsOptional, IsString } from 'class-validator';
-import {
-  injectsTable,
-  jobsTable,
-  projectsTable,
-  scenariosTable,
-} from 'src/database/schema';
+import { jobsTable, projectsTable, scenariosTable } from 'src/database/schema';
 
 export class GenerateMselDto {
   @IsString()
