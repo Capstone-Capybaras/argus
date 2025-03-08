@@ -154,10 +154,18 @@ export class ScenarioService {
   }
 
   // Delete a scenario by scenario_number
-  async deleteScenario(scenario_number: string): Promise<boolean> {
+  async deleteScenario(
+    scenario_number: string,
+    project_id: number,
+  ): Promise<boolean> {
     const result = await this.db
       .delete(scenariosTable)
-      .where(eq(scenariosTable.scenario_number, scenario_number))
+      .where(
+        and(
+          eq(scenariosTable.scenario_number, scenario_number),
+          eq(scenariosTable.project_id, project_id),
+        ),
+      )
       .returning();
     return result.length > 0;
   }
@@ -286,7 +294,7 @@ export class ScenarioService {
             eq(scenariosGeneratedTable.project_id, scenarioData.project_id),
           ),
         );
-      
+
       //upsert scenario table
       await tx
         .insert(scenariosTable)

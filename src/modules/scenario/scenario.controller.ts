@@ -142,11 +142,15 @@ export class ScenarioController {
   }
 
   // Delete a scenario by scenario_number
-  @Delete(':scenario_number')
+  @Delete('delete')
   async deleteScenario(
-    @Param('scenario_number', UriDecodePipe) scenario_number: string,
+    @Query('scenario_number') scenario_number: string,
+    @Query('project_id', ParseIntPipe) project_id: number,
   ) {
-    const deleted = await this.scenarioService.deleteScenario(scenario_number);
+    const deleted = await this.scenarioService.deleteScenario(
+      scenario_number,
+      project_id,
+    );
     if (!deleted) {
       throw new HttpException('Scenario not found', HttpStatus.NOT_FOUND);
     }
