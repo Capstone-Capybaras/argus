@@ -10,7 +10,7 @@ import {
 } from '../../database/schema';
 import { CreateScenarioDto } from './dto/create-scenario.dto';
 import { UpdateScenarioDto } from './dto/update-scenario.dto';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { GenerateScenarioDto } from './dto/generate-scenario.dto';
 import { EntityService } from '../entity/entity.service';
 import { AssetsService } from '../assets/assets.service';
@@ -154,10 +154,18 @@ export class ScenarioService {
   }
 
   // Delete a scenario by scenario_number
-  async deleteScenario(scenario_number: string): Promise<boolean> {
+  async deleteScenario(
+    scenario_number: string,
+    project_id: number,
+  ): Promise<boolean> {
     const result = await this.db
       .delete(scenariosTable)
-      .where(eq(scenariosTable.scenario_number, scenario_number))
+      .where(
+        and(
+          eq(scenariosTable.scenario_number, scenario_number),
+          eq(scenariosTable.project_id, project_id),
+        ),
+      )
       .returning();
     return result.length > 0;
   }
@@ -286,8 +294,29 @@ export class ScenarioService {
             eq(scenariosGeneratedTable.project_id, scenarioData.project_id),
           ),
         );
-      await tx.insert(scenariosTable).values(scenarioData);
 
+      //upsert scenario table
+      await tx
+        .insert(scenariosTable)
+        .values(scenarioData)
+        .onConflictDoUpdate({
+          target: [scenariosTable.scenario_number, scenariosTable.project_id],
+          set: {
+            ...scenarioData,
+            project_id: sql`${scenariosTable.project_id}`,
+            scenario_number: sql`${scenariosTable.scenario_number}`,
+          },
+        });
+
+      // if exists previously generated ttp used, delete
+      await tx
+        .delete(ttpUsedTable)
+        .where(
+          and(
+            eq(ttpUsedTable.scenario_number, scenarioData.scenario_number),
+            eq(ttpUsedTable.scenario_project_id, scenarioData.project_id),
+          ),
+        );
       // update ttp used table
       await tx.insert(ttpUsedTable).values(ttpUsed);
 
