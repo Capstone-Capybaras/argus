@@ -28,5 +28,5 @@ export class GenerateMselDto {
 
   @IsString()
   @IsOptional()
-  upload_key?: typeof injectsTable.$inferSelect.upload_key;
+  upload_key?: string;
 }
