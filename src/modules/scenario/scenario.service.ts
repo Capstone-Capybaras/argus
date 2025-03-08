@@ -286,8 +286,37 @@ export class ScenarioService {
             eq(scenariosGeneratedTable.project_id, scenarioData.project_id),
           ),
         );
-      await tx.insert(scenariosTable).values(scenarioData);
+      
+      //upsert scenario table
+      await tx
+        .insert(scenariosTable)
+        .values(scenarioData)
+        .onConflictDoUpdate({
+          target: [scenariosTable.scenario_number, scenariosTable.project_id],
+          set: {
+            additional_context: scenarioData.additional_context,
+            scenario_title: scenarioData.scenario_title,
+            threat_actor_motivation: scenarioData.threat_actor_motivation,
+            intended_system_impact: scenarioData.intended_system_impact,
+            intended_biz_impact: scenarioData.intended_biz_impact,
+            attack_sophistication: scenarioData.attack_sophistication,
+            severity_level: scenarioData.severity_level,
+            initial_access: scenarioData.initial_access,
+            exploit: scenarioData.exploit,
+            impact: scenarioData.impact,
+            asset_id: scenarioData.asset_id,
+          },
+        });
 
+      // if exists previously generated ttp used, delete
+      await tx
+        .delete(ttpUsedTable)
+        .where(
+          and(
+            eq(ttpUsedTable.scenario_number, scenarioData.scenario_number),
+            eq(ttpUsedTable.scenario_project_id, scenarioData.project_id),
+          ),
+        );
       // update ttp used table
       await tx.insert(ttpUsedTable).values(ttpUsed);
 
