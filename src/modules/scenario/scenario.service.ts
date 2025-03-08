@@ -10,7 +10,7 @@ import {
 } from '../../database/schema';
 import { CreateScenarioDto } from './dto/create-scenario.dto';
 import { UpdateScenarioDto } from './dto/update-scenario.dto';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { GenerateScenarioDto } from './dto/generate-scenario.dto';
 import { EntityService } from '../entity/entity.service';
 import { AssetsService } from '../assets/assets.service';
@@ -302,17 +302,9 @@ export class ScenarioService {
         .onConflictDoUpdate({
           target: [scenariosTable.scenario_number, scenariosTable.project_id],
           set: {
-            additional_context: scenarioData.additional_context,
-            scenario_title: scenarioData.scenario_title,
-            threat_actor_motivation: scenarioData.threat_actor_motivation,
-            intended_system_impact: scenarioData.intended_system_impact,
-            intended_biz_impact: scenarioData.intended_biz_impact,
-            attack_sophistication: scenarioData.attack_sophistication,
-            severity_level: scenarioData.severity_level,
-            initial_access: scenarioData.initial_access,
-            exploit: scenarioData.exploit,
-            impact: scenarioData.impact,
-            asset_id: scenarioData.asset_id,
+            ...scenarioData,
+            project_id: sql`${scenariosTable.project_id}`,
+            scenario_number: sql`${scenariosTable.scenario_number}`,
           },
         });
 
