@@ -142,9 +142,9 @@ export class ScenarioController {
   }
 
   // Delete a scenario by scenario_number
-  @Delete('delete')
+  @Delete()
   async deleteScenario(
-    @Query('scenario_number') scenario_number: string,
+    @Query('scenario_number', UriDecodePipe) scenario_number: string,
     @Query('project_id', ParseIntPipe) project_id: number,
   ) {
     const deleted = await this.scenarioService.deleteScenario(
