@@ -1,0 +1,2 @@
+ALTER TABLE "threat_landscape" DROP CONSTRAINT "threat_landscape_entity_id_threat_actor_name_pk";--> statement-breakpoint
+ALTER TABLE "threat_landscape" ADD CONSTRAINT "threat_landscape_entity_id_threat_actor_name_file_key_pk" PRIMARY KEY("entity_id","threat_actor_name","file_key");
