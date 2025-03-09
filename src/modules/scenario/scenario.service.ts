@@ -144,11 +144,20 @@ export class ScenarioService {
   }
 
   // Update a scenario by scenario_number
-  async updateScenario(scenario_number: string, data: UpdateScenarioDto) {
+  async updateScenario(
+    project_id: number,
+    scenario_number: string,
+    data: UpdateScenarioDto,
+  ) {
     const result = await this.db
       .update(scenariosTable)
       .set(data)
-      .where(eq(scenariosTable.scenario_number, scenario_number))
+      .where(
+        and(
+          eq(scenariosTable.scenario_number, scenario_number),
+          eq(scenariosTable.project_id, project_id),
+        ),
+      )
       .returning();
     return result[0] || null;
   }

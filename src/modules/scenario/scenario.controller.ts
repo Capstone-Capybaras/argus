@@ -128,6 +128,7 @@ export class ScenarioController {
   ): Promise<SelectScenarioDto> {
     try {
       const updatedScenario = await this.scenarioService.updateScenario(
+        updateScenarioDto.project_id,
         updateScenarioDto.scenario_number,
         updateScenarioDto,
       );
