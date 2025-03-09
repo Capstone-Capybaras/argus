@@ -20,6 +20,7 @@ import { DeepSet } from 'src/utils/DeepSet';
 import { ParticipantsService } from '../participants/participants.service';
 import { SelectAssetDto } from '../assets/dto/select-asset.dto';
 import { AssetsService } from '../assets/assets.service';
+import { omit } from 'lodash';
 
 class ISelectEntity extends SelectEntityOnlyDto {
   assets: DeepSet<SelectAssetDto>;
@@ -234,12 +235,15 @@ export class EntityService {
 
       // 3) create assets to duplicate
       if (assetsToDuplicate.length > 0) {
-        await tx.insert(assetsTable).values(
-          assetsToDuplicate.map((asset) => ({
-            ...asset,
-            entity_id: newEntity.id, // Associate with the new entity
-          })),
-        );
+        await tx
+          .insert(assetsTable)
+          .values(
+            assetsToDuplicate.map((asset) => ({
+              ...omit(asset, 'id'),
+              entity_id: newEntity.id, // Associate with the new entity
+            })),
+          )
+          .returning();
       }
 
       return newEntity;
