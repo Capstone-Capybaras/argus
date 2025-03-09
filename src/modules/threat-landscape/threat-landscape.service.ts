@@ -212,20 +212,26 @@ export class ThreatLandscapeService {
       // since the generated table is just to keep track of generation input and outputs
       // insert
       //upsert
-      await tx
-        .insert(threatLandscapeTable)
-        .values(threatLandscape)
-        .onConflictDoUpdate({
-          target: [
-            threatLandscapeTable.threat_actor_name,
-            threatLandscapeTable.entity_id,
-          ],
-          set: {
-            ...threatLandscape,
-            entity_id: sql`${threatLandscapeTable.entity_id}`,
-            threat_actor_name: sql`${threatLandscapeTable.threat_actor_name}`,
-          },
-        });
+      await Promise.all(
+        threatLandscape.map((threat) =>
+          tx
+            .insert(threatLandscapeTable)
+            .values(threat)
+            .onConflictDoUpdate({
+              target: [
+                threatLandscapeTable.threat_actor_name,
+                threatLandscapeTable.entity_id,
+                threatLandscapeTable.file_key,
+              ],
+              set: {
+                ...threat,
+                entity_id: sql`${threatLandscapeTable.entity_id}`,
+                threat_actor_name: sql`${threatLandscapeTable.threat_actor_name}`,
+                file_key: sql`${threatLandscapeTable.file_key}`,
+              },
+            }),
+        ),
+      );
       await tx.insert(threatLandscapeGeneratedTable).values(
         threatLandscape.map((i) => ({
           ...i,
