@@ -10,7 +10,7 @@ import {
 } from '../../database/schema';
 import { CreateThreatLandscapeDto } from './dto/create-threat-landscape.dto';
 import { UpdateThreatLandscapeDto } from './dto/update-threat-landscape.dto';
-import { and, eq, desc } from 'drizzle-orm';
+import { and, eq, desc, sql } from 'drizzle-orm';
 import { DATABASE_CONNECTION } from 'src/config/providers';
 import { AetherService } from '../aether/aether.service';
 import { RedisService } from 'src/email/redis/redis.service';
@@ -207,10 +207,25 @@ export class ThreatLandscapeService {
 
     // if job succeeds
     await this.db.transaction(async (tx) => {
-      // INSERT to the 2 inject tables (master table + generated)
+      // INSERT to the 2 threat tables (master table + generated)
       // note: we do not care about serial ID matching
       // since the generated table is just to keep track of generation input and outputs
-      await tx.insert(threatLandscapeTable).values(threatLandscape);
+      // insert
+      //upsert
+      await tx
+        .insert(threatLandscapeTable)
+        .values(threatLandscape)
+        .onConflictDoUpdate({
+          target: [
+            threatLandscapeTable.threat_actor_name,
+            threatLandscapeTable.entity_id,
+          ],
+          set: {
+            ...threatLandscape,
+            entity_id: sql`${threatLandscapeTable.entity_id}`,
+            threat_actor_name: sql`${threatLandscapeTable.threat_actor_name}`,
+          },
+        });
       await tx.insert(threatLandscapeGeneratedTable).values(
         threatLandscape.map((i) => ({
           ...i,
