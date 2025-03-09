@@ -9,7 +9,7 @@ import {
   InjectScenarioDto,
 } from './msel.dto';
 import { CreateInjectDto } from '../injects/dto/create-inject.dto';
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { ConfigService } from '@nestjs/config';
 import { PassThrough } from 'stream';
 import { SdkStreamMixin } from '@smithy/types';
@@ -210,6 +210,10 @@ export class MselService {
               `Inject ID must be unique and cannot be empty at row: ${i + 2}`,
             );
           }
+        } else if (row['Sce. #'] === null) {
+          errors.push(
+            `Empty scenario number at row: ${i + 2}. Scenario number cannot be empty. For injects that apply to all, use "0".`,
+          );
         } else if (injectIDs.includes(row['Inject ID'])) {
           errors.push(
             `Duplicated Inject ID at row: ${i + 2} Inject IDs must be unique`,
@@ -245,9 +249,12 @@ export class MselService {
               continue;
             }
           }
+          if (row['Sce. #'] === null) {
+            throw new Error('scenario number is null');
+          }
           const injectDto: CreateInjectDto = {
             project_id: project_id,
-            scenario_number: row['Sce. #'],
+            scenario_number: String(row['Sce. #']),
             date: row['Real Day']
               ? this.excelSerialToDate(row['Real Day'])
               : null,
@@ -261,10 +268,34 @@ export class MselService {
             iteration: 0,
             upload_key: filePath,
           };
+
+          // Get the latest iteration for the scenario_number and project_id
+          const [latestIteration] = await this.database
+            .select({ iteration: sql`MAX(${schemas.injectsTable.iteration})` }) // Get max iteration
+            .from(schemas.injectsTable)
+            .where(
+              and(
+                eq(schemas.injectsTable.project_id, project_id),
+                eq(
+                  schemas.injectsTable.scenario_number,
+                  String(injectDto.scenario_number),
+                ),
+              ),
+            );
+
+          // If no previous injects exist, set iteration to 0; otherwise, increment
+          const newIteration = latestIteration
+            ? Number(latestIteration.iteration) + 1
+            : 0;
+
           const [response] = await tx
             .insert(schemas.injectsTable)
-            .values(injectDto)
+            .values({
+              ...injectDto, // Spread existing inject values
+              iteration: newIteration,
+            })
             .returning();
+
           if (response) {
             insertedInjects.push(response);
             const injectSerialId = response.id;
