@@ -104,7 +104,7 @@ export const threatLandscapeTable = pgTable(
   (table) => {
     return {
       pk: primaryKey({
-        columns: [table.entity_id, table.threat_actor_name],
+        columns: [table.entity_id, table.threat_actor_name, table.file_key],
       }),
     };
   },
