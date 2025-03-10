@@ -225,19 +225,24 @@ export class InjectsService {
     );
 
     // last step: send to aether
-    await this.aetherService.generateMsel({
-      job_id: job.id,
-      project_id: data.project_id,
-      start_datetime: data.start_datetime,
-      end_datetime: data.end_datetime,
-      exercise_type,
-      scenario,
-      ttpUsed,
-      entity,
-      asset,
-      roles,
-      ...(data.upload_key ? { upload_key: data.upload_key } : {}),
-    });
+    try {
+      await this.aetherService.generateMsel({
+        job_id: job.id,
+        project_id: data.project_id,
+        start_datetime: data.start_datetime,
+        end_datetime: data.end_datetime,
+        exercise_type,
+        scenario,
+        ttpUsed,
+        entity,
+        asset,
+        roles,
+        ...(data.upload_key ? { upload_key: data.upload_key } : {}),
+      });
+    } catch (err) {
+      Logger.error(`Could not send generate msel to aether: ${err}`);
+      await this.jobsService.onJobFailed(job.id);
+    }
 
     return job;
   }
