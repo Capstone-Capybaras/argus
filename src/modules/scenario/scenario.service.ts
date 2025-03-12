@@ -242,6 +242,7 @@ export class ScenarioService {
         scenario_number: generateScenarioDto.scenario_number,
         project_id: generateScenarioDto.project_id,
         asset_id: generateScenarioDto.asset_id,
+        threat_actor_motivation: generateScenarioDto.threat_actor_motivation,
         generation_inputs: generationInputs,
       });
 

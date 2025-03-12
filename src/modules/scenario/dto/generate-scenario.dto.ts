@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 import {
   assetsTable,
   entitiesTable,
@@ -22,4 +22,12 @@ export class GenerateScenarioDto {
 
   @IsNumber()
   project_id: typeof projectsTable.$inferSelect.id;
+
+  @IsIn([
+    'Financial Crime',
+    'Service Disruption',
+    'Information Theft and Espionage',
+    'Damage to Reputation',
+  ])
+  threat_actor_motivation: typeof scenariosTable.$inferInsert.threat_actor_motivation;
 }
