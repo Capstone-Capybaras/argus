@@ -48,7 +48,10 @@ export class ScenarioService {
 
   // Retrieve all scenarios
   async getScenarios() {
-    const scenarios = await this.db.select().from(scenariosTable);
+    const scenarios = await this.db
+      .select()
+      .from(scenariosTable)
+      .orderBy(scenariosTable.scenario_number);
     return scenarios;
   }
 
@@ -116,6 +119,7 @@ export class ScenarioService {
     const rows = await this.db
       .select()
       .from(scenariosTable)
+      .orderBy(scenariosTable.scenario_number)
       .leftJoin(assetsTable, eq(scenariosTable.asset_id, assetsTable.id))
       .where(eq(scenariosTable.project_id, project_id));
 
