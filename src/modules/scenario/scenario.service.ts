@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
 import { DATABASE_CONNECTION } from '../../config/providers';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import {
@@ -255,13 +255,18 @@ export class ScenarioService {
       return createdJob;
     });
 
-    await this.aetherService.generateScenario({
-      ...generationInputs,
-      scenario_number: generateScenarioDto.scenario_number,
-      project_id: generateScenarioDto.project_id,
-      additional_context: generateScenarioDto.additional_context,
-      job_id: job.id,
-    });
+    try {
+      await this.aetherService.generateScenario({
+        ...generationInputs,
+        scenario_number: generateScenarioDto.scenario_number,
+        project_id: generateScenarioDto.project_id,
+        additional_context: generateScenarioDto.additional_context,
+        job_id: job.id,
+      });
+    } catch (err) {
+      Logger.error(`Could not send generate scenario to aether: ${err}`);
+      await this.jobsService.onJobFailed(job.id);
+    }
 
     return job;
   }

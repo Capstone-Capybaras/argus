@@ -169,13 +169,20 @@ export class ThreatLandscapeService {
     );
 
     // last step: send to aether
-    await this.aetherService.generateThreatLandscape({
-      project_id: data.project_id,
-      job_id: job.id,
-      entity: entity[0],
-      assets: assets,
-      file_key: data.file_key,
-    });
+    try {
+      await this.aetherService.generateThreatLandscape({
+        project_id: data.project_id,
+        job_id: job.id,
+        entity: entity[0],
+        assets: assets,
+        file_key: data.file_key,
+      });
+    } catch (err) {
+      Logger.error(
+        `Could not send generate threat landscape to aether: ${err}`,
+      );
+      await this.jobsService.onJobFailed(job.id);
+    }
 
     return job;
   }
