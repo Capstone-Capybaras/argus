@@ -58,12 +58,16 @@ export const assetsTable = pgTable('assets', {
   id: serial('id').unique().primaryKey(),
   name: varchar().notNull(),
   users: text(),
+  description: text(),
   function: text(),
   sensitive_info: text(),
   category: assetCategory(),
   entity_id: integer()
     .notNull()
     .references(() => entitiesTable.id, { onDelete: 'cascade' }),
+  // NOTE: as of now, drizzle cannot infer json-typed arrays, but is able to do so when not an array
+  // someone has made a PR on drizzle to address this, but not merged yet
+  components: json().array(),
 });
 
 export const participantsTable = pgTable('participants', {
