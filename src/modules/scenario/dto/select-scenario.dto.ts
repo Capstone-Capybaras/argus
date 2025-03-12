@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { scenariosTable } from 'src/database/schema';
 import { SelectAssetDto } from 'src/modules/assets/dto/select-asset.dto';
 import { SelectTtpUsedDto } from 'src/modules/ttp-used/dto/select-ttp-used.dto';
@@ -7,7 +8,21 @@ export class SelectScenarioDto implements InferSelect<typeof scenariosTable> {
   scenario_number: string;
   additional_context: string;
   scenario_title: string;
-  threat_actor_motivation: string;
+
+  @ApiProperty({
+    enum: [
+      'Financial Crime',
+      'Service Disruption',
+      'Information Theft and Espionage',
+      'Damage to Reputation',
+    ],
+  })
+  threat_actor_motivation:
+    | 'Financial Crime'
+    | 'Service Disruption'
+    | 'Information Theft and Espionage'
+    | 'Damage to Reputation';
+
   intended_system_impact: string;
   intended_biz_impact: string;
   attack_sophistication: string;

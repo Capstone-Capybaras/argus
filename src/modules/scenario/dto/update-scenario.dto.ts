@@ -1,3 +1,4 @@
+import { IsIn, IsOptional } from 'class-validator';
 import { scenariosTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
@@ -8,7 +9,18 @@ export class UpdateScenarioDto implements InferUpdate<typeof scenariosTable> {
   project_id: number;
   scenario_title?: string;
   additional_context?: string;
-  threat_actor_motivation?: string;
+  @IsIn([
+    'Financial Crime',
+    'Service Disruption',
+    'Information Theft and Espionage',
+    'Damage to Reputation',
+  ])
+  @IsOptional()
+  threat_actor_motivation?:
+    | 'Financial Crime'
+    | 'Service Disruption'
+    | 'Information Theft and Espionage'
+    | 'Damage to Reputation';
   intended_system_impact?: string;
   intended_biz_impact?: string;
   attack_sophistication?: string;

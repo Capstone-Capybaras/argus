@@ -153,13 +153,20 @@ export const ttpUsedTable = pgTable(
   }),
 );
 
+export const threatActorMotivationEnum = pgEnum('threat_actor_motivation', [
+  'Financial Crime',
+  'Service Disruption',
+  'Information Theft and Espionage',
+  'Damage to Reputation',
+]);
+
 export const scenariosTable = pgTable(
   'scenarios',
   {
     scenario_number: varchar().notNull(),
     additional_context: text().notNull(),
     scenario_title: text().notNull(),
-    threat_actor_motivation: text().notNull(),
+    threat_actor_motivation: threatActorMotivationEnum().notNull(),
     intended_system_impact: text().notNull(),
     intended_biz_impact: text().notNull(),
     attack_sophistication: text().notNull(),
