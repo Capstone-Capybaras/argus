@@ -1,8 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { assetsTable } from 'src/database/schema';
 import { InferSelect } from 'src/utils/modelToDtoTypes';
+import { AssetComponent } from './asset-component.dto';
 
 export class SelectAssetDto implements InferSelect<typeof assetsTable> {
+  @ApiProperty({
+    isArray: true,
+    type: [AssetComponent],
+  })
+  components: unknown[] | null;
+  description: string | null;
   function: string | null;
   id: number;
   name: string;

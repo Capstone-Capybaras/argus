@@ -1,6 +1,16 @@
-import { IsOptional, IsString, IsNumber, IsInt, IsIn } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsOptional,
+  IsString,
+  IsNumber,
+  IsInt,
+  IsIn,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
 import { assetsTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
+import { AssetComponent } from './asset-component.dto';
 
 export class UpdateAssetDto implements InferUpdate<typeof assetsTable> {
   @IsNumber()
@@ -13,6 +23,10 @@ export class UpdateAssetDto implements InferUpdate<typeof assetsTable> {
   @IsOptional()
   @IsString()
   users?: string | null;
+
+  @IsString()
+  @IsOptional()
+  description?: string;
 
   @IsOptional()
   @IsString()
@@ -29,4 +43,10 @@ export class UpdateAssetDto implements InferUpdate<typeof assetsTable> {
   @IsOptional()
   @IsInt()
   entity_id?: number;
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => AssetComponent)
+  components?: AssetComponent[];
 }

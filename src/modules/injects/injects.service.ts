@@ -46,7 +46,10 @@ export class InjectsService {
   }
 
   async getInjects() {
-    const injects = await this.db.select().from(injectsTable);
+    const injects = await this.db
+      .select()
+      .from(injectsTable)
+      .orderBy(injectsTable.scenario_number);
     return injects;
   }
 
@@ -85,7 +88,8 @@ export class InjectsService {
             sql`(SELECT MAX(i.iteration) FROM injects i WHERE i.scenario_number = injects.scenario_number AND i.project_id = ${project_id})`,
           ),
         ),
-      );
+      )
+      .orderBy(injectsTable.scenario_number);
     return injectsWithLatestIteration;
   }
 
