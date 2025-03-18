@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import { CreateTtpUsedDto } from './create-ttp-used.dto';
 import { IsArray, IsInt, IsOptional, ValidateNested } from 'class-validator';
 import { SelectTtpUsedDto } from './select-ttp-used.dto';
+import { BatchOperationResponse } from 'src/utils/BatchOperationResponse';
 
 export class SinglePutTtpUsedDto extends CreateTtpUsedDto {
   // primary key
@@ -17,8 +18,5 @@ export class BatchUpdateTtpUsedDto {
   ttps: SinglePutTtpUsedDto[];
 }
 
-export interface BatchUpdateTtpUsedResponse {
-  success: SelectTtpUsedDto[];
-  failed: SinglePutTtpUsedDto[];
-  failedMessages: string[];
-}
+export interface BatchUpdateTtpUsedResponse
+  extends BatchOperationResponse<SelectTtpUsedDto, SinglePutTtpUsedDto> {}

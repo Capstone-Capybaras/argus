@@ -2,9 +2,7 @@ import {
   Controller,
   Get,
   Post,
-  Patch,
   Delete,
-  Param,
   Body,
   HttpException,
   HttpStatus,
@@ -12,13 +10,17 @@ import {
   Logger,
   Query,
   ParseIntPipe,
+  Put,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-roles.dto';
-import { UpdateRoleDto } from './dto/update-roles.dto';
+import {
+  BatchUpdateRolesDto,
+  BatchUpdateRolesResponse,
+} from './dto/update-roles.dto';
 import { SelectRoleDto } from './dto/select-roles.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { UriDecodePipe } from 'src/utils/uriDecode.pipe';
 
 @ApiBearerAuth()
 @Controller('roles')
@@ -53,40 +55,20 @@ export class RolesController {
     }
   }
 
-  // Get a role by name
-  @Get(':name')
-  async getRoleById(
-    @Param('name', UriDecodePipe) name: string,
-  ): Promise<SelectRoleDto> {
-    try {
-      const role = await this.rolesService.getRoleById(name);
-      if (!role) {
-        throw new HttpException('Role not found', HttpStatus.NOT_FOUND);
-      }
-      return role;
-    } catch (error) {
-      Logger.error(error);
-      throw new BadRequestException(`Failed to fetch role ${error}`);
+  @Put('batch')
+  async batchUpdateRoles(
+    @Body() batchUpdateRoleDto: BatchUpdateRolesDto,
+  ): Promise<BatchUpdateRolesResponse> {
+    if (batchUpdateRoleDto.roles.length === 0) {
+      throw new BadRequestException('No entries provided');
     }
-  }
-
-  // Update a role by name
-  @Patch()
-  async updateRole(
-    @Body() updateRoleDto: UpdateRoleDto,
-  ): Promise<SelectRoleDto> {
     try {
-      const updatedRole = await this.rolesService.updateRole(
-        updateRoleDto.name,
-        updateRoleDto,
-      );
-      if (!updatedRole) {
-        throw new HttpException('Role not found', HttpStatus.NOT_FOUND);
-      }
-      return updatedRole;
-    } catch (error) {
-      Logger.error(error);
-      throw new BadRequestException(`Failed to update role ${error}`);
+      const result =
+        await this.rolesService.batchUpdateRoles(batchUpdateRoleDto);
+      return result;
+    } catch (err) {
+      Logger.error(err);
+      throw new InternalServerErrorException(err);
     }
   }
 
