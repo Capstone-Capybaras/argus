@@ -30,5 +30,7 @@ export class BatchUpdateRolesDto {
   roles: UpdateRoleDto[];
 }
 
-export interface BatchUpdateRolesResponse
-  extends BatchOperationResponse<SelectRoleDto, UpdateRoleDto> {}
+export type BatchUpdateRolesResponse = BatchOperationResponse<
+  SelectRoleDto,
+  UpdateRoleDto
+>;

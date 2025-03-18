@@ -18,5 +18,7 @@ export class BatchUpdateTtpUsedDto {
   ttps: SinglePutTtpUsedDto[];
 }
 
-export interface BatchUpdateTtpUsedResponse
-  extends BatchOperationResponse<SelectTtpUsedDto, SinglePutTtpUsedDto> {}
+export type BatchUpdateTtpUsedResponse = BatchOperationResponse<
+  SelectTtpUsedDto,
+  SinglePutTtpUsedDto
+>;

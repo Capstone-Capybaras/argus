@@ -29,11 +29,15 @@ const participantSheetRequiredColumns = [
 ] as const;
 const roleDescRequiredColumns = ['Role Name', 'Description'] as const;
 
-interface ParticipantSheetRow
-  extends Record<(typeof participantSheetRequiredColumns)[number], string> {}
+type ParticipantSheetRow = Record<
+  (typeof participantSheetRequiredColumns)[number],
+  string
+>;
 
-interface RoleDescriptionSheetRow
-  extends Record<(typeof roleDescRequiredColumns)[number], string> {}
+type RoleDescriptionSheetRow = Record<
+  (typeof roleDescRequiredColumns)[number],
+  string
+>;
 
 @Injectable()
 export class ParticipantsService {
