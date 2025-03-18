@@ -29,7 +29,7 @@ export class ProjectController {
   @Post()
   async createProject(
     @Body() createProjectDto: CreateProjectDto,
-  ): Promise<UpdateProjectDto> {
+  ): Promise<SelectProjectDto> {
     try {
       return await this.projectService.createProject(createProjectDto);
     } catch (error) {
