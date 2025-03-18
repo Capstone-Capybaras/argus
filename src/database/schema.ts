@@ -29,8 +29,10 @@ export const revokedTokensTable = pgTable('revoked_tokens', {
 });
 
 export const exerciseTypeEnum = pgEnum('exercise_type', [
-  'executive',
+  'senior leader',
   'sectorial',
+  'technical',
+  'regulatory compliance',
 ]);
 export const projectsTable = pgTable('projects', {
   id: serial('id').unique().primaryKey(),

@@ -12,8 +12,12 @@ export class CreateProjectDto implements InferInsert<typeof projectsTable> {
   @IsString()
   client_name: string;
 
-  @IsIn(['executive', 'sectorial'])
-  exercise_type: 'executive' | 'sectorial';
+  @IsIn(['senior leader', 'sectorial', 'technical', 'regulatory compliance'])
+  exercise_type:
+    | 'senior leader'
+    | 'sectorial'
+    | 'technical'
+    | 'regulatory compliance';
 
   @IsDateString()
   start_date: string;

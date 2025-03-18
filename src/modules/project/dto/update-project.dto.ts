@@ -22,9 +22,13 @@ export class UpdateProjectDto implements InferUpdate<typeof projectsTable> {
   @IsOptional()
   client_name?: string;
 
-  @IsIn(['executive', 'sectorial'])
+  @IsIn(['senior leader', 'sectorial', 'technical', 'regulatory compliance'])
   @IsOptional()
-  exercise_type?: 'executive' | 'sectorial';
+  exercise_type?:
+    | 'senior leader'
+    | 'sectorial'
+    | 'technical'
+    | 'regulatory compliance';
 
   @IsDateString()
   @IsOptional()
