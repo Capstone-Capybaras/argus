@@ -15,6 +15,7 @@ import {
   unique,
   uuid,
 } from 'drizzle-orm/pg-core';
+import { ProjectDateRange } from 'src/modules/project/dto/project-date-range.dto';
 
 // Existing tables
 export const usersTable = pgTable('users', {
@@ -43,6 +44,7 @@ export const projectsTable = pgTable('projects', {
   end_date: date().notNull(),
   email_header: text(),
   email_footer: text(),
+  projected_exercise_dates: json().$type<ProjectDateRange[]>(),
 });
 
 export const entitiesTable = pgTable('entities', {
