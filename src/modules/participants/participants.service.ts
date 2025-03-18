@@ -19,7 +19,21 @@ import { ParticipantWithRoles } from './dto/select-participant.dto';
 import { ConfigService } from '@nestjs/config';
 import * as XLSX from 'xlsx';
 import { S3Service } from 'src/email/s3.service';
-import { RolesService } from '../roles/roles.service';
+
+const ROLE_DESCRIPTION_SHEET_NAME = 'Role Descriptions';
+
+const participantSheetRequiredColumns = [
+  'TTX Exercise Role',
+  'Email',
+  'Participant Name',
+] as const;
+const roleDescRequiredColumns = ['Role Name', 'Description'] as const;
+
+interface ParticipantSheetRow
+  extends Record<(typeof participantSheetRequiredColumns)[number], string> {}
+
+interface RoleDescriptionSheetRow
+  extends Record<(typeof roleDescRequiredColumns)[number], string> {}
 
 @Injectable()
 export class ParticipantsService {
@@ -28,7 +42,6 @@ export class ParticipantsService {
     private readonly db: ReturnType<typeof drizzle>,
     private readonly configService: ConfigService,
     private readonly s3Service: S3Service,
-    private readonly rolesService: RolesService,
   ) {}
 
   async createParticipant(
@@ -382,11 +395,7 @@ export class ParticipantsService {
     const fileBuffer = await this.s3Service.downloadFile(bucketName, file_key);
     const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
     const errors: string[] = [];
-    interface Row {
-      'TTX Exercise Role': string;
-      Email: string;
-      'Participant Name': string;
-    }
+
     if (!workbook.SheetNames.includes('Participants List')) {
       errors.push(
         "The uploaded Excel file must contain a sheet named 'Participants List'.",
@@ -395,17 +404,37 @@ export class ParticipantsService {
       //throw new Error('The uploaded Excel file must contain a sheet named "msel".');
     }
     const worksheet = workbook.Sheets['Participants List'];
-    const requiredColumns = ['TTX Exercise Role', 'Email', 'Participant Name'];
+    let roleDescWorksheet: XLSX.WorkSheet | null = null;
+    const hasRoleDescSheet = workbook.SheetNames.includes(
+      ROLE_DESCRIPTION_SHEET_NAME,
+    );
     try {
       const { headers, range } = this.getSheetHeaders(worksheet);
-      const missingColumns = requiredColumns.filter(
+      const missingColumns = participantSheetRequiredColumns.filter(
         (col) => !headers.includes(col),
       );
       if (missingColumns.length > 0) {
         errors.push(`Missing required columns: ${missingColumns.join(', ')}`);
         return { success: false, errors: errors };
       }
-      const rows: Row[] = XLSX.utils.sheet_to_json(worksheet, {
+      if (hasRoleDescSheet) {
+        roleDescWorksheet = workbook.Sheets[ROLE_DESCRIPTION_SHEET_NAME];
+        const { headers } = this.getSheetHeaders(roleDescWorksheet);
+        const missingColumns = roleDescRequiredColumns.filter(
+          (col) => !headers.includes(col),
+        );
+        if (missingColumns.length > 0) {
+          errors.push(
+            `Missing required columns for role description sheet: ${missingColumns.join(', ')}`,
+          );
+          return { success: false, errors };
+        }
+      }
+      if (hasRoleDescSheet && !roleDescWorksheet) {
+        errors.push('Could not read role description worksheet');
+        return { success: false, errors };
+      }
+      const rows: ParticipantSheetRow[] = XLSX.utils.sheet_to_json(worksheet, {
         range: range,
         defval: null,
       });
@@ -452,8 +481,72 @@ export class ParticipantsService {
         }
       }
       if (errors.length > 0) {
-        return { success: false, errors: errors };
+        return { success: false, errors };
       }
+
+      const validRoleNames: Set<string> = rows.reduce((acc, curr) => {
+        acc.add(curr['TTX Exercise Role']);
+        return acc;
+      }, new Set<string>());
+
+      let roleDescRows: RoleDescriptionSheetRow[] | null = null;
+      // now check for role description sheet
+      if (hasRoleDescSheet && roleDescWorksheet) {
+        roleDescRows = XLSX.utils.sheet_to_json(roleDescWorksheet, {
+          range: this.getSheetHeaders(roleDescWorksheet).range,
+          defval: null,
+        });
+
+        // check for all role names to be valid and no duplicate
+        // role names should exist in the main sheet
+        // however, not all role names are required to be present, it just needs to be a subset
+        const roleNamesVisited: Set<string> = new Set();
+
+        roleDescRows.forEach((row, i) => {
+          if (row['Role Name'] === null && row['Description'] == null) return;
+
+          if (row['Role Name'] === null) {
+            errors.push(
+              `Role name cannot be empty! empty field at row ${i + 2}`,
+            );
+          } else if (roleNamesVisited.has(row['Role Name'])) {
+            errors.push(
+              `Role name cannot be duplicated! duplicated field at row ${i + 2}`,
+            );
+          } else if (!validRoleNames.has(row['Role Name'])) {
+            errors.push(
+              `Role name not valid! Role name at row ${i + 2} does not exist in the participants list`,
+            );
+          }
+
+          if (
+            row['Description'] === null ||
+            row.Description.trim().length === 0
+          ) {
+            errors.push(
+              `Role description cannot be empty or be whitespaces! empty field at row ${i + 2}`,
+            );
+          }
+
+          roleNamesVisited.add(row['Role Name']);
+        });
+      }
+
+      if (errors.length > 0) {
+        return { success: false, errors };
+      }
+
+      const roleDescriptionHashmap: { [roleName: string]: string } =
+        !roleDescRows
+          ? {}
+          : roleDescRows.reduce(
+              (acc, o) => {
+                acc[o['Role Name']] = o.Description;
+                return acc;
+              },
+              {} as { [roleName: string]: string },
+            );
+
       //insert into db
       return await this.db.transaction(async (tx) => {
         for (const row of rows) {
@@ -462,10 +555,24 @@ export class ParticipantsService {
             .map((role) => role.trim());
           // Ensure roles exist in the entity
           for (const role of newRoles) {
+            const description = roleDescriptionHashmap[role];
             await tx
               .insert(rolesTable)
-              .values({ name: role, entity_id })
-              .onConflictDoNothing();
+              .values({
+                name: role,
+                entity_id,
+                ...(description ? { description } : {}),
+              })
+              .onConflictDoUpdate({
+                target: [rolesTable.entity_id, rolesTable.name],
+                set: {
+                  // leave name and entity id as it was
+                  name: sql`${rolesTable.name}`,
+                  entity_id: sql`${rolesTable.entity_id}`,
+                  // if description was given use it else, keep as-is
+                  description: description || sql`${rolesTable.description}`,
+                },
+              });
           }
           // Insert participant, dont insert if already exists
           await tx
