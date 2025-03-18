@@ -35,11 +35,12 @@ export const exerciseTypeEnum = pgEnum('exercise_type', [
 export const projectsTable = pgTable('projects', {
   id: serial('id').unique().primaryKey(),
   name: text().notNull().unique(),
+  client_name: text().notNull(),
   exercise_type: exerciseTypeEnum().notNull(),
   start_date: date().notNull(),
   end_date: date().notNull(),
-  email_header: text().notNull(),
-  email_footer: text().notNull(),
+  email_header: text(),
+  email_footer: text(),
 });
 
 export const entitiesTable = pgTable('entities', {

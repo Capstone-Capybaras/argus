@@ -18,6 +18,10 @@ export class UpdateProjectDto implements InferUpdate<typeof projectsTable> {
   @IsOptional()
   name?: string;
 
+  @IsString()
+  @IsOptional()
+  client_name?: string;
+
   @IsIn(['executive', 'sectorial'])
   @IsOptional()
   exercise_type?: 'executive' | 'sectorial';
