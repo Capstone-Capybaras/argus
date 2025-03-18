@@ -6,7 +6,7 @@ export class CreateScenarioDto implements InferInsert<typeof scenariosTable> {
   scenario_number: string;
   additional_context: string;
   scenario_title: string;
-  threat_actor_motivation: string;
+  threat_actor_motivation: 'Finance Crime' | 'Service Disruption' | 'Information Theft & Espionage' | 'Damage to Reputation';
   intended_system_impact: string;
   intended_biz_impact: string;
   attack_sophistication: string;
