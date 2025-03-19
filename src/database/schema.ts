@@ -15,6 +15,7 @@ import {
   unique,
   uuid,
 } from 'drizzle-orm/pg-core';
+import { AssetComponent } from 'src/modules/assets/dto/asset-component.dto';
 import { ProjectDateRange } from 'src/modules/project/dto/project-date-range.dto';
 
 // Existing tables
@@ -70,9 +71,7 @@ export const assetsTable = pgTable('assets', {
   entity_id: integer()
     .notNull()
     .references(() => entitiesTable.id, { onDelete: 'cascade' }),
-  // NOTE: as of now, drizzle cannot infer json-typed arrays, but is able to do so when not an array
-  // someone has made a PR on drizzle to address this, but not merged yet
-  components: json().array(),
+  components: json().$type<AssetComponent[]>(),
 });
 
 export const participantsTable = pgTable('participants', {
