@@ -18,5 +18,5 @@ export class AetherGenerateMselDto {
   ttpUsed: SelectTtpUsedDto[];
   entity: SelectEntityOnlyDto;
   asset: SelectAssetDto;
-  roles: SelectRoleDto['name'][];
+  roles: SelectRoleDto[];
 }
