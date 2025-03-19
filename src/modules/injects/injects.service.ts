@@ -186,9 +186,7 @@ export class InjectsService {
       );
     }
     // get roles
-    const roles = (await this.rolesService.getAllRolesForEntity(entity.id)).map(
-      (r) => r.name,
-    );
+    const roles = await this.rolesService.getAllRolesForEntity(entity.id);
     //get exercise type
     const [project] = await this.db
       .select()

@@ -315,10 +315,12 @@ export const tacticsTable = pgTable(
 export const rolesTable = pgTable(
   'roles',
   {
+    // name is the role NAME/label
     name: varchar().notNull(),
     entity_id: integer()
       .notNull()
       .references(() => entitiesTable.id, { onDelete: 'cascade' }),
+    description: text(),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.name, table.entity_id] }),
