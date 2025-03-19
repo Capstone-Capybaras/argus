@@ -95,7 +95,11 @@ export class EmailService {
   async updateStatus(emailId: number, status: string) {
     const result = await this.database
       .update(schemas.emailsTable)
-      .set({ status: status })
+      .set({
+        status,
+        // whenever status is sent to sent, change is_active to false
+        ...(status === 'sent' ? { is_active: false } : {}),
+      })
       .where(eq(schemas.emailsTable.id, emailId))
       .returning();
     return result || null;
@@ -230,6 +234,10 @@ export class EmailService {
       const emailContent = await this.getEmailsById(emailId);
       if (emailContent === null) {
         throw new Error('Email does not exist');
+      }
+      if (!emailContent.is_active) {
+        // if not active, don't send at all
+        return;
       }
       const projId = emailContent.project_id;
       const emailHeaderFooter = await this.getEmailHeaderFooter(projId);

@@ -1,5 +1,11 @@
 //import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsArray, IsDateString, IsOptional } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsArray,
+  IsDateString,
+  IsOptional,
+  IsBoolean,
+} from 'class-validator';
 import { emailsTable } from 'src/database/schema';
 import { InferInsert, InferUpdate } from 'src/utils/modelToDtoTypes';
 
@@ -25,6 +31,10 @@ export class CreateMailDto implements InferInsert<typeof emailsTable> {
   jobId?: string | null;
   status?: string;
   errorMessage?: string | null;
+
+  @IsBoolean()
+  @IsOptional()
+  is_active?: boolean;
 }
 
 export class UpdateMailDBDto implements InferUpdate<typeof emailsTable> {
@@ -45,6 +55,10 @@ export class UpdateMailDBDto implements InferUpdate<typeof emailsTable> {
   @IsNotEmpty()
   status?: string;
   error_message?: string | null;
+
+  @IsBoolean()
+  @IsOptional()
+  is_active?: boolean;
 }
 
 export class UpdateMailClient {
@@ -69,6 +83,10 @@ export class UpdateMailClient {
   jobId?: string | null;
   status?: string;
   errorMessage?: string | null;
+
+  @IsBoolean()
+  @IsOptional()
+  is_active?: boolean;
 }
 
 export class AttachmentDto {
