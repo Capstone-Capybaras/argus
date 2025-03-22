@@ -49,7 +49,7 @@ export class EmailController {
   @Get('sendOne/:emailId')
   async sendMailer(@Param('emailId', ParseIntPipe) emailId: number) {
     try {
-      const mail = await this.emailService.sendMail(emailId);
+      const mail = await this.emailService.sendMail(emailId, true);
       return {
         message: 'success',
         mail,

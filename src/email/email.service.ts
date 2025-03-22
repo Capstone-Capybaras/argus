@@ -215,7 +215,7 @@ export class EmailService {
     return { resp: resp };
   }
 
-  async sendMail(emailId: number) {
+  async sendMail(emailId: number, forceSend = false) {
     if (emailId === null) {
       throw new Error('Email ID is null');
     }
@@ -235,8 +235,8 @@ export class EmailService {
       if (emailContent === null) {
         throw new Error('Email does not exist');
       }
-      if (!emailContent.is_active) {
-        // if not active, don't send at all
+      if (!emailContent.is_active && !forceSend) {
+        // if not active, and not force sending don't send at all
         return;
       }
       const projId = emailContent.project_id;
