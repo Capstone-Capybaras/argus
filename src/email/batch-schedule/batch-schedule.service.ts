@@ -10,6 +10,28 @@ import { EmailService } from '../email.service';
 import { S3Service } from '../s3.service';
 import { RedisService } from '../redis/redis.service';
 import { ConfigService } from '@nestjs/config';
+import { isBoolean } from 'lodash';
+
+const scheduleRequiredColumns = [
+  'real_day',
+  'real_time',
+  'inject',
+  'subject',
+  'artefact_name',
+  'email_groups',
+  'additional_tos',
+  'is_active',
+] as const;
+
+export type ScheduleSheetRow = Omit<
+  Record<(typeof scheduleRequiredColumns)[number], string>,
+  'is_active'
+> & {
+  ccs: string;
+  bccs: string;
+  real_day: number;
+  is_active?: boolean; // either true, false or undefined (excel empty cell)
+};
 
 @Injectable()
 export class BatchScheduleService {
@@ -145,29 +167,9 @@ export class BatchScheduleService {
       return { success: false, errors: errors };
     }
     const worksheet = workbook.Sheets['schedule'];
-    interface Row {
-      subject: string;
-      artefact_name: string;
-      inject: string;
-      email_groups: string;
-      additional_tos: string;
-      real_day: number;
-      real_time: string;
-      ccs: string;
-      bccs: string;
-    }
     try {
       const headers = this.getSheetHeaders(worksheet);
-      const requiredColumns = [
-        'real_day',
-        'real_time',
-        'inject',
-        'subject',
-        'artefact_name',
-        'email_groups',
-        'additional_tos',
-      ];
-      const missingColumns = requiredColumns.filter(
+      const missingColumns = scheduleRequiredColumns.filter(
         (col) => !headers.includes(col),
       );
       if (missingColumns.length > 0) {
@@ -176,9 +178,9 @@ export class BatchScheduleService {
       }
       //parse and check for error
       //check if file exists and number of uploaded files matched number of attachments needed.
-      const rows: Row[] = XLSX.utils.sheet_to_json(worksheet);
+      const rows: ScheduleSheetRow[] = XLSX.utils.sheet_to_json(worksheet);
       const artefacts: string[] = rows
-        .map((row: Row) => row['artefact_name']?.trim())
+        .map((row: ScheduleSheetRow) => row['artefact_name']?.trim())
         .filter((artefact) => artefact && artefact !== '');
       if (artefacts.length != attachments.length) {
         errors.push(
@@ -212,7 +214,7 @@ export class BatchScheduleService {
       //check body not empty, subject not empty,
       //const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
       const subjectColumn: string[] = rows.map(
-        (row: Row) => row['subject'] || '',
+        (row: ScheduleSheetRow) => row['subject'] || '',
       );
       console.log(subjectColumn);
       let emptyFieldsWithRow = subjectColumn
@@ -226,7 +228,9 @@ export class BatchScheduleService {
           `Empty fields found in column 'subject' at: ${emptyFieldsInfo}`,
         );
       }
-      const bodyColumn: string[] = rows.map((row: Row) => row['inject'] || '');
+      const bodyColumn: string[] = rows.map(
+        (row: ScheduleSheetRow) => row['inject'] || '',
+      );
       emptyFieldsWithRow = bodyColumn
         .map((value, index) => ({ value, row: index }))
         .filter((item) => !item.value || item.value.trim() === '');
@@ -241,7 +245,7 @@ export class BatchScheduleService {
       //check email groups or tos not empty
       const emptyTos = rows
         .slice(1)
-        .map((row: Row, index) => ({
+        .map((row: ScheduleSheetRow, index) => ({
           row: index, // Account for header row (1-based index)
           colA: row['email_groups'],
           colB: row['additional_tos'],
@@ -262,7 +266,10 @@ export class BatchScheduleService {
       //check date string correct
       const today = this.getTodaySerial();
       const dateRows = rows
-        .map((row: Row, index) => ({ value: row['real_day'], index: index }))
+        .map((row: ScheduleSheetRow, index) => ({
+          value: row['real_day'],
+          index: index,
+        }))
         .filter((date) => date.value !== undefined);
       const nonDates = dateRows.filter(
         (value) =>
@@ -273,12 +280,15 @@ export class BatchScheduleService {
       if (nonDates.length > 0) {
         const errorRows = nonDates.map((values) => values.index).join(', ');
         errors.push(
-          `All values in 'real_day' column has to be either empty or a date. Errors on rows: ${errorRows}`,
+          `All values in 'real_day' column has to be either empty or a date. Dates also cannot be earlier than today. Errors on rows: ${errorRows}`,
         );
       }
       //check time string correct
       const timeRows = rows
-        .map((row: Row, index) => ({ value: row['real_time'], index: index }))
+        .map((row: ScheduleSheetRow, index) => ({
+          value: row['real_time'],
+          index: index,
+        }))
         .filter((time) => time.value !== undefined);
       const nonTimes = timeRows.filter(
         (value) => !this.isValid24HourTime(value.value),
@@ -352,7 +362,7 @@ export class BatchScheduleService {
         }
       }
       //check valid emails
-      rows.forEach((row: Row, index) => {
+      rows.forEach((row: ScheduleSheetRow, index) => {
         const value = row['additional_tos'];
         if (value !== undefined && value !== '') {
           // Allow empty cells
@@ -393,6 +403,14 @@ export class BatchScheduleService {
           }
         }
       });
+
+      // check is_active states
+      const activeStates = rows.map((r) => r.is_active);
+      if (activeStates.some((s) => s !== undefined && !isBoolean(s))) {
+        // some malformed cell values
+        errors.push('is_active has to either be TRUE, FALSE or left empty');
+      }
+
       if (errors.length > 0) {
         return { success: false, errors: errors };
       }
@@ -405,7 +423,7 @@ export class BatchScheduleService {
 
     //schedule emails
     const scheduled: { jobId: string | null; emailId: number }[] = []; // array of successfully scheduled jobs
-    const rows: Row[] = XLSX.utils.sheet_to_json(worksheet);
+    const rows: ScheduleSheetRow[] = XLSX.utils.sheet_to_json(worksheet);
     for (const value of rows) {
       let tos: string[] =
         value.additional_tos !== undefined && value.additional_tos !== ''
@@ -470,9 +488,12 @@ export class BatchScheduleService {
           value.artefact_name !== undefined && value.artefact_name !== ''
             ? [`${projectId}/artefact/batch/${value.artefact_name}`]
             : [],
-        ...(datetimeString !== '' && { scheduleDateTime: datetimeString }),
-        ...(ccs.length > 0 && { cc: ccs }),
-        ...(bccs.length > 0 && { bcc: bccs }),
+        ...(datetimeString !== '' ? { scheduleDateTime: datetimeString } : {}),
+        ...(ccs.length > 0 ? { cc: ccs } : {}),
+        ...(bccs.length > 0 ? { bcc: bccs } : {}),
+        ...(value.is_active !== undefined
+          ? { is_active: value.is_active }
+          : {}),
       };
       console.log('data: ', data);
       try {

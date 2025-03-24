@@ -14,6 +14,7 @@ import {
   time,
   unique,
   uuid,
+  boolean,
 } from 'drizzle-orm/pg-core';
 import { AssetComponent } from 'src/modules/assets/dto/asset-component.dto';
 import { ProjectDateRange } from 'src/modules/project/dto/project-date-range.dto';
@@ -503,6 +504,7 @@ export const emailsTable = pgTable('emails', {
   error_message: text(),
   status: text().default('notScheduled'), // status: notScheduled, scheduled, sent, failed
   observations: text(),
+  is_active: boolean().default(true).notNull(),
 });
 
 export const serverTypeEnum = pgEnum('server_type', ['simx1', 'simx2']);

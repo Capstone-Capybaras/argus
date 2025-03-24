@@ -130,6 +130,7 @@ export class RedisService {
         subject: data.subject,
         html: data.html,
         attachments: data.attachments,
+        is_active: data.is_active,
       };
       const entry = await this.emailService.addEmail(emailData);
       const emailId = entry[0].id;
@@ -145,11 +146,12 @@ export class RedisService {
         };
         resp = await this.emailService.updateEmail(emailId, scheduleData);
       } else {
-        const scheduleData = {
-          jobId: null,
-          scheduleDateTime: null,
+        const scheduleData: UpdateMailDBDto = {
+          redis_job_id: null,
+          schedule_date_time: null,
           status: 'notScheduled',
-          errorMessage: null,
+          error_message: null,
+          is_active: false, // if no schedule, we must set is_active to false
         };
         resp = await this.emailService.updateEmail(emailId, scheduleData);
       }
@@ -167,6 +169,9 @@ export class RedisService {
         subject: updateMailDto.subject,
         html: updateMailDto.html,
         attachments: updateMailDto.attachments,
+        ...(updateMailDto.is_active
+          ? { is_active: updateMailDto.is_active }
+          : {}),
       };
       let update = await this.emailService.updateEmail(
         updateMailDto.emailId,
