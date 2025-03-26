@@ -5,13 +5,12 @@ import {
   IsNumber,
   IsOptional,
   IsArray,
-  ValidateNested,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import * as sanitizeHtml from 'sanitize-html';
 import { projectsTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
-import { ProjectDateRange } from './project-date-range.dto';
+import { IsDateBetweenRangeDecorator } from 'src/validators/date-between-range.decorator';
 
 export class UpdateProjectDto implements InferUpdate<typeof projectsTable> {
   @IsNumber()
@@ -53,7 +52,7 @@ export class UpdateProjectDto implements InferUpdate<typeof projectsTable> {
 
   @IsArray()
   @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => ProjectDateRange)
-  projected_exercise_dates?: ProjectDateRange[];
+  @IsDateString({}, { each: true })
+  @IsDateBetweenRangeDecorator()
+  projected_exercise_dates?: string[];
 }
