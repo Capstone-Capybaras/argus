@@ -100,7 +100,7 @@ export class RolesService {
       await Promise.all(
         roles.map(async (role) => {
           try {
-            const [result] = await this.db
+            const [result] = await tx
               .insert(rolesTable)
               .values(role)
               .onConflictDoUpdate({
