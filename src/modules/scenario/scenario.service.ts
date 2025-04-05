@@ -7,7 +7,7 @@ import {
   scenariosGeneratedTable,
   scenariosTable,
   ttpUsedTable,
-  entitiesTable
+  entitiesTable,
 } from '../../database/schema';
 import { CreateScenarioDto } from './dto/create-scenario.dto';
 import { UpdateScenarioDto } from './dto/update-scenario.dto';
@@ -168,35 +168,46 @@ export class ScenarioService {
     return result[0] || null;
   }
 
-  async learnScenario(project_id: number, scenario_number: string){
-    const scenario = await this.db.select().from(scenariosTable)
+  async learnScenario(project_id: number, scenario_number: string) {
+    const scenario = await this.db
+      .select()
+      .from(scenariosTable)
       .where(
         and(
           eq(scenariosTable.scenario_number, scenario_number),
-          eq(scenariosTable.project_id, project_id)
-        )
-      ).limit(1);
-    if (scenario.length === 0){
-      throw new Error(`Scenario ${scenario_number} does not exist in project ${project_id}.`);
+          eq(scenariosTable.project_id, project_id),
+        ),
+      )
+      .limit(1);
+    if (scenario.length === 0) {
+      throw new Error(
+        `Scenario ${scenario_number} does not exist in project ${project_id}.`,
+      );
     }
-    if (!scenario[0].saveToLearnings){
-      return {job: null}
+    if (!scenario[0].save_to_learnings) {
+      return { job: null };
     }
     const assetId = scenario[0].asset_id;
-    const asset = await this.db.select().from(assetsTable).where(eq(assetsTable.id, assetId));
+    const asset = await this.db
+      .select()
+      .from(assetsTable)
+      .where(eq(assetsTable.id, assetId));
     const entityId = asset[0].entity_id;
-    const entity = await this.db.select().from(entitiesTable).where(eq(entitiesTable.id, entityId));
+    const entity = await this.db
+      .select()
+      .from(entitiesTable)
+      .where(eq(entitiesTable.id, entityId));
 
-    //create job 
+    //create job
     const [createdJob] = await this.db
-        .insert(jobsTable)
-        .values({
-          type: 'learning',
-          status: 'pending',
-          name: `[Save Learning] - ${entity[0].name}, ${scenario_number}`,
-          project_id: project_id,
-        })
-        .returning();
+      .insert(jobsTable)
+      .values({
+        type: 'learning',
+        status: 'pending',
+        name: `[Save Learning] - ${entity[0].name}, ${scenario_number}`,
+        project_id: project_id,
+      })
+      .returning();
 
     const scenarioLearningReq: AetherScenarioLearningDto = {
       project_id: project_id,
@@ -204,15 +215,15 @@ export class ScenarioService {
       scenario: scenario[0],
       asset: asset[0],
       entity: entity[0],
-      job_id: createdJob.id
-    }
+      job_id: createdJob.id,
+    };
     try {
       await this.aetherService.saveScenarioLearnings(scenarioLearningReq);
-      return {job: createdJob}
+      return { job: createdJob };
     } catch (err) {
       Logger.error(`Could not send generate scenario to aether: ${err}`);
       await this.jobsService.onJobFailed(createdJob.id);
-      return {job:null, error: err}
+      return { job: null, error: err };
     }
   }
 

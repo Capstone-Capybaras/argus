@@ -125,7 +125,7 @@ export class ScenarioController {
   @Patch()
   async updateScenario(
     @Body() updateScenarioDto: UpdateScenarioDto,
-  ): Promise<{scenario: SelectScenarioDto, job: SelectJobDto | null}> {
+  ): Promise<{ scenario: SelectScenarioDto; job: SelectJobDto | null }> {
     try {
       const updatedScenario = await this.scenarioService.updateScenario(
         updateScenarioDto.project_id,
@@ -135,11 +135,14 @@ export class ScenarioController {
       if (!updatedScenario) {
         throw new HttpException('Scenario not found', HttpStatus.NOT_FOUND);
       }
-      const learningResp = await this.scenarioService.learnScenario(updateScenarioDto.project_id, updateScenarioDto.scenario_number);
-      if(learningResp.error){
-        throw new InternalServerErrorException(learningResp.error)
+      const learningResp = await this.scenarioService.learnScenario(
+        updateScenarioDto.project_id,
+        updateScenarioDto.scenario_number,
+      );
+      if (learningResp.error) {
+        throw new InternalServerErrorException(learningResp.error);
       } else {
-        return {scenario: updatedScenario, job: learningResp.job}
+        return { scenario: updatedScenario, job: learningResp.job };
       }
     } catch (error) {
       Logger.error(error);
