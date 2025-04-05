@@ -7,6 +7,7 @@ import {
   scenariosGeneratedTable,
   scenariosTable,
   ttpUsedTable,
+  entitiesTable
 } from '../../database/schema';
 import { CreateScenarioDto } from './dto/create-scenario.dto';
 import { UpdateScenarioDto } from './dto/update-scenario.dto';
@@ -23,6 +24,7 @@ import {
 import { AetherService } from '../aether/aether.service';
 import { MasterThreatCubesService } from '../master-threat-cubes/master-threat-cubes.service';
 import { ThreatLandscapeService } from '../threat-landscape/threat-landscape.service';
+import { AetherScenarioLearningDto } from '../aether/dto/aether-scenario-learnings.dto';
 
 @Injectable()
 export class ScenarioService {
@@ -164,6 +166,54 @@ export class ScenarioService {
       )
       .returning();
     return result[0] || null;
+  }
+
+  async learnScenario(project_id: number, scenario_number: string){
+    const scenario = await this.db.select().from(scenariosTable)
+      .where(
+        and(
+          eq(scenariosTable.scenario_number, scenario_number),
+          eq(scenariosTable.project_id, project_id)
+        )
+      ).limit(1);
+    if (scenario.length === 0){
+      throw new Error(`Scenario ${scenario_number} does not exist in project ${project_id}.`);
+    }
+    if (!scenario[0].saveToLearnings){
+      return {job: null}
+    }
+    const assetId = scenario[0].asset_id;
+    const asset = await this.db.select().from(assetsTable).where(eq(assetsTable.id, assetId));
+    const entityId = asset[0].entity_id;
+    const entity = await this.db.select().from(entitiesTable).where(eq(entitiesTable.id, entityId));
+
+    //create job 
+    const [createdJob] = await this.db
+        .insert(jobsTable)
+        .values({
+          type: 'learning',
+          status: 'pending',
+          name: `[Save Learning] - ${entity[0].name}, ${scenario_number}`,
+          project_id: project_id,
+        })
+        .returning();
+
+    const scenarioLearningReq: AetherScenarioLearningDto = {
+      project_id: project_id,
+      scenario_number: scenario_number,
+      scenario: scenario[0],
+      asset: asset[0],
+      entity: entity[0],
+      job_id: createdJob.id
+    }
+    try {
+      await this.aetherService.saveScenarioLearnings(scenarioLearningReq);
+      return {job: createdJob}
+    } catch (err) {
+      Logger.error(`Could not send generate scenario to aether: ${err}`);
+      await this.jobsService.onJobFailed(createdJob.id);
+      return {job:null, error: err}
+    }
   }
 
   // Delete a scenario by scenario_number

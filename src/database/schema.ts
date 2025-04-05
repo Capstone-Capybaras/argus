@@ -184,6 +184,7 @@ export const scenariosTable = pgTable(
     asset_id: integer()
       .notNull()
       .references(() => assetsTable.id, { onDelete: 'cascade' }),
+    saveToLearnings: boolean().default(true)
   },
   (table) => ({
     pk: primaryKey({ columns: [table.scenario_number, table.project_id] }),
@@ -520,7 +521,7 @@ export const mselTable = pgTable('msel', {
   date_uploaded: timestamp().notNull(),
 });
 
-export const jobTypesEnum = pgEnum('job_types', ['scenario', 'msel', 'threat']);
+export const jobTypesEnum = pgEnum('job_types', ['scenario', 'msel', 'threat', 'learning']);
 export const jobStatusEnum = pgEnum('job_status', [
   'pending',
   'failed',

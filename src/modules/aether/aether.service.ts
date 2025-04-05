@@ -10,6 +10,7 @@ import {
   AetherChatMessage,
   AetherGenerateChatDto,
 } from './dto/aether-generate-chat.dto';
+import { AetherScenarioLearningDto } from './dto/aether-scenario-learnings.dto';
 
 interface AetherJwtPayload {
   username: string;
@@ -86,6 +87,27 @@ export class AetherService {
           catchError((error: AxiosError) => {
             Logger.error(error?.response?.data);
             throw 'An error happened sending Threat Landscape generation request to AI service';
+          }),
+        ),
+    );
+
+    return data;
+  }
+
+  async saveScenarioLearnings(body: AetherScenarioLearningDto) {
+    const token = await this.createToken();
+
+    const { data } = await firstValueFrom(
+      this.httpService
+        .post('/scenario_learning', body, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .pipe(
+          catchError((error: AxiosError) => {
+            Logger.error(error?.response?.data);
+            throw 'An error happened sending scenario generation request to AI service';
           }),
         ),
     );
