@@ -22,7 +22,7 @@ export class GenerateScenarioCallbackDto {
   @IsObject()
   @ValidateNested()
   @Type(() => CreateScenarioDto)
-  scenario?: CreateScenarioDto;
+  scenarios?: CreateScenarioDto[];
 
   @IsArray()
   @IsOptional()
