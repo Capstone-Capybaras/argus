@@ -382,16 +382,16 @@ export class ScenarioService {
         });
 
       //insert to generated table
-      const addedGenInputs = scenarioData.map((scenario)=>({
-        ... scenario,
-        generation_inputs: generationInputs
-      }))
-      await tx
-        .insert(scenariosGeneratedTable)
-        .values(addedGenInputs);
+      const addedGenInputs = scenarioData.map((scenario) => ({
+        ...scenario,
+        generation_inputs: generationInputs,
+      }));
+      await tx.insert(scenariosGeneratedTable).values(addedGenInputs);
 
       // if exists previously generated ttp used, delete
-      const scenario_numbers = scenarioData.map((scenario)=>scenario.scenario_number)
+      const scenario_numbers = scenarioData.map(
+        (scenario) => scenario.scenario_number,
+      );
       await tx
         .delete(ttpUsedTable)
         .where(
