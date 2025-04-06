@@ -26,6 +26,7 @@ export class CreateMailDto implements InferInsert<typeof emailsTable> {
   subject: string;
   @IsNotEmpty()
   html: string;
+  @IsOptional()
   attachments?: string[];
 
   @IsOptional()
@@ -33,8 +34,11 @@ export class CreateMailDto implements InferInsert<typeof emailsTable> {
   @Transform(({ value }) => (typeof value === 'string' ? new Date(value) : value))
   schedule_date_time?: Date;
 
+  @IsOptional()
   redis_job_id?: string;
+  @IsOptional()
   status?: string;
+  @IsOptional()
   error_message?: string;
 
   @IsBoolean()
