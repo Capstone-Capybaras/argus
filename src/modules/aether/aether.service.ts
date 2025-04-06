@@ -107,7 +107,7 @@ export class AetherService {
         .pipe(
           catchError((error: AxiosError) => {
             Logger.error(error?.response?.data);
-            throw 'An error happened sending scenario generation request to AI service';
+            throw 'An error happened sending scenario learning request to AI service';
           }),
         ),
     );

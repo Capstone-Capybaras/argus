@@ -19,8 +19,8 @@ export class GenerateScenarioCallbackDto {
   job_status: typeof jobsTable.$inferSelect.status;
 
   @IsOptional()
-  @IsObject()
-  @ValidateNested()
+  @IsArray()
+  @ValidateNested({ each: true })
   @Type(() => CreateScenarioDto)
   scenarios?: CreateScenarioDto[];
 

@@ -365,7 +365,7 @@ export class ScenarioService {
     );
 
     if (!generationInputs) {
-      Logger.warn('No msel generation input found in redis');
+      Logger.warn('No scenario generation input found in redis');
     }
     await this.db.transaction(async (tx) => {
       //upsert scenario table
