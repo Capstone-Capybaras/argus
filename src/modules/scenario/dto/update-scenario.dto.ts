@@ -29,4 +29,5 @@ export class UpdateScenarioDto implements InferUpdate<typeof scenariosTable> {
   exploit?: string;
   impact?: string;
   asset_id?: number;
+  save_to_learnings?: boolean;
 }

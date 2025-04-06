@@ -5,8 +5,8 @@ import { InferSelect } from 'src/utils/modelToDtoTypes';
 export class SelectJobDto implements InferSelect<typeof jobsTable> {
   id: number;
 
-  @ApiProperty({ enum: ['scenario', 'msel', 'threat'] })
-  type: 'scenario' | 'msel' | 'threat';
+  @ApiProperty({ enum: ['scenario', 'msel', 'threat', 'learning'] })
+  type: 'scenario' | 'msel' | 'threat' | 'learning';
 
   @ApiProperty({ enum: ['pending', 'failed', 'done'] })
   status: 'pending' | 'failed' | 'done';

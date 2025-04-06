@@ -7,10 +7,11 @@ import {
   scenariosGeneratedTable,
   scenariosTable,
   ttpUsedTable,
+  entitiesTable,
 } from '../../database/schema';
 import { CreateScenarioDto } from './dto/create-scenario.dto';
 import { UpdateScenarioDto } from './dto/update-scenario.dto';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 import { GenerateScenarioDto } from './dto/generate-scenario.dto';
 import { EntityService } from '../entity/entity.service';
 import { AssetsService } from '../assets/assets.service';
@@ -23,6 +24,8 @@ import {
 import { AetherService } from '../aether/aether.service';
 import { MasterThreatCubesService } from '../master-threat-cubes/master-threat-cubes.service';
 import { ThreatLandscapeService } from '../threat-landscape/threat-landscape.service';
+import { AetherScenarioLearningDto } from '../aether/dto/aether-scenario-learnings.dto';
+import { RedisService } from 'src/email/redis/redis.service';
 
 @Injectable()
 export class ScenarioService {
@@ -35,6 +38,7 @@ export class ScenarioService {
     private readonly aetherService: AetherService,
     private readonly masterThreatCubeService: MasterThreatCubesService,
     private readonly threatLandscapeService: ThreatLandscapeService,
+    private readonly redisService: RedisService,
   ) {}
 
   // Create a new scenario
@@ -166,6 +170,65 @@ export class ScenarioService {
     return result[0] || null;
   }
 
+  async learnScenario(project_id: number, scenario_number: string) {
+    const scenario = await this.db
+      .select()
+      .from(scenariosTable)
+      .where(
+        and(
+          eq(scenariosTable.scenario_number, scenario_number),
+          eq(scenariosTable.project_id, project_id),
+        ),
+      )
+      .limit(1);
+    if (scenario.length === 0) {
+      throw new Error(
+        `Scenario ${scenario_number} does not exist in project ${project_id}.`,
+      );
+    }
+    if (!scenario[0].save_to_learnings) {
+      return { job: null };
+    }
+    const assetId = scenario[0].asset_id;
+    const asset = await this.db
+      .select()
+      .from(assetsTable)
+      .where(eq(assetsTable.id, assetId));
+    const entityId = asset[0].entity_id;
+    const entity = await this.db
+      .select()
+      .from(entitiesTable)
+      .where(eq(entitiesTable.id, entityId));
+
+    //create job
+    const [createdJob] = await this.db
+      .insert(jobsTable)
+      .values({
+        type: 'learning',
+        status: 'pending',
+        name: `[Save Learning] - ${entity[0].name}, ${scenario_number}`,
+        project_id: project_id,
+      })
+      .returning();
+
+    const scenarioLearningReq: AetherScenarioLearningDto = {
+      project_id: project_id,
+      scenario_number: scenario_number,
+      scenario: scenario[0],
+      asset: asset[0],
+      entity: entity[0],
+      job_id: createdJob.id,
+    };
+    try {
+      await this.aetherService.saveScenarioLearnings(scenarioLearningReq);
+      return { job: createdJob };
+    } catch (err) {
+      Logger.error(`Could not send generate scenario to aether: ${err}`);
+      await this.jobsService.onJobFailed(createdJob.id);
+      return { job: null, error: err };
+    }
+  }
+
   // Delete a scenario by scenario_number
   async deleteScenario(
     scenario_number: string,
@@ -236,16 +299,6 @@ export class ScenarioService {
 
     // create job and return it
     const job = await this.db.transaction(async (tx) => {
-      // insert base record into generated table, no content
-      // the main motivation is to store the generation inputs
-      await tx.insert(scenariosGeneratedTable).values({
-        scenario_number: generateScenarioDto.scenario_number,
-        project_id: generateScenarioDto.project_id,
-        asset_id: generateScenarioDto.asset_id,
-        threat_actor_motivation: generateScenarioDto.threat_actor_motivation,
-        generation_inputs: generationInputs,
-      });
-
       // create job
       const [createdJob] = await tx
         .insert(jobsTable)
@@ -259,6 +312,12 @@ export class ScenarioService {
 
       return createdJob;
     });
+
+    // set generation input in redis
+    await this.redisService.setGenerationInput(
+      String(job.id),
+      generationInputs,
+    );
 
     try {
       await this.aetherService.generateScenario({
@@ -277,7 +336,7 @@ export class ScenarioService {
   }
 
   async generateScenarioCallback(data: GenerateScenarioCallbackDto) {
-    const { job_status, job_id, scenario: scenarioData, ttpUsed } = data;
+    const { job_status, job_id, scenarios: scenarioData, ttpUsed } = data;
 
     if (job_status === 'pending') return;
 
@@ -299,21 +358,16 @@ export class ScenarioService {
     }
 
     // if job succeeds
-    await this.db.transaction(async (tx) => {
-      // update the 2 secnario tables (master table + generated)
-      await tx
-        .update(scenariosGeneratedTable)
-        .set(scenarioData)
-        .where(
-          and(
-            eq(
-              scenariosGeneratedTable.scenario_number,
-              scenarioData.scenario_number,
-            ),
-            eq(scenariosGeneratedTable.project_id, scenarioData.project_id),
-          ),
-        );
 
+    // get inputs from redis
+    const generationInputs = await this.redisService.getRedisItem(
+      String(job_id),
+    );
+
+    if (!generationInputs) {
+      Logger.warn('No scenario generation input found in redis');
+    }
+    await this.db.transaction(async (tx) => {
       //upsert scenario table
       await tx
         .insert(scenariosTable)
@@ -327,13 +381,23 @@ export class ScenarioService {
           },
         });
 
+      //insert to generated table
+      const addedGenInputs = scenarioData.map((scenario) => ({
+        ...scenario,
+        generation_inputs: generationInputs,
+      }));
+      await tx.insert(scenariosGeneratedTable).values(addedGenInputs);
+
       // if exists previously generated ttp used, delete
+      const scenario_numbers = scenarioData.map(
+        (scenario) => scenario.scenario_number,
+      );
       await tx
         .delete(ttpUsedTable)
         .where(
           and(
-            eq(ttpUsedTable.scenario_number, scenarioData.scenario_number),
-            eq(ttpUsedTable.scenario_project_id, scenarioData.project_id),
+            inArray(ttpUsedTable.scenario_number, scenario_numbers),
+            eq(ttpUsedTable.scenario_project_id, scenarioData[0].project_id),
           ),
         );
       // update ttp used table

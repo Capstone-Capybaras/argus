@@ -32,6 +32,7 @@ export class SelectScenarioDto implements InferSelect<typeof scenariosTable> {
   impact: string;
   project_id: number;
   asset_id: number;
+  save_to_learnings: boolean | null;
 }
 
 export class SelectScenarioByNumberDto extends SelectScenarioDto {

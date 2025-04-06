@@ -8,6 +8,7 @@ import { JobsModule } from '../jobs/jobs.module';
 import { AetherModule } from '../aether/aether.module';
 import { ThreatLandscapeModule } from '../threat-landscape/threat-landscape.module';
 import { MasterThreatCubesModule } from '../master-threat-cubes/master-threat-cubes.module';
+import { RedisModule } from 'src/email/redis/redis.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MasterThreatCubesModule } from '../master-threat-cubes/master-threat-cu
     AetherModule,
     ThreatLandscapeModule,
     MasterThreatCubesModule,
+    RedisModule,
   ],
   providers: [ScenarioService],
   controllers: [ScenarioController],
