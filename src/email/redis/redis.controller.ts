@@ -6,13 +6,15 @@ import {
   Logger,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
 } from '@nestjs/common';
 import { RedisService } from './redis.service';
 import {
   CreateMailDto,
   ScheduleMailDto,
-  UpdateMailClient,
+  SelectMailDto,
+  UpdateMailDto,
   UpdateScheduleDto,
 } from '../email.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -92,13 +94,14 @@ export class RedisController {
     }
   }
 
-  @Post('editEmail')
-  async UpdateMail(@Body() updateMailDto: UpdateMailClient) {
+  @Patch('editEmail')
+  async UpdateMail(@Body() updateMailDto: UpdateMailDto) : Promise<{success: boolean, email?: SelectMailDto,  error?: string}>{
     try {
       const resp = await this.redisService.updateEmailSchedule(updateMailDto);
       return resp;
     } catch (err) {
       Logger.log('editEmail error controller: ', err);
+      return {success: false, error: String(err)}
     }
   }
 

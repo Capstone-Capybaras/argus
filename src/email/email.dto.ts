@@ -1,13 +1,14 @@
 //import { Transform } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import {
   IsNotEmpty,
   IsArray,
-  IsDateString,
   IsOptional,
   IsBoolean,
+  IsDate,
 } from 'class-validator';
 import { emailsTable } from 'src/database/schema';
-import { InferInsert, InferUpdate } from 'src/utils/modelToDtoTypes';
+import { InferInsert, InferSelect, InferUpdate } from 'src/utils/modelToDtoTypes';
 
 export class CreateMailDto implements InferInsert<typeof emailsTable> {
   @IsNotEmpty()
@@ -16,44 +17,67 @@ export class CreateMailDto implements InferInsert<typeof emailsTable> {
   @IsArray()
   to: string[];
   @IsArray()
+  @IsOptional()
   cc?: string[];
   @IsArray()
+  @IsOptional()
   bcc?: string[];
   @IsNotEmpty()
   subject: string;
   @IsNotEmpty()
   html: string;
-  attachments?: string[];
-  // @Transform(({ value }) => value === "" ? null : value)
-  @IsDateString()
   @IsOptional()
-  scheduleDateTime?: string | null;
-  jobId?: string | null;
+  attachments?: string[];
+
+  @IsOptional()
+  @IsDate()
+  @Transform(({ value }) => (typeof value === 'string' ? new Date(value) : value))
+  schedule_date_time?: Date;
+
+  @IsOptional()
+  redis_job_id?: string;
+  @IsOptional()
   status?: string;
-  errorMessage?: string | null;
+  @IsOptional()
+  error_message?: string;
 
   @IsBoolean()
   @IsOptional()
   is_active?: boolean;
 }
 
-export class UpdateMailDBDto implements InferUpdate<typeof emailsTable> {
+export class UpdateMailDto implements InferUpdate<typeof emailsTable> {
+  id: number;
   @IsNotEmpty()
   @IsArray()
+  @IsOptional()
   to?: string[];
   @IsArray()
+  @IsOptional()
   cc?: string[];
   @IsArray()
+  @IsOptional()
   bcc?: string[];
   @IsNotEmpty()
+  @IsOptional()
   subject?: string;
   @IsNotEmpty()
+  @IsOptional()
   html?: string;
+  @IsOptional()
   attachments?: string[];
+
+  @IsOptional()
+  @IsDate()
+  @Transform(({ value }) => (typeof value === 'string' ? new Date(value) : value))
   schedule_date_time?: Date | null;
+
+  @IsOptional()
   redis_job_id?: string | null;
   @IsNotEmpty()
+  @IsOptional()
   status?: string;
+  @IsOptional()
   error_message?: string | null;
 
   @IsBoolean()
@@ -61,32 +85,21 @@ export class UpdateMailDBDto implements InferUpdate<typeof emailsTable> {
   is_active?: boolean;
 }
 
-export class UpdateMailClient {
-  @IsNotEmpty()
-  emailId: number;
-  projectId?: number;
-  @IsNotEmpty()
-  @IsArray()
-  to?: string[];
-  @IsArray()
-  cc?: string[];
-  @IsArray()
-  bcc?: string[];
-  @IsNotEmpty()
-  subject?: string;
-  @IsNotEmpty()
-  html?: string;
-  attachments?: string[];
-  // @Transform(({ value }) => value === "" ? null : value)
-  // @IsDateString()
-  scheduleDateTime?: string | null;
-  jobId?: string | null;
-  status?: string;
-  errorMessage?: string | null;
-
-  @IsBoolean()
-  @IsOptional()
-  is_active?: boolean;
+export class SelectMailDto implements InferSelect<typeof emailsTable> {
+  id: number;
+  project_id: number;
+  to: string[];
+  cc: string[] | null;
+  bcc: string[] | null;
+  subject: string;
+  html: string;
+  attachments: string[] | null;
+  schedule_date_time: Date | null;
+  status: string | null;
+  redis_job_id: string | null;
+  error_message: string | null;
+  observations: string | null;
+  is_active: boolean;
 }
 
 export class AttachmentDto {

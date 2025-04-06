@@ -7,7 +7,7 @@ import {
 import { Redis, RedisKey } from 'ioredis';
 import { Queue, Worker } from 'bullmq';
 import { EmailService } from '../email.service';
-import { CreateMailDto, UpdateMailClient, UpdateMailDBDto } from '../email.dto';
+import { CreateMailDto, UpdateMailDto } from '../email.dto';
 
 @Injectable()
 export class RedisService {
@@ -81,8 +81,12 @@ export class RedisService {
   }
 
   async scheduleEmail(emailId: number, scheduleDateTime: Date) {
+    if (typeof scheduleDateTime === 'string'){
+      scheduleDateTime = new Date(scheduleDateTime)
+    }
     if (scheduleDateTime.getTime() - Date.now() < 0) {
-      await this.emailService.deleteEmail(emailId);
+      console.log(scheduleDateTime)
+      console.log(scheduleDateTime.toISOString())
       throw new Error('Schedule cannot be made in the past');
     } else {
       const job = await this.jobQueue.add(
@@ -93,7 +97,6 @@ export class RedisService {
           removeOnComplete: true, // Remove the job after it completes
         },
       );
-      Logger.log('######### PRINT JOB #########');
       Logger.log(job.asJSON());
       return { jobId: job.id };
     }
@@ -110,6 +113,9 @@ export class RedisService {
   }
 
   async updateJob(jobId: string, newEmail: number, newDelay: Date) {
+    if (typeof newDelay === 'string'){
+      newDelay = new Date(newDelay)
+    }
     const job = await this.jobQueue.getJob(jobId);
     if (job) {
       await job.remove();
@@ -135,25 +141,30 @@ export class RedisService {
       const entry = await this.emailService.addEmail(emailData);
       const emailId = entry[0].id;
       let resp;
-      if (data.scheduleDateTime != null) {
-        const delay = new Date(data.scheduleDateTime);
+      let date;
+      if (data.schedule_date_time != null) {
+        if (typeof data.schedule_date_time === 'string'){
+          date = new Date(data.schedule_date_time);
+        } else {
+          date = data.schedule_date_time
+        }
+        const delay = data.schedule_date_time;
         const job = await this.scheduleEmail(entry[0].id, delay);
-        const scheduleData: UpdateMailDBDto = {
+        const updateMailData : UpdateMailDto = {
+          id: emailId,
+          ...data,
+          schedule_date_time: date,
           redis_job_id: job.jobId,
-          schedule_date_time: delay,
-          status: 'scheduled',
-          error_message: null,
-        };
-        resp = await this.emailService.updateEmail(emailId, scheduleData);
+          status: "scheduled"
+        }
+        resp = await this.emailService.updateEmail(updateMailData);
       } else {
-        const scheduleData: UpdateMailDBDto = {
-          redis_job_id: null,
+        const updateMailData : UpdateMailDto = {
+          id: emailId,
+          ...data,
           schedule_date_time: null,
-          status: 'notScheduled',
-          error_message: null,
-          is_active: false, // if no schedule, we must set is_active to false
-        };
-        resp = await this.emailService.updateEmail(emailId, scheduleData);
+        }
+        resp = await this.emailService.updateEmail(updateMailData);
       }
       return { success: true, resp: resp };
     } catch (err) {
@@ -162,64 +173,67 @@ export class RedisService {
     }
   }
 
-  async updateEmailSchedule(updateMailDto: UpdateMailClient) {
-    try {
-      const data: UpdateMailDBDto = {
-        to: updateMailDto.to,
-        subject: updateMailDto.subject,
-        html: updateMailDto.html,
-        attachments: updateMailDto.attachments,
-        ...(updateMailDto.is_active
-          ? { is_active: updateMailDto.is_active }
-          : {}),
-      };
-      let update = await this.emailService.updateEmail(
-        updateMailDto.emailId,
-        data,
-      );
-      //check if schedule is the same
-      if (update.schedule_date_time != updateMailDto.scheduleDateTime) {
+  async updateEmailSchedule(updateMailDto: UpdateMailDto) {
+    if (updateMailDto.schedule_date_time !== undefined){
+      try{
+        const current = await this.emailService.getEmailsById(updateMailDto.id);
+        console.log("current:", current)
+        if (!current) {
+          throw new Error('emailService.updateEmail returned undefined');
+        }
         let jobId;
         if (
-          update.redis_job_id == null &&
-          updateMailDto.scheduleDateTime != null
+          current.redis_job_id == null &&
+          updateMailDto.schedule_date_time != null
         ) {
-          const delay = new Date(updateMailDto.scheduleDateTime);
-          const job = await this.scheduleEmail(updateMailDto.emailId, delay);
+          const delay = updateMailDto.schedule_date_time;
+          const job = await this.scheduleEmail(updateMailDto.id, delay);
           jobId = job.jobId;
         } else if (
-          update.redis_job_id != null &&
-          updateMailDto.scheduleDateTime != null
+          current.redis_job_id != null &&
+          updateMailDto.schedule_date_time != null
         ) {
-          const delay = new Date(updateMailDto.scheduleDateTime);
+          const delay = updateMailDto.schedule_date_time;
           const newJob = await this.updateJob(
-            update.redis_job_id,
-            updateMailDto.emailId,
+            current.redis_job_id,
+            updateMailDto.id,
             delay,
           );
           jobId = newJob.jobId;
-        } else if (update.redis_job_id != null && updateMailDto.jobId == null) {
-          await this.removeJob(update.redis_job_id);
+        } else if (current.redis_job_id != null && updateMailDto.id == null) {
+          await this.removeJob(current.redis_job_id);
           jobId = null;
         }
-        const scheduleData: UpdateMailDBDto = {
+        let date;
+        if(typeof updateMailDto.schedule_date_time === "string"){
+          date = new Date(updateMailDto.schedule_date_time);
+        } else{
+          date = null
+        }
+        const scheduleData: UpdateMailDto = {
+          ...updateMailDto,
           redis_job_id: jobId ?? null,
-          schedule_date_time:
-            updateMailDto.scheduleDateTime != null
-              ? new Date(updateMailDto.scheduleDateTime)
-              : null,
-          status: 'scheduled',
+          schedule_date_time: date,
+          status: jobId ? 'scheduled' : 'notScheduled',
         };
-        const newEmail = await this.emailService.updateEmail(
-          updateMailDto.emailId,
-          scheduleData,
-        );
-        update = newEmail;
+        console.log("schedule data:", scheduleData)
+        const newEmail = await this.emailService.updateEmail(scheduleData);
+        return { success: true, email: newEmail };
       }
-      return { success: true, resp: update };
-    } catch (err) {
-      Logger.log('update email Error', err);
-      throw new InternalServerErrorException(err);
+      catch (err) {
+        Logger.log('update email Error', err);
+        throw new InternalServerErrorException(err);
+      }
+    }
+    else{
+      try{
+        const newEmail = await this.emailService.updateEmail(updateMailDto);
+        return { success: true, email: newEmail };
+      }
+      catch (err) {
+        Logger.log('update email Error', err);
+        throw new InternalServerErrorException(err);
+      }
     }
   }
 

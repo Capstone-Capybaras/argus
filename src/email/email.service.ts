@@ -11,7 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { DATABASE_CONNECTION } from 'src/config/providers';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { eq, sql } from 'drizzle-orm';
-import { AttachmentDto, CreateMailDto, UpdateMailDBDto } from './email.dto';
+import { AttachmentDto, CreateMailDto, UpdateMailDto } from './email.dto';
 import { RawEmail } from './email.interface';
 import { S3Service } from './s3.service';
 import { ServerSelectorService } from './server-selector/server-selector.service';
@@ -63,31 +63,16 @@ export class EmailService {
   async addEmail(data: CreateMailDto) {
     const result = await this.database
       .insert(schemas.emailsTable)
-      .values({
-        project_id: data.project_id,
-        to: data.to,
-        cc: data.cc ?? null,
-        bcc: data.bcc ?? null,
-        subject: data.subject,
-        html: data.html,
-        attachments: data.attachments ?? null,
-        redis_job_id: data.jobId ?? null,
-        schedule_date_time: data.scheduleDateTime
-          ? new Date(data.scheduleDateTime)
-          : null,
-        status: data.status ?? 'notScheduled',
-        error_message: data.errorMessage ?? null,
-        observations: null,
-      })
+      .values(data)
       .returning({ id: schemas.emailsTable.id });
     return result;
   }
 
-  async updateEmail(emailId: number, data: UpdateMailDBDto) {
+  async updateEmail(data: UpdateMailDto) {
     const result = await this.database
       .update(schemas.emailsTable)
       .set(data)
-      .where(eq(schemas.emailsTable.id, emailId))
+      .where(eq(schemas.emailsTable.id, data.id))
       .returning();
     return result[0] || null;
   }

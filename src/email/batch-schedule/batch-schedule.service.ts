@@ -488,7 +488,7 @@ export class BatchScheduleService {
           value.artefact_name !== undefined && value.artefact_name !== ''
             ? [`${projectId}/artefact/batch/${value.artefact_name}`]
             : [],
-        ...(datetimeString !== '' ? { scheduleDateTime: datetimeString } : {}),
+        ...(datetimeString !== '' ? { schedule_date_time: new Date(datetimeString) } : {}),
         ...(ccs.length > 0 ? { cc: ccs } : {}),
         ...(bccs.length > 0 ? { bcc: bccs } : {}),
         ...(value.is_active !== undefined
