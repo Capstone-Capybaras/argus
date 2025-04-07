@@ -3,7 +3,6 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-//import { BullQueueService } from 'src/email/bullqueue.service';
 import * as XLSX from 'xlsx';
 import { CreateMailDto } from '../email.dto';
 import { EmailService } from '../email.service';
@@ -488,7 +487,9 @@ export class BatchScheduleService {
           value.artefact_name !== undefined && value.artefact_name !== ''
             ? [`${projectId}/artefact/batch/${value.artefact_name}`]
             : [],
-        ...(datetimeString !== '' ? { schedule_date_time: new Date(datetimeString) } : {}),
+        ...(datetimeString !== ''
+          ? { schedule_date_time: new Date(datetimeString) }
+          : {}),
         ...(ccs.length > 0 ? { cc: ccs } : {}),
         ...(bccs.length > 0 ? { bcc: bccs } : {}),
         ...(value.is_active !== undefined

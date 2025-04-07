@@ -14,7 +14,6 @@ import { MasterThreatCubesModule } from './modules/master-threat-cubes/master-th
 import { ParticipantsModule } from './modules/participants/participants.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { EmailModule } from './email/email.module';
-//import { BullQueueModule } from './email/bullqueue.module';
 import { ImapModule } from './email/imap/imap.module';
 import { TtpUsedModule } from './modules/ttp-used/ttp-used.module';
 import { ThreatLandscapeModule } from './modules/threat-landscape/threat-landscape.module';
@@ -47,7 +46,6 @@ import { ChatsModule } from './modules/chats/chats.module';
     MasterThreatCubesModule,
     ParticipantsModule,
     RolesModule,
-    //BullQueueModule,
     EmailModule,
     ImapModule,
     TtpUsedModule,

@@ -8,7 +8,11 @@ import {
   IsDate,
 } from 'class-validator';
 import { emailsTable } from 'src/database/schema';
-import { InferInsert, InferSelect, InferUpdate } from 'src/utils/modelToDtoTypes';
+import {
+  InferInsert,
+  InferSelect,
+  InferUpdate,
+} from 'src/utils/modelToDtoTypes';
 
 export class CreateMailDto implements InferInsert<typeof emailsTable> {
   @IsNotEmpty()
@@ -31,7 +35,9 @@ export class CreateMailDto implements InferInsert<typeof emailsTable> {
 
   @IsOptional()
   @IsDate()
-  @Transform(({ value }) => (typeof value === 'string' ? new Date(value) : value))
+  @Transform(({ value }) =>
+    typeof value === 'string' ? new Date(value) : value,
+  )
   schedule_date_time?: Date;
 
   @IsOptional()
@@ -69,7 +75,9 @@ export class UpdateMailDto implements InferUpdate<typeof emailsTable> {
 
   @IsOptional()
   @IsDate()
-  @Transform(({ value }) => (typeof value === 'string' ? new Date(value) : value))
+  @Transform(({ value }) =>
+    typeof value === 'string' ? new Date(value) : value,
+  )
   schedule_date_time?: Date | null;
 
   @IsOptional()

@@ -81,12 +81,12 @@ export class RedisService {
   }
 
   async scheduleEmail(emailId: number, scheduleDateTime: Date) {
-    if (typeof scheduleDateTime === 'string'){
-      scheduleDateTime = new Date(scheduleDateTime)
+    if (typeof scheduleDateTime === 'string') {
+      scheduleDateTime = new Date(scheduleDateTime);
     }
     if (scheduleDateTime.getTime() - Date.now() < 0) {
-      console.log(scheduleDateTime)
-      console.log(scheduleDateTime.toISOString())
+      console.log(scheduleDateTime);
+      console.log(scheduleDateTime.toISOString());
       throw new Error('Schedule cannot be made in the past');
     } else {
       const job = await this.jobQueue.add(
@@ -113,8 +113,8 @@ export class RedisService {
   }
 
   async updateJob(jobId: string, newEmail: number, newDelay: Date) {
-    if (typeof newDelay === 'string'){
-      newDelay = new Date(newDelay)
+    if (typeof newDelay === 'string') {
+      newDelay = new Date(newDelay);
     }
     const job = await this.jobQueue.getJob(jobId);
     if (job) {
@@ -143,27 +143,27 @@ export class RedisService {
       let resp;
       let date;
       if (data.schedule_date_time != null) {
-        if (typeof data.schedule_date_time === 'string'){
+        if (typeof data.schedule_date_time === 'string') {
           date = new Date(data.schedule_date_time);
         } else {
-          date = data.schedule_date_time
+          date = data.schedule_date_time;
         }
         const delay = data.schedule_date_time;
         const job = await this.scheduleEmail(entry[0].id, delay);
-        const updateMailData : UpdateMailDto = {
+        const updateMailData: UpdateMailDto = {
           id: emailId,
           ...data,
           schedule_date_time: date,
           redis_job_id: job.jobId,
-          status: "scheduled"
-        }
+          status: 'scheduled',
+        };
         resp = await this.emailService.updateEmail(updateMailData);
       } else {
-        const updateMailData : UpdateMailDto = {
+        const updateMailData: UpdateMailDto = {
           id: emailId,
           ...data,
           schedule_date_time: null,
-        }
+        };
         resp = await this.emailService.updateEmail(updateMailData);
       }
       return { success: true, resp: resp };
@@ -174,10 +174,10 @@ export class RedisService {
   }
 
   async updateEmailSchedule(updateMailDto: UpdateMailDto) {
-    if (updateMailDto.schedule_date_time !== undefined){
-      try{
+    if (updateMailDto.schedule_date_time !== undefined) {
+      try {
         const current = await this.emailService.getEmailsById(updateMailDto.id);
-        console.log("current:", current)
+        console.log('current:', current);
         if (!current) {
           throw new Error('emailService.updateEmail returned undefined');
         }
@@ -205,10 +205,10 @@ export class RedisService {
           jobId = null;
         }
         let date;
-        if(typeof updateMailDto.schedule_date_time === "string"){
+        if (typeof updateMailDto.schedule_date_time === 'string') {
           date = new Date(updateMailDto.schedule_date_time);
-        } else{
-          date = null
+        } else {
+          date = null;
         }
         const scheduleData: UpdateMailDto = {
           ...updateMailDto,
@@ -216,21 +216,18 @@ export class RedisService {
           schedule_date_time: date,
           status: jobId ? 'scheduled' : 'notScheduled',
         };
-        console.log("schedule data:", scheduleData)
+        console.log('schedule data:', scheduleData);
         const newEmail = await this.emailService.updateEmail(scheduleData);
         return { success: true, email: newEmail };
-      }
-      catch (err) {
+      } catch (err) {
         Logger.log('update email Error', err);
         throw new InternalServerErrorException(err);
       }
-    }
-    else{
-      try{
+    } else {
+      try {
         const newEmail = await this.emailService.updateEmail(updateMailDto);
         return { success: true, email: newEmail };
-      }
-      catch (err) {
+      } catch (err) {
         Logger.log('update email Error', err);
         throw new InternalServerErrorException(err);
       }

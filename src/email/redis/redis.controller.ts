@@ -95,13 +95,15 @@ export class RedisController {
   }
 
   @Patch('editEmail')
-  async UpdateMail(@Body() updateMailDto: UpdateMailDto) : Promise<{success: boolean, email?: SelectMailDto,  error?: string}>{
+  async UpdateMail(
+    @Body() updateMailDto: UpdateMailDto,
+  ): Promise<{ success: boolean; email?: SelectMailDto; error?: string }> {
     try {
       const resp = await this.redisService.updateEmailSchedule(updateMailDto);
       return resp;
     } catch (err) {
       Logger.log('editEmail error controller: ', err);
-      return {success: false, error: String(err)}
+      return { success: false, error: String(err) };
     }
   }
 
