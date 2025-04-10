@@ -326,7 +326,7 @@ export class ScenarioService {
         project_id: generateScenarioDto.project_id,
         additional_context: generateScenarioDto.additional_context,
         job_id: job.id,
-        threat_actor_motivation: generateScenarioDto.threat_actor_motivation
+        threat_actor_motivation: generateScenarioDto.threat_actor_motivation,
       });
     } catch (err) {
       Logger.error(`Could not send generate scenario to aether: ${err}`);

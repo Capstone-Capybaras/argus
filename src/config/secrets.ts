@@ -21,6 +21,11 @@ export interface Secrets {
   AETHER_URL: string;
   S3_BUCKET_NAME: string;
   VALKEY_ENDPOINT: string;
+  EMAIL_HOST: string;
+  EMAIL_USERNAME: string;
+  EMAIL_PASSWORD: string;
+  EMAIL_BACKUP_USERNAME: string;
+  EMAIL_BACKUP_PASSWORD: string;
 }
 
 const fetchSecrets = async (secretName: string): Promise<Secrets> => {
