@@ -13,6 +13,18 @@ export class UsersService {
     private readonly database: NodePgDatabase<typeof schemas>,
   ) {}
 
+  async validateSuperUser(username: string): Promise<boolean> {
+    const [user] = await this.database
+      .select()
+      .from(schemas.usersTable)
+      .where(eq(schemas.usersTable.username, username))
+      .limit(1);
+
+    if (!user) return false;
+
+    return user.is_super_user;
+  }
+
   async getUsers() {
     return this.database
       .select({

@@ -13,4 +13,8 @@ export class CreateUserDto implements InferInsert<typeof usersTable> {
   @IsBoolean()
   @IsOptional()
   is_active?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  is_super_user?: boolean;
 }

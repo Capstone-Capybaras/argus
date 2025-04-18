@@ -111,7 +111,7 @@ export class AuthService {
         throw new ForbiddenException('Access Denied');
       }
 
-      const newPayload = { sub: user.id, username: user.username };
+      const newPayload: JwtPayload = { sub: user.id, username: user.username };
       const newAccessToken = await this.jwtService.signAsync(newPayload);
 
       return {

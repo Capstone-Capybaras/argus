@@ -24,6 +24,7 @@ export const usersTable = pgTable('users', {
   username: text().notNull().unique(),
   password: text(), // password is nullable, if null user is unregistered
   is_active: boolean().notNull().default(true),
+  is_super_user: boolean().notNull().default(false),
 });
 
 export const revokedTokensTable = pgTable('revoked_tokens', {
