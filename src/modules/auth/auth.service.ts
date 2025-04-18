@@ -73,7 +73,9 @@ export class AuthService {
       throw new UnauthorizedException('User account marked as inactive');
     }
     if (!user.password) {
-      throw new UnauthorizedException('User has not set password yet!');
+      throw new UnauthorizedException(
+        'User has not set password yet, possibly unregistered!',
+      );
     }
 
     const isMatch = await bcrypt.compare(pass, user.password);
