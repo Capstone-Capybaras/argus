@@ -22,7 +22,8 @@ import { AssetComponent } from 'src/modules/assets/dto/asset-component.dto';
 export const usersTable = pgTable('users', {
   id: serial('id').unique().primaryKey(),
   username: text().notNull().unique(),
-  password: text().notNull(),
+  password: text(), // password is nullable, if null user is unregistered
+  is_active: boolean().notNull().default(true),
 });
 
 export const revokedTokensTable = pgTable('revoked_tokens', {

@@ -57,7 +57,8 @@ export class AuthService {
   async register(username: string, pass: string) {
     const saltOrRounds = +this.configService.getOrThrow('SALT_OR_ROUNDS');
     const hash = await bcrypt.hash(pass, saltOrRounds);
-    return this.usersService.addUser(username, hash);
+    // when registering, we do not create a user object, instead update the PW only
+    return this.usersService.updateUserByUsername({ username, password: hash });
   }
 
   async signIn(
@@ -65,22 +66,28 @@ export class AuthService {
     pass: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const user = await this.usersService.findOne(username);
-    if (user) {
-      const isMatch = await bcrypt.compare(pass, user.password);
-      if (!isMatch) {
-        throw new UnauthorizedException('Wrong password given');
-      }
-      const payload: JwtPayload = { sub: user.id, username: user.username };
-      // sign with default secret and expiry
-      const accessToken = await this.jwtService.signAsync(payload);
-      const refreshToken = await this.generateRefreshToken(payload);
-      return {
-        accessToken,
-        refreshToken,
-      };
-    } else {
+    if (!user) {
       throw new NotFoundException('User not found');
     }
+    if (!user.is_active) {
+      throw new UnauthorizedException('User account marked as inactive');
+    }
+    if (!user.password) {
+      throw new UnauthorizedException('User has not set password yet!');
+    }
+
+    const isMatch = await bcrypt.compare(pass, user.password);
+    if (!isMatch) {
+      throw new UnauthorizedException('Wrong password given');
+    }
+    const payload: JwtPayload = { sub: user.id, username: user.username };
+    // sign with default secret and expiry
+    const accessToken = await this.jwtService.signAsync(payload);
+    const refreshToken = await this.generateRefreshToken(payload);
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
   async triggerRefreshToken(

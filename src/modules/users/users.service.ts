@@ -3,6 +3,8 @@ import * as schemas from 'src/database/schema';
 import { DATABASE_CONNECTION } from 'src/config/providers';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { eq } from 'drizzle-orm/expressions';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +18,7 @@ export class UsersService {
       .select({
         id: schemas.usersTable.id,
         username: schemas.usersTable.username,
+        is_active: schemas.usersTable.is_active,
       })
       .from(schemas.usersTable);
   }
@@ -32,10 +35,17 @@ export class UsersService {
     if (user) return user;
   }
 
-  async addUser(username: string, password: string) {
+  async addUser(data: CreateUserDto) {
+    return this.database.insert(schemas.usersTable).values(data).returning();
+  }
+
+  async updateUserByUsername(data: UpdateUserDto) {
+    const { username, ...editable } = data;
+
     return this.database
-      .insert(schemas.usersTable)
-      .values({ username: username, password: password })
+      .update(schemas.usersTable)
+      .set(editable)
+      .where(eq(schemas.usersTable.username, username))
       .returning();
   }
 }

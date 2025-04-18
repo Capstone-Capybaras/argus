@@ -18,6 +18,7 @@ import { AccessTokenResponse, SignInDto } from './auth.dto';
 import { RegisterDto } from './auth.dto';
 import { SelectUserDto } from '../users/dto/select-user.dto';
 import { Public } from './public.guard';
+import { UsersService } from '../users/users.service';
 
 const cookieConfig: CookieOptions = {
   httpOnly: true,
@@ -30,7 +31,10 @@ const REFRESH_TOKEN_COOKIE = 'refreshToken';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private usersService: UsersService,
+  ) {}
 
   @Public()
   @HttpCode(HttpStatus.OK)
@@ -51,6 +55,14 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('register')
   async register(@Body() registerDto: RegisterDto): Promise<SelectUserDto[]> {
+    // only whitelisted users can register
+    const whitelisted = this.usersService.findOne(registerDto.username);
+    if (!whitelisted) {
+      throw new UnauthorizedException(
+        'You are not a whitelisted user of this platform',
+      );
+    }
+
     if (registerDto.confirmPassword !== registerDto.password) {
       throw new BadRequestException('Password does not match!');
     }
