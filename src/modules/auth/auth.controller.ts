@@ -56,7 +56,7 @@ export class AuthController {
   @Post('register')
   async register(@Body() registerDto: RegisterDto): Promise<SelectUserDto[]> {
     // only whitelisted users can register
-    const whitelisted = this.usersService.findOne(registerDto.username);
+    const whitelisted = await this.usersService.findOne(registerDto.username);
     if (!whitelisted) {
       throw new UnauthorizedException(
         'You are not a whitelisted user of this platform',
