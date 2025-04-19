@@ -31,6 +31,7 @@ export class UsersService {
         id: schemas.usersTable.id,
         username: schemas.usersTable.username,
         is_active: schemas.usersTable.is_active,
+        is_super_user: schemas.usersTable.is_super_user,
       })
       .from(schemas.usersTable);
   }
