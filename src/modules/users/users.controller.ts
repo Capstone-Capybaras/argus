@@ -30,7 +30,7 @@ export class UsersController {
     return this.usersService.updateUserByUsername(data);
   }
 
-  @Get()
+  @Get('is-super-user')
   async isUserSuperUser(@User() userInfo: UserInfo): Promise<boolean> {
     return this.usersService.validateSuperUser(userInfo.username);
   }
