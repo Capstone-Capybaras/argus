@@ -27,6 +27,7 @@ import { GenerateScenarioCallbackDto } from './dto/generate-scenario-callback.dt
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { SelectJobDto } from '../jobs/dto/select-job.dto';
 import { UriDecodePipe } from 'src/utils/uriDecode.pipe';
+import { saveScenarioLearningsCallbackDto } from './save-learnings.dto';
 
 @ApiBearerAuth()
 @Controller('scenarios')
@@ -66,6 +67,19 @@ export class ScenarioController {
     try {
       return await this.scenarioService.generateScenarioCallback(
         generateScenarioCallbackDto,
+      );
+    } catch (e) {
+      throw new BadRequestException('Failed to callback scenario: ', String(e));
+    }
+  }
+
+  @Post('/learning/callback')
+  async saveScenarioLearningsCallback(
+    @Body() saveLearningsCallbackDto: saveScenarioLearningsCallbackDto,
+  ) {
+    try {
+      return await this.scenarioService.saveScenarioLearningsCallback(
+        saveLearningsCallbackDto,
       );
     } catch (e) {
       throw new BadRequestException('Failed to callback scenario: ', String(e));
