@@ -416,11 +416,13 @@ export class ScenarioService {
     });
   }
 
-  async saveScenarioLearningsCallback(data: saveScenarioLearningsCallbackDto){
-    this.db.update(jobsTable).set({
-      id: data.job_id,
-      status: data.job_status
-    })
-    .where(eq(jobsTable.id, data.job_id))
+  async saveScenarioLearningsCallback(data: saveScenarioLearningsCallbackDto) {
+    this.db
+      .update(jobsTable)
+      .set({
+        id: data.job_id,
+        status: data.job_status,
+      })
+      .where(eq(jobsTable.id, data.job_id));
   }
 }

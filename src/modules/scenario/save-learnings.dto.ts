@@ -1,7 +1,4 @@
-import {
-  IsIn,
-  IsNumber,
-} from 'class-validator';
+import { IsIn, IsNumber } from 'class-validator';
 import { jobsTable } from 'src/database/schema';
 
 export class saveScenarioLearningsCallbackDto {
