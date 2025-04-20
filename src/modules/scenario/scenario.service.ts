@@ -17,6 +17,7 @@ import { EntityService } from '../entity/entity.service';
 import { AssetsService } from '../assets/assets.service';
 import { JobsService } from '../jobs/jobs.service';
 import { GenerateScenarioCallbackDto } from './dto/generate-scenario-callback.dto';
+import { saveScenarioLearningsCallbackDto } from './save-learnings.dto';
 import {
   SelectScenarioWithAssetDto,
   SelectScenarioByNumberDto,
@@ -413,5 +414,15 @@ export class ScenarioService {
         })
         .where(eq(jobsTable.id, job_id));
     });
+  }
+
+  async saveScenarioLearningsCallback(data: saveScenarioLearningsCallbackDto) {
+    this.db
+      .update(jobsTable)
+      .set({
+        id: data.job_id,
+        status: data.job_status,
+      })
+      .where(eq(jobsTable.id, data.job_id));
   }
 }
