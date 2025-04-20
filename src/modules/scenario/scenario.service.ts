@@ -417,7 +417,14 @@ export class ScenarioService {
   }
 
   async saveScenarioLearningsCallback(data: saveScenarioLearningsCallbackDto) {
-    this.db
+    if (data.job_status === 'pending') return;
+
+    if (data.job_status === 'failed') {
+      await this.jobsService.onJobFailed(data.job_id);
+
+      return;
+    }
+    await this.db
       .update(jobsTable)
       .set({
         id: data.job_id,
