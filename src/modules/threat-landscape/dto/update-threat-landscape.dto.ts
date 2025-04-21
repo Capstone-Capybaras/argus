@@ -17,27 +17,27 @@ export class UpdateThreatLandscapeDto
 
   @IsString()
   @IsOptional()
-  capability?: string;
+  capability?: string | null;
 
   @IsString()
   @IsOptional()
-  capability_reason?: string;
+  capability_reason?: string | null;
 
   @IsString()
   @IsOptional()
-  intent?: string;
+  intent?: string | null;
 
   @IsString()
   @IsOptional()
-  intent_reason?: string;
+  intent_reason?: string | null;
 
   @IsString()
   @IsOptional()
-  opportunity?: string;
+  opportunity?: string | null;
 
   @IsString()
   @IsOptional()
-  opportunity_reason?: string;
+  opportunity_reason?: string | null;
 
   @IsString()
   file_key: string;
