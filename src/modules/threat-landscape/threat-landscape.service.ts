@@ -97,6 +97,7 @@ export class ThreatLandscapeService {
         and(
           eq(threatLandscapeTable.entity_id, data.entity_id),
           eq(threatLandscapeTable.threat_actor_name, data.threat_actor_name),
+          eq(threatLandscapeTable.file_key, data.file_key)
         ),
       )
       .returning();

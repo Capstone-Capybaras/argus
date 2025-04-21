@@ -1,4 +1,4 @@
-import { IsString, IsInt, IsOptional } from 'class-validator';
+import { IsString, IsInt, IsOptional, IsIn } from 'class-validator';
 import { threatLandscapeTable } from 'src/database/schema';
 import { InferUpdate } from 'src/utils/modelToDtoTypes';
 
@@ -12,10 +12,14 @@ export class UpdateThreatLandscapeDto
   @IsString()
   threat_actor_name: string;
   // ---------
-
-  @IsString()
-  @IsOptional()
-  category?: 'Material' | 'Impending' | 'Potential' | 'Insubstantial' | null;
+  @IsIn([
+      'Material',
+      'Impending',
+      'Insubstantial',
+      'Potential',
+      null
+    ])
+  category: 'Material' | 'Impending' | 'Potential' | 'Insubstantial' | null;
 
   @IsString()
   @IsOptional()
@@ -42,6 +46,5 @@ export class UpdateThreatLandscapeDto
   opportunity_reason?: string;
 
   @IsString()
-  @IsOptional()
-  file_key?: string;
+  file_key: string;
 }
