@@ -6,7 +6,7 @@ export class SelectThreatLandscapeDto
   implements InferSelect<typeof threatLandscapeTable>
 {
   entity_id: number;
-  threat_actor_name: string | null;
+  threat_actor_name: string;
 
   @IsIn(['Material', 'Impending', 'Potential', 'Insubstantial', null])
   category: 'Material' | 'Impending' | 'Potential' | 'Insubstantial' | null;
