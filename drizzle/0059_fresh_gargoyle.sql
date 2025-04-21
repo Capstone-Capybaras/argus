@@ -1,0 +1,1 @@
+ALTER TABLE "threat_landscape" ALTER COLUMN "threat_actor_name" SET NOT NULL;

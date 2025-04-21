@@ -414,6 +414,13 @@
       "when": 1744986726339,
       "tag": "0058_faulty_captain_universe",
       "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1745237533543,
+      "tag": "0059_fresh_gargoyle",
+      "breakpoints": true
     }
   ]
 }

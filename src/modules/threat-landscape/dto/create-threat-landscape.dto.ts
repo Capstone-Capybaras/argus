@@ -1,6 +1,6 @@
 import { IsString, IsInt } from 'class-validator';
 import { threatLandscapeTable } from 'src/database/schema';
-import { InferInsert, InferUpdate } from 'src/utils/modelToDtoTypes';
+import { InferInsert } from 'src/utils/modelToDtoTypes';
 
 export class CreateThreatLandscapeDto
   implements InferInsert<typeof threatLandscapeTable>
