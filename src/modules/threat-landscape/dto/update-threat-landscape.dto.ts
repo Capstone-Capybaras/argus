@@ -12,13 +12,7 @@ export class UpdateThreatLandscapeDto
   @IsString()
   threat_actor_name: string;
   // ---------
-  @IsIn([
-      'Material',
-      'Impending',
-      'Insubstantial',
-      'Potential',
-      null
-    ])
+  @IsIn(['Material', 'Impending', 'Insubstantial', 'Potential', null])
   category: 'Material' | 'Impending' | 'Potential' | 'Insubstantial' | null;
 
   @IsString()

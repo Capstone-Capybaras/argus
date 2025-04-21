@@ -1,9 +1,9 @@
 import { IsString, IsInt } from 'class-validator';
 import { threatLandscapeTable } from 'src/database/schema';
-import { InferUpdate } from 'src/utils/modelToDtoTypes';
+import { InferInsert, InferUpdate } from 'src/utils/modelToDtoTypes';
 
 export class CreateThreatLandscapeDto
-  implements InferUpdate<typeof threatLandscapeTable>
+  implements InferInsert<typeof threatLandscapeTable>
 {
   @IsInt()
   entity_id: number;
